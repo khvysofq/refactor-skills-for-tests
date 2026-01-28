@@ -1,126 +1,188 @@
-# 可测试性重构工作流 - Agent 入口
+# 可测试性重构工作流 - Agent Skill
 
-> **读取指令**：这是 Agent 执行可测试性重构的总入口。根据当前工程状态，选择对应路径执行。
+这是一个用于重构复杂 C/C++ 项目的 Agent Skill 工作流系统。通过 ClaudeCode 和预定义的工作流，帮助自动化执行可测试性重构任务。
 
----
+## 项目简介
 
-## 快速决策树
+本项目提供了一套完整的 Agent Skill 工作流，用于指导 AI Agent 系统化地重构复杂 C/C++ 项目，提升项目的可测试性。工作流包含多个阶段和技能，从基线准备、工程分析、优先级排序到迭代重构，确保重构过程的可控性和可追溯性。
 
-按以下顺序回答问题，根据第一个"否"的回答选择对应阶段：
+## 快速开始
 
-| 步骤 | 问题 | 否 | 是 |
-|------|------|-----|-----|
-| Q1 | 工程是否已建立门禁基线？ | 执行 [Phase 01: 基线准备](phases/01-setup.md) | 继续 Q2 |
-| Q2 | 是否已完成工程分析？ | 执行 [Phase 02: 工程分析](phases/02-analysis.md) | 继续 Q3 |
-| Q3 | 是否已建立模块优先级队列？ | 执行 [Phase 03: 优先级排序](phases/03-prioritization.md) | 进入 [Phase 04: 迭代循环](phases/04-iteration.md) |
+### 前置要求
 
-**决策规则**：从 Q1 开始，遇到第一个"否"即进入对应阶段；全部为"是"则进入 Phase 04。
+- Docker 已安装并运行
+- 具有 sudo 权限（用于设置目录权限）
+- 需要重构的 C/C++ 项目
 
----
+### 步骤 1: 构建 Docker 镜像
 
-## 判断依据
+首先，使用 `docker/` 目录下的 Dockerfile 构建包含 ClaudeCode 和完整 C/C++ 开发环境的镜像：
 
-### Q1: 如何判断"门禁基线已建立"？
+```bash
+cd docker
+docker build -t claude-code:0.0.2 -f dockerfile .
+```
 
-检查以下条件是否全部满足：
+镜像包含：
+- **ClaudeCode**: 最新版本的 `@anthropic-ai/claude-code`
+- **C/C++ 开发工具链**: gcc, g++, clang, cmake, make, ninja-build 等
+- **调试工具**: gdb, lldb, valgrind, strace 等
+- **静态分析工具**: clang-tidy, cppcheck 等
+- **测试框架**: Google Test, Google Mock
+- **其他开发工具**: git, zsh, fzf 等
 
-- [ ] 存在可执行的构建命令，且能稳定编译核心 target
-- [ ] 存在 `tests/` 目录结构
-- [ ] 存在一键测试脚本（如 `./tools/test.sh`）
-- [ ] 测试运行器能执行并返回 0
+### 步骤 2: 准备项目目录
 
-**全部满足** → 基线已建立  
-**任一不满足** → 需执行 Phase 01
+将需要重构的项目下载或克隆到本地，作为当前项目的一个子文件夹。例如：
 
-### Q2: 如何判断"工程分析已完成"？
+```bash
+# 假设当前项目在 /path/to/project/refactor-skills-for-tests
+# 将目标项目克隆到子目录
+git clone <your-project-url> target-project
+# 或者
+cd /path/to/your/project
+```
 
-检查以下文档是否存在且内容完整：
+### 步骤 3: 启动容器并配置环境
 
-- [ ] `docs/architecture/module_map.md` 存在且覆盖主要模块
-- [ ] 每个模块有职责、边界、依赖类型描述
-- [ ] 编译体系已文档化
+使用 `docker.sh` 脚本启动容器并进入开发环境：
 
-**全部满足** → 分析已完成  
-**任一不满足** → 需执行 Phase 02
+```bash
+# 进入项目子目录（相对路径或绝对路径）
+./docker.sh target-project
 
-### Q3: 如何判断"优先级队列已建立"？
+# 或者使用绝对路径
+./docker.sh /path/to/project/your-project
+```
 
-检查以下条件：
+脚本会自动：
+- 设置目录权限（确保容器内 node 用户可访问）
+- 挂载项目目录到容器内
+- 挂载 ClaudeCode 配置目录
+- 挂载 Git 配置（SSH 密钥、gitconfig 等）
+- 启动交互式 zsh shell
 
-- [ ] `docs/testing/backlog.md` 存在
-- [ ] 包含至少 10 个可执行切片
-- [ ] 每个条目有 S1-S4 评估和 L1-L3 策略
+### 步骤 4: 配置 ClaudeCode 使用工作流
 
-**全部满足** → 队列已建立  
-**任一不满足** → 需执行 Phase 03
+在容器内，ClaudeCode 会自动加载 `skills/SKILL.md` 中定义的工作流。该工作流包含：
 
----
+- **决策树**: 根据工程状态自动选择执行阶段
+- **4 个主要阶段**:
+  - Phase 01: 基线准备
+  - Phase 02: 工程分析
+  - Phase 03: 优先级排序
+  - Phase 04: 迭代循环
+- **13+ 个技能模块**: 涵盖从基线建立到重构完成的各个环节
 
-## 核心文档索引
+## 工作流说明
 
-### 定义文档（按需查阅）
+### 工作流入口
 
-| 文档 | 用途 | 何时阅读 |
-|------|------|----------|
-| [全局约束](definitions/constraints.md) | 不可违背的硬性规则 | 执行任何改动前 |
-| [状态定义](definitions/states.md) | S1-S4/G0-G3 状态说明 | 进行评估或处理门禁时 |
-| [测试分层](definitions/test_levels.md) | L1/L2/L3 定义 | 选择测试策略时 |
+工作流的主入口文档位于 `skills/SKILL.md`。Agent 会根据以下决策树自动选择执行路径：
 
-### 阶段文档（按序执行）
+1. **Q1**: 工程是否已建立门禁基线？
+   - 否 → 执行 Phase 01: 基线准备
+   - 是 → 继续 Q2
 
-| 阶段 | 文档 | 前置条件 |
-|------|------|----------|
-| Phase 01 | [基线准备](phases/01-setup.md) | 无 |
-| Phase 02 | [工程分析](phases/02-analysis.md) | Phase 01 完成 |
-| Phase 03 | [优先级排序](phases/03-prioritization.md) | Phase 02 完成 |
-| Phase 04 | [迭代循环](phases/04-iteration.md) | Phase 03 完成 |
+2. **Q2**: 是否已完成工程分析？
+   - 否 → 执行 Phase 02: 工程分析
+   - 是 → 继续 Q3
 
-### 技能文档（按需加载）
+3. **Q3**: 是否已建立模块优先级队列？
+   - 否 → 执行 Phase 03: 优先级排序
+   - 是 → 进入 Phase 04: 迭代循环
 
-> **注意**：不要预先阅读所有 Skill 文档，仅在阶段文档指示时加载对应 Skill。
+### 核心文档结构
 
-| Skill | 名称 | 触发条件 |
-|-------|------|----------|
-| [Skill 01](skills/skill-01-baseline.md) | 工程基线与门禁准备 | Phase 01 指示 |
-| [Skill 02](skills/skill-02-analysis.md) | 工程深度分析 | Phase 02 指示 |
-| [Skill 03](skills/skill-03-prioritization.md) | 模块分级与优先级 | Phase 03 指示 |
-| [Skill 04](skills/skill-04-assessment.md) | 模块可测试性评估 | Phase 04 循环入口 |
-| [Skill 05](skills/skill-05-characterization.md) | 表征测试 | 评估结果为 S2 |
-| [Skill 06](skills/skill-06-unit-tests.md) | 直接单测覆盖 | 评估结果为 S1 |
-| [Skill 07](skills/skill-07-seams.md) | 设计 Seam 与解耦 | 评估结果为 S3 或 S2 后续 |
-| [Skill 08](skills/skill-08-refactor.md) | 小步重构 | Skill 06/07 完成后 |
-| [Skill 09](skills/skill-09-behavior-drift.md) | 行为差异判定 | 门禁 G2 |
-| [Skill 10](skills/skill-10-human-input.md) | 人工介入问询 | 评估结果为 S4 或无法判定 |
-| [Skill 11](skills/skill-11-documentation.md) | 文档更新 | 模块处理完成 |
-| [Skill 12](skills/skill-12-stability.md) | 稳定性治理 | 门禁 G3 |
-| [Skill 13](skills/skill-13-bugfix.md) | 缺陷修复 | 确认为 Bug |
+```
+skills/
+├── SKILL.md                    # 主入口文档（Agent 从这里开始）
+├── phases/                     # 阶段文档
+│   ├── 01-setup.md            # 基线准备
+│   ├── 02-analysis.md         # 工程分析
+│   ├── 03-prioritization.md   # 优先级排序
+│   └── 04-iteration.md        # 迭代循环
+├── skills/                     # 技能文档
+│   ├── skill-01-baseline.md   # 工程基线与门禁准备
+│   ├── skill-02-analysis.md   # 工程深度分析
+│   ├── skill-03-prioritization.md  # 模块分级与优先级
+│   └── ...                    # 其他技能
+├── definitions/               # 定义文档
+│   ├── constraints.md         # 全局约束
+│   ├── states.md              # 状态定义
+│   └── test_levels.md         # 测试分层
+├── decisions/                 # 决策文档
+│   ├── testability-decision.md
+│   └── gate-failure-decision.md
+└── templates/                 # 模板文档
+    ├── module-card.md
+    ├── backlog-entry.md
+    └── ...
+```
 
-### 模板文档
+### 使用方式
 
-| 模板 | 用途 |
-|------|------|
-| [模块卡片模板](templates/module-card.md) | 创建/更新模块评估文档 |
-| [Backlog 条目模板](templates/backlog-entry.md) | 创建待办条目 |
-| [人工问询模板](templates/question-set.md) | 结构化提问 |
+1. **启动容器后**，在容器内打开 ClaudeCode
+2. **告诉 Agent**："请按照 `skills/SKILL.md` 中的工作流开始执行可测试性重构"
+3. **Agent 会自动**：
+   - 读取 `skills/SKILL.md` 作为入口
+   - 根据决策树判断当前工程状态
+   - 进入对应的阶段文档
+   - 按需加载技能文档执行具体任务
 
-### 决策文档
+## 配置说明
 
-| 决策树 | 用途 |
-|--------|------|
-| [可测试性决策](decisions/testability-decision.md) | Skill 04 评估后路径选择 |
-| [门禁失败决策](decisions/gate-failure-decision.md) | 门禁失败后路径选择 |
+### Docker 镜像配置
 
----
+镜像名称和版本在 `docker.sh` 中配置：
 
-## 执行原则
+```bash
+IMAGE_NAME="claude-code:0.0.2"
+CONTAINER_USER="node"
+CONTAINER_USER_UID=1000
+CONTAINER_USER_GID=1000
+```
 
-1. **最小上下文原则**：仅加载当前步骤需要的文档
-2. **验收驱动**：每个 Skill 执行完必须验证验收标准
-3. **状态持久化**：完成阶段/Skill 后更新相关状态文档
-4. **失败快速回滚**：门禁失败时立即进入对应处理流程
+### ClaudeCode 配置
 
----
+ClaudeCode 的配置目录挂载在：
+- 容器内: `/home/node/.claude`
+- 宿主机: `./claude_settings/.claude`
 
-## 立即开始
+首次使用前，可以在宿主机创建 `claude_settings/.claude` 目录并配置相关设置。
 
-请根据上方决策树判断当前工程状态，然后进入对应阶段文档开始执行。
+## 注意事项
+
+1. **权限设置**: `docker.sh` 脚本会尝试使用 sudo 修改挂载目录的权限。如果失败，请手动执行：
+   ```bash
+   sudo chown -R 1000:1000 <your-project-path>
+   ```
+
+2. **网络配置**: 容器使用 `--network=host` 模式，可以直接访问宿主机网络。
+
+3. **资源限制**: 容器默认共享内存为 32GB，可根据需要调整 `docker.sh` 中的 `--shm-size` 参数。
+
+4. **Git 配置**: 容器的 Git 配置（SSH 密钥、gitconfig）会从宿主机的 `~/.ssh` 和 `~/.gitconfig` 挂载（只读）。
+
+## 故障排查
+
+### 容器无法启动
+
+- 检查 Docker 是否运行: `docker ps`
+- 检查镜像是否存在: `docker images | grep claude-code`
+- 检查路径是否正确: 确保 `docker.sh` 的参数路径存在
+
+### 权限问题
+
+- 确保挂载目录对 node 用户（UID 1000）可读写
+- 检查 `docker.sh` 中的权限设置是否正确
+
+### ClaudeCode 无法加载工作流
+
+- 确保 `skills/SKILL.md` 文件存在
+- 检查 ClaudeCode 配置目录是否正确挂载
+- 在容器内验证文件路径: `ls -la /path/to/mounted/project/skills/SKILL.md`
+
+## 贡献
+
+欢迎提交 Issue 和 Pull Request 来改进这个工作流系统。
