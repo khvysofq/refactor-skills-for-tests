@@ -123,7 +123,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 # Install Claude
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
-# Install Opencode
+# Install OpenCode (optional agent environment)
 RUN npm i -g opencode-ai@latest
 
 

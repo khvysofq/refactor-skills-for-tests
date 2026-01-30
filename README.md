@@ -1,6 +1,6 @@
 # 可测试性重构工作流 - Agent Skill
 
-这是一个用于重构复杂 C/C++ 项目的 Agent Skill 工作流系统。通过 ClaudeCode 和预定义的工作流，帮助自动化执行可测试性重构任务。
+这是一个用于重构复杂 C/C++ 项目的 Agent Skill 工作流系统。通过 ClaudeCode 或 OpenCode 和预定义的工作流，帮助自动化执行可测试性重构任务。
 
 ## 项目简介
 
@@ -16,7 +16,7 @@
 
 ### 步骤 1: 构建 Docker 镜像
 
-首先，使用 `docker/` 目录下的 Dockerfile 构建包含 ClaudeCode 和完整 C/C++ 开发环境的镜像：
+首先，使用 `docker/` 目录下的 Dockerfile 构建包含 ClaudeCode、OpenCode 和完整 C/C++ 开发环境的镜像：
 
 ```bash
 cd docker
@@ -25,6 +25,7 @@ docker build -t claude-code:0.0.2 -f dockerfile .
 
 镜像包含：
 - **ClaudeCode**: 最新版本的 `@anthropic-ai/claude-code`
+- **OpenCode**: 最新版本的 `opencode-ai`（可选使用的 Agent 环境）
 - **C/C++ 开发工具链**: gcc, g++, clang, cmake, make, ninja-build 等
 - **调试工具**: gdb, lldb, valgrind, strace 等
 - **静态分析工具**: clang-tidy, cppcheck 等
@@ -58,13 +59,14 @@ cd /path/to/your/project
 脚本会自动：
 - 设置目录权限（确保容器内 node 用户可访问）
 - 挂载项目目录到容器内
-- 挂载 ClaudeCode 配置目录
+- 挂载 ClaudeCode 配置目录（`claude_settings/`）
+- 挂载 OpenCode 配置目录（`opencode_settings/.config`）
 - 挂载 Git 配置（SSH 密钥、gitconfig 等）
 - 启动交互式 zsh shell
 
-### 步骤 4: 配置 ClaudeCode 使用工作流
+### 步骤 4: 配置 Agent 使用工作流
 
-在容器内，ClaudeCode 会自动加载 `skills/SKILL.md` 中定义的工作流。该工作流包含：
+在容器内，使用 **ClaudeCode** 或 **OpenCode** 时，让 Agent 加载项目中的 `skills/SKILL.md` 中定义的工作流。该工作流包含：
 
 - **决策树**: 根据工程状态自动选择执行阶段
 - **4 个主要阶段**:
@@ -122,8 +124,8 @@ skills/
 
 ### 使用方式
 
-1. **启动容器后**，在容器内打开 ClaudeCode
-2. **告诉 Agent**："请按照 `skills/SKILL.md` 中的工作流开始执行可测试性重构"
+1. **启动容器后**，在容器内打开 ClaudeCode 或 OpenCode。
+2. **告诉 Agent**："请按照 `skills/SKILL.md` 中的工作流开始执行可测试性重构"。
 3. **Agent 会自动**：
    - 读取 `skills/SKILL.md` 作为入口
    - 根据决策树判断当前工程状态
@@ -151,6 +153,14 @@ ClaudeCode 的配置目录挂载在：
 
 首次使用前，可以在宿主机创建 `claude_settings/.claude` 目录并配置相关设置。
 
+### OpenCode 配置
+
+OpenCode 的配置目录挂载在：
+- 容器内: `/home/node/.config`
+- 宿主机: `./opencode_settings/.config`
+
+首次使用前，可以在宿主机创建 `opencode_settings/.config` 目录并配置相关设置。
+
 ## 注意事项
 
 1. **权限设置**: `docker.sh` 脚本会尝试使用 sudo 修改挂载目录的权限。如果失败，请手动执行：
@@ -177,11 +187,11 @@ ClaudeCode 的配置目录挂载在：
 - 确保挂载目录对 node 用户（UID 1000）可读写
 - 检查 `docker.sh` 中的权限设置是否正确
 
-### ClaudeCode 无法加载工作流
+### ClaudeCode / OpenCode 无法加载工作流
 
-- 确保 `skills/SKILL.md` 文件存在
-- 检查 ClaudeCode 配置目录是否正确挂载
-- 在容器内验证文件路径: `ls -la /path/to/mounted/project/skills/SKILL.md`
+- 确保 `skills/SKILL.md` 文件存在（在挂载的项目路径下）
+- 检查对应配置目录是否正确挂载：ClaudeCode 使用 `claude_settings/.claude`，OpenCode 使用 `opencode_settings/.config`
+- 在容器内验证文件路径: `ls -la <挂载路径>/skills/SKILL.md`
 
 ## 贡献
 
