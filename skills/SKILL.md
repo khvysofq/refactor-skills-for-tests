@@ -54,7 +54,7 @@ compatibility: Designed for Claude Code. Requires C/C++ development environment 
 检查以下条件：
 
 - [ ] `docs/testing/backlog.md` 存在
-- [ ] 包含至少 10 个可执行切片
+- [ ] 包含至少 10 个可执行切片（主要还是按照模块的复杂度来评估，默认情况至少10个模块，如果模型太过于简单，可以根据情况减少一些。）
 - [ ] 每个条目有 S1-S4 评估和 L1-L3 策略
 
 **全部满足** → 队列已建立  
