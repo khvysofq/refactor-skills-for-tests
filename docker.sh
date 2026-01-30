@@ -5,7 +5,7 @@ set -e
 # ============================================
 # 配置区域 - 可根据需要修改
 # ============================================
-IMAGE_NAME="claude-code:0.0.2"
+IMAGE_NAME="claude-code:0.0.3"
 CONTAINER_USER="node"
 CONTAINER_USER_UID=1000
 CONTAINER_USER_GID=1000
@@ -114,6 +114,7 @@ docker run -it --rm \
     `# === 持久化配置挂载 ===` \
     -v "${SCRIPT_DIR}/claude_settings/.claude":"/home/${CONTAINER_USER}/.claude" \
     -v "${SCRIPT_DIR}/claude_settings/.claude.json":"/home/${CONTAINER_USER}/.claude.json" \
+    -v "${SCRIPT_DIR}/opencode_settings/.config":"/home/${CONTAINER_USER}/.config" \
     \
     `# === Git 配置挂载（只读）===` \
     -v "${HOME_DIR}/.ssh":"/home/${CONTAINER_USER}/.ssh:ro" \
