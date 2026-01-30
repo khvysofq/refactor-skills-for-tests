@@ -1,10 +1,10 @@
-# 可测试性重构工作流 - Agent Skill
+# 可测试性重构工作流 - Agent Workflow
 
-这是一个用于重构复杂 C/C++ 项目的 Agent Skill 工作流系统。通过 ClaudeCode 或 OpenCode 和预定义的工作流，帮助自动化执行可测试性重构任务。
+这是一个用于重构复杂 C/C++ 项目的 Agent Workflow 工作流系统。通过 ClaudeCode 或 OpenCode 和预定义的工作流，帮助自动化执行可测试性重构任务。
 
 ## 项目简介
 
-本项目提供了一套完整的 Agent Skill 工作流，用于指导 AI Agent 系统化地重构复杂 C/C++ 项目，提升项目的可测试性。工作流包含多个阶段和技能，从基线准备、工程分析、优先级排序到迭代重构，确保重构过程的可控性和可追溯性。
+本项目提供了一套完整的 Agent Workflow 工作流，用于指导 AI Agent 系统化地重构复杂 C/C++ 项目，提升项目的可测试性。工作流包含多个阶段和技能，从基线准备、工程分析、优先级排序到迭代重构，确保重构过程的可控性和可追溯性。
 
 ## 快速开始
 
@@ -66,7 +66,7 @@ cd /path/to/your/project
 
 ### 步骤 4: 配置 Agent 使用工作流
 
-在容器内，使用 **ClaudeCode** 或 **OpenCode** 时，让 Agent 加载项目中的 `skills/SKILL.md` 中定义的工作流。该工作流包含：
+在容器内，使用 **ClaudeCode** 或 **OpenCode** 时，让 Agent 加载项目中的 `workflow/Workflow.md` 中定义的工作流。该工作流包含：
 
 - **决策树**: 根据工程状态自动选择执行阶段
 - **4 个主要阶段**:
@@ -80,7 +80,7 @@ cd /path/to/your/project
 
 ### 工作流入口
 
-工作流的主入口文档位于 `skills/SKILL.md`。Agent 会根据以下决策树自动选择执行路径：
+工作流的主入口文档位于 `workflow/Workflow.md`。Agent 会根据以下决策树自动选择执行路径：
 
 1. **Q1**: 工程是否已建立门禁基线？
    - 否 → 执行 Phase 01: 基线准备
@@ -97,8 +97,8 @@ cd /path/to/your/project
 ### 核心文档结构
 
 ```
-skills/
-├── SKILL.md                    # 主入口文档（Agent 从这里开始）
+workflow/
+├── Workflow.md                 # 主入口文档（Agent 从这里开始）
 ├── phases/                     # 阶段文档
 │   ├── 01-setup.md            # 基线准备
 │   ├── 02-analysis.md         # 工程分析
@@ -125,9 +125,9 @@ skills/
 ### 使用方式
 
 1. **启动容器后**，在容器内打开 ClaudeCode 或 OpenCode。
-2. **告诉 Agent**："请按照 `skills/SKILL.md` 中的工作流开始执行可测试性重构"。
+2. **告诉 Agent**："请按照 `workflow/Workflow.md` 中的工作流开始执行可测试性重构"。
 3. **Agent 会自动**：
-   - 读取 `skills/SKILL.md` 作为入口
+   - 读取 `workflow/Workflow.md` 作为入口
    - 根据决策树判断当前工程状态
    - 进入对应的阶段文档
    - 按需加载技能文档执行具体任务
@@ -189,9 +189,9 @@ OpenCode 的配置目录挂载在：
 
 ### ClaudeCode / OpenCode 无法加载工作流
 
-- 确保 `skills/SKILL.md` 文件存在（在挂载的项目路径下）
+- 确保 `workflow/Workflow.md` 文件存在（在挂载的项目路径下）
 - 检查对应配置目录是否正确挂载：ClaudeCode 使用 `claude_settings/.claude`，OpenCode 使用 `opencode_settings/.config`
-- 在容器内验证文件路径: `ls -la <挂载路径>/skills/SKILL.md`
+- 在容器内验证文件路径: `ls -la <挂载路径>/workflow/Workflow.md`
 
 ## 贡献
 
