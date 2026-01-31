@@ -15,7 +15,7 @@
 
 | ID | 决策点 | 位置 | 关联文档 |
 |----|--------|------|----------|
-| D01 | 入口决策 | 任务开始 | README.md |
+| D01 | 入口决策 | 任务开始 | Workflow.md.md |
 | D02 | 可测试性决策 | Skill 04 后 | testability-decision.md |
 | D03 | 门禁失败决策 | 门禁运行后 | gate-failure-decision.md |
 | D04 | 行为差异决策 | Skill 09 中 | skill-09-behavior-drift.md |

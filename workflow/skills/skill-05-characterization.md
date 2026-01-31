@@ -165,7 +165,7 @@ tests/
     ├── <module>_golden_test.cpp
     └── golden/
         └── <module>/
-            ├── README.md          # 说明 golden 数据来源和更新方法
+            ├── Workflow.md.md          # 说明 golden 数据来源和更新方法
             ├── typical_001.input
             ├── typical_001.expected
             ├── typical_002.input
@@ -175,7 +175,7 @@ tests/
             └── error_*.input/expected
 ```
 
-### Golden README 模板
+### Golden Workflow.md 模板
 
 ```markdown
 # Golden 数据说明

@@ -8,7 +8,7 @@
 ## 进入条件
 
 - Phase 01 验收通过
-- 或从 [README](../README.md) 决策树判断需要执行此阶段
+- 或从 [Workflow.md](../Workflow.md.md) 决策树判断需要执行此阶段
 
 ---
 
