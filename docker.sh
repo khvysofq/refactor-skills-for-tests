@@ -78,6 +78,24 @@ sudo chown -R ${CONTAINER_USER_UID}:${CONTAINER_USER_GID} "${MOUNT_PATH}" || {
     echo "请手动执行: sudo chown -R ${CONTAINER_USER_UID}:${CONTAINER_USER_GID} ${MOUNT_PATH}"
 }
 
+# 持久化配置挂载目录：先确保存在，再赋予容器用户权限
+CLAUDE_SETTINGS_DIR="${SCRIPT_DIR}/claude_settings"
+OPENCODE_SETTINGS_DIR="${SCRIPT_DIR}/opencode_settings"
+for dir in "${CLAUDE_SETTINGS_DIR}/.claude" "${OPENCODE_SETTINGS_DIR}/.config"; do
+    if [ ! -d "$dir" ]; then
+        echo "创建配置目录: $dir"
+        sudo mkdir -p "$dir"
+    fi
+done
+if [ ! -f "${CLAUDE_SETTINGS_DIR}/.claude.json" ]; then
+    sudo touch "${CLAUDE_SETTINGS_DIR}/.claude.json" 2>/dev/null || true
+fi
+echo "正在设置持久化配置目录权限..."
+sudo chown -R ${CONTAINER_USER_UID}:${CONTAINER_USER_GID} "${CLAUDE_SETTINGS_DIR}" "${OPENCODE_SETTINGS_DIR}" 2>/dev/null || {
+    echo "警告: 无法修改持久化配置目录权限，容器内可能无法写入 .claude / .claude.json / .config"
+    echo "请手动执行: sudo chown -R ${CONTAINER_USER_UID}:${CONTAINER_USER_GID} ${CLAUDE_SETTINGS_DIR} ${OPENCODE_SETTINGS_DIR}"
+}
+
 # ============================================
 # 启动容器
 # ============================================
