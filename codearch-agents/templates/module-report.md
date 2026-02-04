@@ -1,6 +1,6 @@
 # 模块报告模板
 
-> **用途**：记录单个模块的架构分析结果（职责、边界、依赖、复杂度）  
+> **用途**：记录单个模块的架构分析结果（职责、边界、依赖、复杂度、使用示例）  
 > **位置**：`docs/codearch/modules/<module_name>.md`
 
 ---
@@ -8,8 +8,9 @@
 ## 使用说明
 
 1. 每个模块一份独立文件，文件名与模块标识一致（如 `core_utils.md`、`io_file.md`）。
-2. 由 Phase 02 / Skill 02 填写；复杂度评级时参阅 [complexity_levels](../definitions/complexity_levels.md)。
+2. 由 Phase 02 / Skill 02 填写；复杂度评级时参阅 [complexity_levels](../definitions/complexity_levels.md)；验证时参阅 [validation_levels](../definitions/validation_levels.md)。
 3. 保持纯架构分析，不包含可测试性状态（S1–S4）等重构专用字段。
+4. 「信息来源」记录分析依据；「使用示例」必须填写至少一个基本用法；「验证状态」复杂度≥高时必填。
 
 ---
 
@@ -91,6 +92,66 @@
 
 - 本模块被：`app/main`、`service/handler` 依赖
 - 本模块依赖：`core/utils`、`core/parser`
+
+---
+
+## 信息来源
+
+<记录分析所依据的信息来源，便于追溯和验证>
+
+| 类型 | 路径 | 贡献内容 |
+|------|------|----------|
+| README | <src/module/README.md 或「无」> | <职责描述、设计意图> |
+| 测试文件 | <test/module_test.cpp 或「无」> | <边界条件、使用示例> |
+| 头文件注释 | <src/module/module.h> | <API 说明> |
+| 代码分析 | 静态分析 | <依赖关系、复杂度> |
+
+---
+
+## 使用示例
+
+<提供可运行的代码示例，帮助读者快速理解模块用法>
+
+### 基本用法
+
+**来源**: [<test/basic_test.cpp:45-60> 或 Agent 编写]
+
+```cpp
+// 示例：初始化并使用模块
+#include "<module>.h"
+
+int main() {
+    Module m;
+    m.init(config);
+    auto result = m.process(input);
+    // 处理结果...
+    return 0;
+}
+```
+
+### 进阶用法（可选）
+
+**来源**: [<examples/advanced.cpp> 或 Agent 编写]
+
+```cpp
+// 示例：高级配置或复杂场景
+// ...
+```
+
+---
+
+## 验证状态
+
+<复杂度为「高」或「极高」时必填；复杂度「低」可省略；复杂度「中」建议填写>
+
+- **验证等级**: [L0 / L1 / L2 / L3]（参见 [validation_levels](../definitions/validation_levels.md)）
+- **验证方式**: [静态分析 / 阅读测试 / 运行测试 / 探索性测试]
+- **测试命令**: <若 L2/L3，填写实际执行的命令>
+- **测试结果**: <X/Y 通过，或「全部通过」>
+- **验证发现**:
+  - 确认: <静态分析正确的点>
+  - 修正: <需要修正的理解>
+  - 新发现: <测试揭示的额外信息>
 ```
 
 ---

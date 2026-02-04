@@ -1,7 +1,7 @@
-# Phase 02: 模块与依赖分析（含复杂度）
+# Phase 02: 模块与依赖分析（含复杂度与验证）
 
-> **前置条件**：Phase 01 已完成（总体报告已有概览），或从 [Workflow.md](../Workflow.md) 决策树 Q2 为「否」进入  
-> **目标**：识别模块、梳理依赖、为每个模块撰写独立报告并给出复杂度评级；完成后先执行「分解审视」，通过或已收敛再进入下一阶段
+> **前置条件**：Phase 01 已完成（总体报告已有概览和信息来源汇总），或从 [Workflow.md](../Workflow.md) 决策树 Q2 为「否」进入  
+> **目标**：识别模块、梳理依赖、为每个模块撰写独立报告（含使用示例）、给出复杂度评级、对高复杂度模块进行验证；完成后先执行「分解审视」，通过或已收敛再进入下一阶段
 
 ---
 
@@ -15,7 +15,10 @@
 ## 执行指令
 
 **加载 Skill**：阅读并执行 → [Skill 02: 模块与依赖分析](../skills/skill-02-modules.md)  
-**按需查阅**：进行复杂度评级时阅读 [复杂度等级定义](../definitions/complexity_levels.md)；进行模块边界与依赖分析时可按需阅读 [C/C++ 注意点](../definitions/cpp_cpp_notes.md)
+**按需查阅**：
+- 进行复杂度评级时阅读 [复杂度等级定义](../definitions/complexity_levels.md)
+- 进行模块验证时阅读 [验证等级定义](../definitions/validation_levels.md)
+- 进行模块边界与依赖分析时可按需阅读 [C/C++ 注意点](../definitions/cpp_cpp_notes.md)
 
 ---
 
@@ -39,6 +42,18 @@
   - [ ] 依赖（内部/外部）
   - [ ] 复杂度评级（低/中/高/极高）
   - [ ] 关键设计要点（建议 3–5 条）
+  - [ ] 信息来源（记录分析依据）
+  - [ ] 使用示例（至少一个基本用法，标注来源）
+
+- [ ] **高复杂度模块验证**：复杂度为「高」或「极高」的模块报告包含「验证状态」章节
+  ```bash
+  # 检查高复杂度模块是否包含验证状态
+  for f in docs/codearch/modules/*.md; do
+    if grep -q "等级.*高\|等级.*极高" "$f" 2>/dev/null; then
+      grep -q "验证状态\|验证等级" "$f" && echo "$f: PASS" || echo "$f: FAIL"
+    fi
+  done
+  ```
 
 - [ ] **总体报告中存在模块列表**，且每项含路径/范围、到 `modules/<module_name>.md` 的链接，链接指向的文件存在
 
@@ -48,6 +63,8 @@
 
 - [ ] 依赖方向合理（无未标注的循环依赖）
 - [ ] 复杂度依据与 [complexity_levels](../definitions/complexity_levels.md) 一致
+- [ ] 使用示例代码完整且标注来源（文件路径或「Agent 编写」）
+- [ ] 高复杂度模块的验证发现已反映在报告相关章节中
 
 ---
 
@@ -55,10 +72,11 @@
 
 | 产出 | 路径 | 说明 |
 |------|------|------|
-| 模块报告（每模块一份） | `docs/codearch/modules/<module_name>.md` | 职责、边界、依赖、复杂度、关键设计要点 |
+| 模块报告（每模块一份） | `docs/codearch/modules/<module_name>.md` | 职责、边界、依赖、复杂度、关键设计要点、信息来源、使用示例、验证状态（高复杂度） |
 | 总体报告中的模块列表 | `docs/codearch/overall_report.md` | 含路径/范围、到各模块报告的链接 |
 | 分解审视结论与变更列表（若有不通过） | 可选：`docs/codearch/decomposition_changelog.md` | 见 [分解审视约定](../definitions/decomposition_review.md) |
 | 模块地图（可选） | `docs/codearch/module_map.md` | 模块列表与依赖图汇总 |
+| 探索性测试代码（可选） | 可选：`test/explore/` | L3 验证时编写的测试代码（若选择保留） |
 
 ---
 
@@ -66,9 +84,11 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 审视通过或已收敛 | 回到 [Workflow.md](../Workflow.md) 决策树：若 Q3 为「否」则进入 [Phase 03: 编译与测试体系](03-build-and-tests.md)；若 Q3 为「是」则进入 [Phase 04: 报告产出与引用](04-reports.md) |
+| 审视通过或已收敛，验证完成 | 回到 [Workflow.md](../Workflow.md) 决策树：若 Q3 为「否」则进入 [Phase 03: 编译与测试体系](03-build-and-tests.md)；若 Q3 为「是」则进入 [Phase 04: 报告产出与引用](04-reports.md) |
 | 审视不通过且未收敛 | 按 [分解审视约定](../definitions/decomposition_review.md) 回退规则进入 [Phase 01](01-overview.md) 或本 Phase 02；下一轮 Phase 02 结束时再次执行审视 |
 | 未通过（报告或链接缺失等） | 返回 Skill 02 补充分析后重新验收 |
+| 未通过（使用示例缺失） | 返回 Skill 02 任务 1.5 和任务 2，补充使用示例后重新验收 |
+| 未通过（高复杂度模块验证缺失） | 检查 Phase 03 是否完成；若否则先执行 Phase 03，再返回执行 Skill 02 任务 2.5 |
 
 ---
 
