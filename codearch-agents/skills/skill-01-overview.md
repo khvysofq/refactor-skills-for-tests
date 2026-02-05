@@ -132,6 +132,60 @@ grep -rn "getopt\|argc\|argv\|config\|Config" . --include="*.c" --include="*.cpp
 
 ---
 
+### 任务 5: 技术特征快速扫描
+
+**目标**：快速扫描工程的整体技术特征，填写总体报告的「技术特征概览」初始内容
+
+**步骤**：
+
+1. **识别语言标准**
+   ```bash
+   # 检查 CMake 中的语言标准设置
+   grep -rn "CMAKE_CXX_STANDARD\|set_property.*CXX_STANDARD\|c++11\|c++14\|c++17\|c++20" . --include="CMakeLists.txt"
+   grep -rn "CMAKE_C_STANDARD\|c99\|c11" . --include="CMakeLists.txt"
+   
+   # 检查编译选项
+   grep -rn "\-std=c++\|\-std=c" . --include="Makefile" --include="CMakeLists.txt"
+   ```
+
+2. **识别主要依赖库**
+   ```bash
+   # 检查 CMake 依赖
+   grep -rn "find_package\|target_link_libraries" . --include="CMakeLists.txt" | head -20
+   
+   # 检查 include 的第三方库
+   grep -rn "#include.*<boost\|#include.*<openssl\|#include.*<grpc" . --include="*.h" --include="*.cpp" | head -10
+   ```
+
+3. **快速扫描技术特征分布**（数量级估计）
+   ```bash
+   # 手动内存管理
+   grep -rn "malloc\|free\|new \|delete " . --include="*.c" --include="*.cpp" | wc -l
+   
+   # 多线程
+   grep -rn "pthread\|std::thread\|mutex" . --include="*.c" --include="*.cpp" | wc -l
+   
+   # 文件 I/O
+   grep -rn "fopen\|fclose\|ifstream\|ofstream" . --include="*.c" --include="*.cpp" | wc -l
+   
+   # 网络 I/O
+   grep -rn "socket\|connect\|bind\|listen" . --include="*.c" --include="*.cpp" | wc -l
+   ```
+
+4. **定位主要入口点**
+   ```bash
+   # 查找 main 函数位置
+   grep -rn "^int main\|^void main" . --include="*.c" --include="*.cpp"
+   ```
+
+**产出**：
+
+- 在总体报告中填写「技术特征概览」的「语言与标准」部分
+- 在「入口点索引」中记录 main() 位置
+- 「技术特征统计」可先留空或填写粗略估计，待 Phase 02 完成后更新
+
+---
+
 ## 验收标准
 
 ### 必须满足
@@ -141,6 +195,7 @@ grep -rn "getopt\|argc\|argv\|config\|Config" . --include="*.c" --include="*.cpp
 - [ ] 文档包含「输入」且至少列出一类输入
 - [ ] 文档包含「输出」且至少列出一类输出
 - [ ] 文档包含「主流程」且至少有三步或等价描述
+- [ ] 文档包含「技术特征概览」且至少填写「语言与标准」和「入口点索引」
 - [ ] 文档包含「信息来源汇总」且至少列出一个信息源
 
 ### 验收检查
@@ -151,6 +206,8 @@ grep -q "工程目标\|工程目标" docs/codearch/overall_report.md && echo "PA
 grep -q "输入" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
 grep -q "输出" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
 grep -q "主流程" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
+grep -q "技术特征概览\|语言与标准" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
+grep -q "入口点索引\|main()" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
 grep -q "信息来源" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
 ```
 

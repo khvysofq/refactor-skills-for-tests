@@ -35,11 +35,20 @@
   - [ ] 输出
   - [ ] 主流程
 
+- [ ] **技术特征概览完整**：文档包含以下内容
+  - [ ] 语言与标准（主要语言、语言标准）
+  - [ ] 入口点索引（至少 main() 位置）
+  ```bash
+  grep -q "技术特征概览\|语言与标准" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
+  grep -q "入口点索引\|main()" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
+  ```
+
 - [ ] **验收检查通过**（见 Skill 01 中的验收检查命令）
 
 ### 可选
 
 - [ ] 主流程以步骤列表或 Mermaid 图形式呈现，便于后续引用
+- [ ] 技术特征统计已有初步估计（待 Phase 02 完成后更新）
 
 ---
 
@@ -47,7 +56,7 @@
 
 | 产出 | 路径 | 说明 |
 |------|------|------|
-| 总体报告（概览部分） | `docs/codearch/overall_report.md` | 工程目标、输入、输出、主流程 |
+| 总体报告（概览部分） | `docs/codearch/overall_report.md` | 工程目标、输入、输出、主流程、技术特征概览（初步） |
 
 ---
 
