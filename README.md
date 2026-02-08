@@ -1,10 +1,38 @@
-# 可测试性重构工作流 - Agent Workflow
+# 可测试性重构与代码架构分析 - Agent 工作流
 
-这是一个用于重构复杂 C/C++ 项目的 Agent Workflow 工作流系统。通过 ClaudeCode 或 OpenCode 和预定义的工作流，帮助自动化执行可测试性重构任务。
+本仓库提供两套 Agent 工作流，用于在复杂 C/C++ 项目上做架构分析与可测试性重构。通过 ClaudeCode 或 OpenCode 加载对应工作流，可自动化执行代码架构分析或可测试性重构任务。
 
 ## 项目简介
 
-本项目提供了一套完整的 Agent Workflow 工作流，用于指导 AI Agent 系统化地重构复杂 C/C++ 项目，提升项目的可测试性。工作流包含多个阶段和技能，从基线准备、工程分析、优先级排序到迭代重构，确保重构过程的可控性和可追溯性。
+本项目提供**两套** Agent 工作流：
+
+- **codearch-agents**（代码架构分析）：理解项目在做什么、分析模块与依赖、文档化构建与测试体系，产出总体报告与各模块报告（含使用示例与高复杂度模块验证），供后续代码审查与写测试按需引用。
+- **automated-ut-agents**（可测试性重构）：从基线准备、工程分析、优先级排序到迭代重构，系统化提升 C/C++ 项目可测试性并补充单元测试。
+
+两者可配合使用：架构分析产出的文档可被可测试性重构工作流按需引用，推荐先跑架构分析再跑重构。
+
+## 两种工作流概览
+
+| 维度 | codearch-agents | automated-ut-agents |
+|------|-----------------|---------------------|
+| 入口 | `codearch-agents/Workflow.md` | `automated-ut-agents/Workflow.md` |
+| 目标 | 架构理解、模块/依赖分析、构建与测试文档化、产出结构化报告 | 建立门禁基线、分析、优先级排序、迭代重构与单测 |
+| 阶段数 | 4（概览 → 模块 → 构建与测试 → 报告） | 4（基线 → 分析 → 优先级 → 迭代） |
+| 技能数 | 4 个 | 14 个 |
+| 典型产出 | `docs/codearch/` 下总体报告与 `modules/*.md` | 门禁基线、`docs/architecture/`、`docs/testing/backlog.md` 及迭代结果 |
+
+- **何时用 codearch-agents**：需要理解项目、撰写模块文档或为后续写测试做准备时。
+- **何时用 automated-ut-agents**：需要实际做可测试性重构、补充单测时。
+
+### 项目根目录结构
+
+```
+codearch-agents/          # 代码架构分析工作流
+automated-ut-agents/      # 可测试性重构工作流
+docker/                   # 构建 Agent 运行环境
+claude_settings/          # ClaudeCode 配置（可选）
+opencode_settings/        # OpenCode 配置（可选）
+```
 
 ## 快速开始
 
@@ -33,6 +61,14 @@ docker build -t claude-code:0.0.2 -f dockerfile .
 - **其他开发工具**: git, zsh, fzf 等
 
 ### 步骤 2: 准备项目目录
+
+先确保下面的两个目录和文件是存在的，使用`docker.sh`的时候需要用。如果你会自己配置opencode和claudecode的环境，不需要特别看下面的内容。自己想办法启动镜像，挂载自己的目录就行了。
+
+- 目录：`${SCRIPT_DIR}/claude_settings/.claude`
+- 文件：`${SCRIPT_DIR}/claude_settings/.claude.json`
+- 目录：`${SCRIPT_DIR}/opencode_settings/.config`
+
+这些文件主要是用来存储默认情况下OpenCode和Claude的配置环境。
 
 将需要重构的项目下载或克隆到本地，作为当前项目的一个子文件夹。例如：
 
@@ -66,68 +102,98 @@ cd /path/to/your/project
 
 ### 步骤 4: 配置 Agent 使用工作流
 
-在容器内，使用 **ClaudeCode** 或 **OpenCode** 时，让 Agent 加载项目中的 `workflow/Workflow.md` 中定义的工作流。该工作流包含：
+在容器内，使用 **ClaudeCode** 或 **OpenCode** 时，根据目标选择要加载的工作流：
 
-- **决策树**: 根据工程状态自动选择执行阶段
-- **4 个主要阶段**:
-  - Phase 01: 基线准备
-  - Phase 02: 工程分析
-  - Phase 03: 优先级排序
-  - Phase 04: 迭代循环
-- **13+ 个技能模块**: 涵盖从基线建立到重构完成的各个环节
+- **做架构分析**：让 Agent 加载 `codearch-agents/Workflow.md`
+- **做可测试性重构**：让 Agent 加载 `automated-ut-agents/Workflow.md`
+
+各工作流均包含决策树、阶段文档与按需加载的技能文档，详见下方「工作流说明」。
 
 ## 工作流说明
 
-### 工作流入口
+### 工作流 1：codearch-agents（代码架构分析）
 
-工作流的主入口文档位于 `workflow/Workflow.md`。Agent 会根据以下决策树自动选择执行路径：
+**入口**：`codearch-agents/Workflow.md`
 
-1. **Q1**: 工程是否已建立门禁基线？
+**决策树**（从 Q1 开始，首个「否」进入对应阶段）：
+
+1. **Q1**：是否存在满足约定结构的总体介绍报告（含信息来源汇总）？  
+   - 否 → Phase 01: 工程概览与主流程  
+   - 是 → 继续 Q2
+2. **Q2**：是否已为主要模块生成独立模块报告（含使用示例）且总体报告中已引用？  
+   - 否 → Phase 02: 模块与依赖分析  
+   - 是 → 继续 Q2b / Q2c / Q3
+3. **Q2b**：当前模块划分是否已稳定、合理？  
+   - 否 → 执行分解审视，按结果回到 Phase 01 或 Phase 02  
+   - 是 → 继续 Q2c
+4. **Q2c**：是否已对高复杂度模块完成验证？  
+   - 否 → 先看 Q3，再执行验证  
+   - 是 → 继续 Q3
+5. **Q3**：构建与测试是否已文档化且可执行？  
+   - 否 → Phase 03: 编译与测试体系  
+   - 是 → Phase 04: 报告产出与引用
+
+**核心文档结构**：
+
+```
+codearch-agents/
+├── Workflow.md                 # 主入口
+├── phases/
+│   ├── 01-overview.md         # 工程概览与主流程
+│   ├── 02-modules.md          # 模块与依赖分析
+│   ├── 03-build-and-tests.md  # 编译与测试体系
+│   └── 04-reports.md          # 报告产出与引用
+├── skills/
+│   ├── skill-01-overview.md
+│   ├── skill-02-modules.md
+│   ├── skill-03-build-tests.md
+│   └── skill-04-reports.md
+├── definitions/                # 复杂度、验证等级、产出结构、分解审视等
+└── templates/                  # overall-report, module-report
+```
+
+完整判断依据与索引见 [codearch-agents/Workflow.md](codearch-agents/Workflow.md)。
+
+### 工作流 2：automated-ut-agents（可测试性重构）
+
+**入口**：`automated-ut-agents/Workflow.md`
+
+**决策树**（从 Q1 开始，首个「否」进入对应阶段）：
+
+1. **Q1**：工程是否已建立门禁基线？
    - 否 → 执行 Phase 01: 基线准备
    - 是 → 继续 Q2
-
-2. **Q2**: 是否已完成工程分析？
+2. **Q2**：是否已完成工程分析？
    - 否 → 执行 Phase 02: 工程分析
    - 是 → 继续 Q3
-
-3. **Q3**: 是否已建立模块优先级队列？
+3. **Q3**：是否已建立模块优先级队列？
    - 否 → 执行 Phase 03: 优先级排序
    - 是 → 进入 Phase 04: 迭代循环
 
-### 核心文档结构
+**核心文档结构**：
 
 ```
-workflow/
-├── Workflow.md                 # 主入口文档（Agent 从这里开始）
-├── phases/                     # 阶段文档
+automated-ut-agents/
+├── Workflow.md                 # 主入口
+├── phases/
 │   ├── 01-setup.md            # 基线准备
 │   ├── 02-analysis.md         # 工程分析
 │   ├── 03-prioritization.md   # 优先级排序
 │   └── 04-iteration.md        # 迭代循环
-├── skills/                     # 技能文档
-│   ├── skill-01-baseline.md   # 工程基线与门禁准备
-│   ├── skill-02-analysis.md   # 工程深度分析
-│   ├── skill-03-prioritization.md  # 模块分级与优先级
-│   └── ...                    # 其他技能
-├── definitions/               # 定义文档
-│   ├── constraints.md         # 全局约束
-│   ├── states.md              # 状态定义
-│   └── test_levels.md         # 测试分层
-├── decisions/                 # 决策文档
-│   ├── testability-decision.md
-│   └── gate-failure-decision.md
-└── templates/                 # 模板文档
-    ├── module-card.md
-    ├── backlog-entry.md
-    └── ...
+├── skills/                     # 14 个技能（baseline, analysis, prioritization, ...）
+├── definitions/               # 全局约束、状态定义、测试分层
+├── decisions/                 # 可测试性决策、门禁失败决策
+└── templates/                 # module-card, backlog-entry, question-set 等
 ```
 
 ### 使用方式
 
 1. **启动容器后**，在容器内打开 ClaudeCode 或 OpenCode。
-2. **告诉 Agent**："请按照 `workflow/Workflow.md` 中的工作流开始执行可测试性重构"。
+2. **根据目标告诉 Agent**：
+   - 架构分析：例如「请按照 `codearch-agents/Workflow.md` 中的工作流执行代码架构分析」
+   - 可测试性重构：例如「请按照 `automated-ut-agents/Workflow.md` 中的工作流开始执行可测试性重构」
 3. **Agent 会自动**：
-   - 读取 `workflow/Workflow.md` 作为入口
+   - 读取对应工作流的 `Workflow.md` 作为入口
    - 根据决策树判断当前工程状态
    - 进入对应的阶段文档
    - 按需加载技能文档执行具体任务
@@ -189,9 +255,9 @@ OpenCode 的配置目录挂载在：
 
 ### ClaudeCode / OpenCode 无法加载工作流
 
-- 确保 `workflow/Workflow.md` 文件存在（在挂载的项目路径下）
+- 确保所选用工作流入口存在：`codearch-agents/Workflow.md` 或 `automated-ut-agents/Workflow.md`（路径相对于挂载的项目根目录）
 - 检查对应配置目录是否正确挂载：ClaudeCode 使用 `claude_settings/.claude`，OpenCode 使用 `opencode_settings/.config`
-- 在容器内验证文件路径: `ls -la <挂载路径>/workflow/Workflow.md`
+- 在容器内验证：`ls -la <挂载路径>/codearch-agents/Workflow.md` 或 `ls -la <挂载路径>/automated-ut-agents/Workflow.md`
 
 ## 贡献
 
