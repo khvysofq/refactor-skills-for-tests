@@ -26,17 +26,15 @@
 
 ### 必须满足
 
-- [ ] **所有「已确认」任务均已实施修复**：源码已变更
+- [ ] **所有「已确认」任务均已实施修复**：源码已变更（直接修改，当前分支）
+- [ ] **每条已修复任务的验证测试在修复后通过**（PASS）
+- [ ] **全量回归测试无新增失败**
+- [ ] **remediation_log 已更新**：每条已修复任务含修复描述、修复前后测试结果、回归结果、涉及文件列表
 - [ ] 可检查：关键文件已修改，或（若无可确认任务）已注明「本轮回溯无可修复任务」
 
-### 可选
-
-- [ ] 补丁已归档至 `docs/remediation/patches/`
-- [ ] 新增或补充的测试用例已落入工程测试目录（遵循 build_and_tests）
-
 ```bash
-# 若有补丁目录：至少存在一个 patch（当有已确认任务时）
-[ -d docs/remediation/patches/ ] && ls docs/remediation/patches/*.patch 2>/dev/null || true
+# 检查 remediation_log 含修复相关记录
+grep -q "修复\|PASS\|修复后" docs/remediation/remediation_log.md 2>/dev/null && echo "PASS" || echo "CHECK"
 ```
 
 ---
@@ -45,9 +43,9 @@
 
 | 产出 | 路径 | 说明 |
 |------|------|------|
-| 源码变更 | 仓库源码 | 直接修改 |
-| 补丁（可选） | `docs/remediation/patches/` | 按约定命名 |
-| 测试用例（可选） | 工程测试目录 | 遵循 build_and_tests |
+| 源码修复 | 仓库源码 | 直接修改（当前分支） |
+| 验证测试通过 | Phase 01 的验证测试 | 修复后须通过 |
+| 全量回归通过 | 工程测试套件 | 无新增失败 |
 
 ---
 

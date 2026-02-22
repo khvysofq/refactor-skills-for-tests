@@ -10,16 +10,16 @@ compatibility: Designed for Agent/Claude. Requires stage two (2-risk-assessment)
 
 ---
 
-## 前置检查 Q0：任务列表是否就绪？
+## 前置检查 Q0：任务列表与编译环境是否就绪？
 
-在进入本阶段决策树前，须确认**阶段二（风险评估）**已产出任务列表：
+在进入本阶段决策树前，须确认**阶段二（风险评估）**已产出任务列表，且**编译/测试环境已就绪**：
 
 - [ ] `docs/risk_tasks/task_list.md` 存在
-- [ ] 任务列表含 [2-risk-assessment task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 规定的必填字段（位置、简要描述、风险类型、关联模块）；可执行 2-risk-assessment Workflow 中 Q3 的检查命令
-- [ ] （建议）`docs/codearch/build_and_tests.md` 存在，以便构建与运行测试
+- [ ] 任务列表含 [2-risk-assessment task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 规定的必填字段（位置、简要描述、风险类型、关联模块、推理依据、已排除的保护机制、需验证的前提假设）
+- [ ] `docs/codearch/build_and_tests.md` 存在，且「环境验证状态」显示 build_success=true、tests_runnable=true
 
 **全部满足** → 可继续下方决策树  
-**任一不满足** → 先执行 [2-risk-assessment](2-risk-assessment/Workflow.md)，入口见 [Workflow.md](../Workflow.md)，完成后再进入本工作流
+**任一不满足** → 先执行对应的前置阶段（[1-code-cognition](1-code-cognition/Workflow.md) 或 [2-risk-assessment](2-risk-assessment/Workflow.md)），入口见 [Workflow.md](../Workflow.md)，完成后再进入本工作流
 
 ---
 
@@ -44,11 +44,14 @@ compatibility: Designed for Agent/Claude. Requires stage two (2-risk-assessment)
 检查以下条件是否全部满足：
 
 - [ ] 存在 `docs/remediation/remediation_log.md`，且其中每条任务均有对应验证结果（已确认 / 未复现 / 暂缓）
-- [ ] 可执行检查：针对 `docs/remediation/remediation_log.md` 的 grep（验证结果须写在本文件，见 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)）
+- [ ] 每条任务均有对应的验证测试（测试路径已记录在 remediation_log 中）
+- [ ] 所有验证测试已实际编译并运行
+- [ ] 可执行检查：
 
 ```bash
 [ -f docs/remediation/remediation_log.md ] && echo "PASS" || echo "FAIL"
 grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+grep -q "验证测试路径\|test/verification" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
 ```
 
 **全部满足** → 验证已就绪  
@@ -59,7 +62,8 @@ grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md && ec
 检查以下条件：
 
 - [ ] 所有标记为「已确认」的任务均已实施修复（源码已变更）；若本轮回溯无已确认任务，则视为满足
-- [ ] 可选：补丁已归档至 `docs/remediation/patches/` 或修复已体现在代码中
+- [ ] 每条已修复任务的验证测试在修复后通过（PASS）
+- [ ] 全量回归测试无新增失败
 
 **全部满足** → 修复已就绪  
 **任一不满足** → 需执行 Phase 02
@@ -143,9 +147,9 @@ grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/re
 
 | 产出 | 路径 | 说明 |
 |------|------|------|
-| 测试用例 | 工程测试目录 | 遵循 build_and_tests；用于验证与回归 |
-| 修复 | 源码直接修改；可选 patch | 可选补丁归档至 `docs/remediation/patches/` |
-| 修复摘要 | `docs/remediation/remediation_log.md` | 每条任务验证结果与修复摘要，结构见 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) |
+| 验证测试 | `test/verification/`（临时）→ 工程正式测试目录（归档后） | 每条任务的验证测试，已确认的集成到正式套件 |
+| 源码修复 | 仓库源码（直接修改，当前分支） | 已确认 BUG 的修复代码，人类可通过 git diff 审查 |
+| 修复摘要 | `docs/remediation/remediation_log.md` | 每条任务完整记录（验证结果、测试路径、修复摘要、测试归档状态等），结构见 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) |
 
 ---
 

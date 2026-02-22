@@ -26,18 +26,21 @@
 
 ### 必须满足
 
-- [ ] **已按 build_and_tests 运行全量回归测试**，或已在 log 中说明未运行原因
-- [ ] **`docs/remediation/remediation_log.md` 存在**，且每条任务有验证结果与（若已修复）修复摘要
+- [ ] **已按 build_and_tests 运行全量回归测试**，结果通过（或已在 log 中说明预已存在的失败）
+- [ ] **`docs/remediation/remediation_log.md` 存在**，且每条任务有完整记录（验证结果、验证测试路径、测试归档状态等）
+- [ ] **已确认 BUG 的验证测试已集成到正式测试套件**
+- [ ] **未复现任务的验证测试已删除**
+- [ ] **暂缓任务的验证测试已隔离标注**
+- [ ] **`test/verification/` 目录已清空**（所有测试已归档或删除）
 - [ ] 执行 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) 中的验收检查命令通过
 
 ```bash
 [ -f docs/remediation/remediation_log.md ] && echo "PASS" || echo "FAIL"
 grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+grep -q "测试归档状态" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+# 检查 verification 目录已清空
+[ -z "$(ls -A test/verification/ 2>/dev/null)" ] && echo "PASS (verification dir empty)" || echo "CHECK (verification dir not empty)"
 ```
-
-### 可选
-
-- [ ] 回归测试结果（通过/失败）已写在 log 或单独说明
 
 ---
 
@@ -45,8 +48,9 @@ grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/re
 
 | 产出 | 路径 | 说明 |
 |------|------|------|
-| 修复摘要 | `docs/remediation/remediation_log.md` | 每条任务验证结果与修复摘要 |
-| 回归结果（可选） | log 内或单独说明 | 全量测试通过/失败 |
+| 修复摘要 | `docs/remediation/remediation_log.md` | 每条任务的完整记录（验证结果、修复摘要、测试归档状态等） |
+| 回归结果 | log 内 | 最终全量回归测试结果 |
+| 集成测试 | 工程正式测试目录 | 已确认 BUG 的验证测试已集成为永久回归守护 |
 
 ---
 

@@ -29,13 +29,18 @@
 
 ## remediation_log 必填内容
 
-每条任务对应一条记录，须含至少：
+每条任务对应一条记录，须含以下字段：
 
-| 字段 | 说明 |
-|------|------|
-| **任务标识** | 位置（如 `src/foo.cpp:42`）或任务序号，与 task_list 对应 |
-| **验证结果** | 已确认 / 未复现 / 暂缓 |
-| **修复摘要**（若已修复） | 简要说明修复内容；可选：测试路径、补丁路径 |
+| 字段 | 说明 | 必须 |
+|------|------|------|
+| **任务标识** | 位置（如 `src/foo.cpp:42`）或任务序号，与 task_list 对应 | ✓ |
+| **验证结果** | 已确认 / 未复现 / 暂缓 | ✓ |
+| **验证测试路径** | 验证测试文件路径与测试名称（如 `test/verification/verify_M5_test.cpp::TestOverflow`）；暂缓项须说明无法编写的原因 | ✓ |
+| **验证测试结果** | 修复前：PASS/FAIL；修复后（若已修复）：PASS/FAIL | ✓（已确认/未复现时） |
+| **修复摘要**（若已修复） | 简要说明修复内容 | ✓（已确认时） |
+| **修复变更文件** | 修复涉及的文件列表 | ✓（已确认时） |
+| **全量回归结果** | 修复后全量回归测试结果 | ✓（已确认时） |
+| **测试归档状态** | 已集成（含最终测试路径） / 已删除 / 保留(暂缓) | ✓ |
 
 可选字段：时间、关联模块、建议验证方式引用。
 
@@ -53,6 +58,15 @@ Phase 03 或 Skill 03 完成后，可执行以下检查（相对仓库根）：
 
 # 含验证结果与修复相关标题或关键词
 grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+
+# 含验证测试路径
+grep -q "验证测试路径\|test/verification\|verify_" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+
+# 含测试归档状态
+grep -q "测试归档状态\|已集成\|已删除\|保留" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+
+# verification 目录已清空
+[ -z "$(ls -A test/verification/ 2>/dev/null)" ] && echo "PASS (verification dir clean)" || echo "CHECK (verification dir not empty)"
 ```
 
 ---

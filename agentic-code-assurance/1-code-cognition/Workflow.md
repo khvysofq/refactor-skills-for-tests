@@ -98,10 +98,13 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 - [ ] `docs/codearch/build_and_tests.md` 存在
 - [ ] 文档包含编译系统说明及至少一条构建命令
 - [ ] 文档包含单元测试说明及运行测试的方式（无测试则写明「当前无单元测试体系」）
-- [ ] 文档中所列构建/测试命令在工程中可执行（或已说明不可用原因）
+- [ ] 文档包含「环境验证状态」章节，且 build_success=true、tests_runnable=true
+- [ ] 构建命令已实际执行成功（exit code 0）且单元测试可运行
 
 **全部满足** → 构建与测试已文档化  
 **任一不满足** → 需执行 Phase 03
+
+> **硬性门禁**：Phase 03 包含编译与测试环境验证。若工程在当前环境中无法编译或单元测试无法运行，**整个工作流将中止**，不会进入后续的风险评估与 BUG 修复阶段。使用者须配置好编译环境与测试体系后重新执行工作流。
 
 ---
 

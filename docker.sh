@@ -5,10 +5,16 @@ set -e
 # ============================================
 # 配置区域 - 可根据需要修改
 # ============================================
-IMAGE_NAME="claude-code:0.0.3"
+# 若出现 "client version X is too new. Maximum supported API version is 1.42" 错误，
+# 请取消下行注释以限制客户端使用的 API 版本：
+# export DOCKER_API_VERSION=1.42
+IMAGE_NAME="claude-code:0.0.4"
 CONTAINER_USER="node"
 CONTAINER_USER_UID=1000
 CONTAINER_USER_GID=1000
+
+# Docker socket 路径
+DOCKER_SOCKET="/var/run/docker.sock"
 
 # ============================================
 # 使用说明
@@ -61,12 +67,34 @@ if [ ! -d "${MOUNT_PATH}" ]; then
     exit 1
 fi
 
+# ============================================
+# Docker socket 检查和 GID 获取
+# ============================================
+DOCKER_GID=""
+DOCKER_MOUNT_OPTS=""
+if [ -S "${DOCKER_SOCKET}" ]; then
+    # 获取 docker socket 的 GID
+    DOCKER_GID=$(stat -c '%g' "${DOCKER_SOCKET}")
+    echo "检测到 Docker socket: ${DOCKER_SOCKET} (GID=${DOCKER_GID})"
+    DOCKER_MOUNT_OPTS="-v ${DOCKER_SOCKET}:${DOCKER_SOCKET}"
+    
+    # 如果存在 Docker 配置目录，也挂载它（用于 registry 认证等）
+    if [ -d "${HOME_DIR}/.docker" ]; then
+        DOCKER_MOUNT_OPTS="${DOCKER_MOUNT_OPTS} -v ${HOME_DIR}/.docker:/home/${CONTAINER_USER}/.docker:ro"
+    fi
+else
+    echo "警告: Docker socket 不存在 (${DOCKER_SOCKET})，容器内将无法使用 Docker"
+fi
+
 echo "============================================"
 echo "脚本目录: ${SCRIPT_DIR}"
 echo "HOME目录: ${HOME_DIR}"
 echo "挂载路径: ${MOUNT_PATH}"
 echo "容器镜像: ${IMAGE_NAME}"
 echo "容器用户: ${CONTAINER_USER} (uid=${CONTAINER_USER_UID}, gid=${CONTAINER_USER_GID})"
+if [ -n "${DOCKER_GID}" ]; then
+    echo "Docker GID: ${DOCKER_GID}"
+fi
 echo "============================================"
 
 # ============================================
@@ -97,6 +125,14 @@ sudo chown -R ${CONTAINER_USER_UID}:${CONTAINER_USER_GID} "${CLAUDE_SETTINGS_DIR
 }
 
 # ============================================
+# 构建 Docker 组参数
+# ============================================
+DOCKER_GROUP_OPTS=""
+if [ -n "${DOCKER_GID}" ]; then
+    DOCKER_GROUP_OPTS="--group-add ${DOCKER_GID}"
+fi
+
+# ============================================
 # 启动容器
 # ============================================
 docker run -it --rm \
@@ -117,6 +153,7 @@ docker run -it --rm \
     \
     `# === 用户配置 ===` \
     -u ${CONTAINER_USER_UID}:${CONTAINER_USER_GID} \
+    ${DOCKER_GROUP_OPTS} \
     \
     `# === 环境变量（来自 devcontainer.json）===` \
     -e NODE_OPTIONS="--max-old-space-size=4096" \
@@ -138,5 +175,8 @@ docker run -it --rm \
     -v "${HOME_DIR}/.ssh":"/home/${CONTAINER_USER}/.ssh:ro" \
     -v "${HOME_DIR}/.gitconfig":"/home/${CONTAINER_USER}/.gitconfig:ro" \
     -v "${HOME_DIR}/.git-credentials":"/home/${CONTAINER_USER}/.git-credentials:ro" \
+    \
+    `# === Docker socket 挂载（用于容器内使用 Docker）===` \
+    ${DOCKER_MOUNT_OPTS} \
     \
     ${IMAGE_NAME} /bin/zsh

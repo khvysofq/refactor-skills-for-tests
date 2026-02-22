@@ -26,20 +26,32 @@
 
 ## 核心任务
 
-### 任务 1: 按任务逐条或分批处理
+### 任务 1: 按任务逐条编写验证测试并执行
 
-1. 读取 `docs/risk_tasks/task_list.md`，按 [2-risk-assessment 下游使用约定](2-risk-assessment/definitions/task_output_structure.md) 理解每条任务：位置、简要描述、风险类型、关联模块、建议验证方式、复现思路。
-2. **每条任务**（最小上下文：单次仅加载当前任务相关模块报告）：
+1. 读取 `docs/risk_tasks/task_list.md`，按 [2-risk-assessment 下游使用约定](2-risk-assessment/definitions/task_output_structure.md) 理解每条任务的完整信息：位置、简要描述、风险类型、关联模块、**推理依据**、**已排除的保护机制**、**需验证的前提假设**、建议验证方式、复现思路。
+2. 读取 `docs/codearch/build_and_tests.md`，了解工程的测试框架、测试目录结构、命名约定和运行方式。
+3. **每条任务**（最小上下文：单次仅加载当前任务相关模块报告）：
    - 根据「位置」打开对应文件与行范围；
    - 根据「关联模块」按需加载 `docs/codearch/modules/<module_name>.md`；
-   - 结合「建议验证方式」「复现思路」与 `docs/codearch/build_and_tests.md` 构建或选择测试场景（可新写测试或利用现有测试）；
-   - 运行测试；
-   - 记录结果：**已确认**（BUG 可复现）、**未复现**（当前无法复现）、**暂缓**（暂不处理）。
-3. 将验证结果写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
+   - 阅读「推理依据」理解阶段二的分析路径，阅读「已排除的保护机制」**避免重复检查已排除的内容**；
+   - **编写验证测试**（必须）：
+     - 基于「需验证的前提假设」「建议验证方式」「复现思路」设计一个最小测试用例
+     - 测试目标：尝试触发疑似 BUG（如：传入超长输入触发缓冲区溢出、并发执行触发竞态条件）
+     - 测试须遵循工程现有测试框架约定（如 Google Test 的 `TEST()` 宏）
+     - 将测试文件放入 `test/verification/` 目录（或工程约定的测试目录），文件名含任务编号（如 `verify_M5_test.cpp`）
+   - **运行验证测试**：
+     - 编译并运行测试
+     - 根据测试结果判定：
+       - 测试触发了 BUG（崩溃、错误输出、内存错误等）→ **已确认**
+       - 测试运行正常，BUG 未被触发 → **未复现**
+       - 测试因结构性原因无法编写或运行（如需要特定硬件、网络环境等）→ **暂缓**（附说明）
+   - **记录结果**：将验证结果、测试文件路径、测试名称写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
 
 ### 任务 2: 验收自检
 
 - 确认任务列表中每条任务均有验证结果；
+- 确认每条任务均有对应的验证测试文件（或「暂缓」原因说明）；
+- 确认所有验证测试已实际运行（非仅编写）；
 - 执行 Phase 01 中的验收检查（如 grep 验证结果关键词）。
 
 ---

@@ -4,22 +4,52 @@
 
 ---
 
-## 本轮回溯范围（可选）
+## 本轮回溯范围
 
 - **任务列表来源**：`docs/risk_tasks/task_list.md`
-- **完成日期 / 仓库版本**：（可选）
-- **回归测试结果**：通过 / 失败 / 未运行（及原因）
+- **完成日期 / 仓库版本**：
+- **最终回归测试结果**：通过 / 失败
+- **汇总**：已确认 X 条 / 未复现 Y 条 / 暂缓 Z 条
 
 ---
 
 ## 任务处理记录
 
-每条任务对应一条记录，必填：任务标识、验证结果；若已修复则含修复摘要。
+每条任务对应一条记录。所有字段定义见 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
 
-| 任务标识（位置或序号） | 验证结果 | 修复摘要（若已修复） | 测试路径（可选） | 补丁路径（可选） |
-|------------------------|----------|----------------------|------------------|------------------|
-| `src/foo.cpp:42` | 已确认 | 增加长度校验，防止溢出 | tests/test_foo.cpp | patches/task_1.patch |
-| `src/bar.c:100` | 未复现 | — | — | — |
+### 示例：已确认并修复
+
+| 字段 | 内容 |
+|------|------|
+| **任务标识** | M5: `src/protocol/http_parser.c:60` |
+| **验证结果** | 已确认 |
+| **验证测试路径** | `test/verification/verify_M5_test.cpp::TestIntegerOverflow` |
+| **验证测试结果** | 修复前: FAIL / 修复后: PASS |
+| **修复摘要** | 在 size 计算前添加上限检查，防止整数溢出 |
+| **修复变更文件** | `src/protocol/http_parser.c` |
+| **全量回归结果** | PASS (全部 42 个测试通过) |
+| **测试归档状态** | 已集成 → `test/http_parser_overflow_test.cpp` |
+
+### 示例：未复现
+
+| 字段 | 内容 |
+|------|------|
+| **任务标识** | M1: `src/kernel/Communicator.cc:147-159` |
+| **验证结果** | 未复现 |
+| **验证测试路径** | `test/verification/verify_M1_test.cpp::TestMemcpyBounds` |
+| **验证测试结果** | PASS（BUG 未触发，代码已有边界检查） |
+| **测试归档状态** | 已删除 |
+
+### 示例：暂缓
+
+| 字段 | 内容 |
+|------|------|
+| **任务标识** | C4: `src/kernel/Communicator.cc:712-723` |
+| **验证结果** | 暂缓 |
+| **验证测试路径** | `test/verification/verify_C4_test.cpp`（需多线程时序控制，当前无法可靠触发） |
+| **测试归档状态** | 保留(暂缓) → `test/deferred/verify_C4_test.cpp` |
+
+---
 
 **验证结果**取值：已确认 / 未复现 / 暂缓。
 

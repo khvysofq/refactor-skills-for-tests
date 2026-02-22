@@ -19,6 +19,7 @@
 **按需查阅**：
 
 - 确定风险类型时阅读 [风险类型定义](2-risk-assessment/definitions/risk_types.md)
+- 执行路径追踪审查时阅读 [审查模式定义](2-risk-assessment/definitions/review_patterns.md)
 - 撰写任务条目时阅读 [任务列表产出结构约定](2-risk-assessment/definitions/task_output_structure.md)
 
 ---
@@ -30,7 +31,10 @@
 ### 必须满足
 
 - [ ] **分析范围内所有选定模块/维度已完成审查**
-- [ ] **疑似 BUG 已记录**：每条至少包含位置、简要描述、风险类型、关联模块（可先落临时文件，由 Phase 03 汇总）
+- [ ] **高复杂度模块（高/极高）使用了 L2/L3 路径追踪审查**，而非仅模式匹配
+- [ ] **跨模块交互审查已覆盖关键的模块边界**（至少覆盖高复杂度模块之间的调用关系）
+- [ ] **疑似 BUG 已记录**：每条至少包含位置、简要描述、风险类型、关联模块、推理依据、已排除的保护机制、需验证的前提假设
+- [ ] **每条条目标注了对应的审查模式编号**（如 M-1、C-2）
 - [ ] **每条条目符合** [task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 必填字段要求
 
 ```bash

@@ -106,6 +106,7 @@ grep -q "位置\|描述\|风险类型\|关联模块" docs/risk_tasks/task_list.m
 |------|------|----------|
 | [任务列表产出结构](2-risk-assessment/definitions/task_output_structure.md) | 产出路径、任务条目必填/可选字段、验收、下游使用约定 | Phase 03 或撰写/检查任务列表时；阶段三按需引用 |
 | [风险类型定义](2-risk-assessment/definitions/risk_types.md) | 风险类型枚举及与阶段一代码特征的对应 | Phase 01 定策略、Phase 02 做审查、撰写任务条目时 |
+| [审查模式定义](2-risk-assessment/definitions/review_patterns.md) | 每种风险类型的具体审查模式（路径追踪而非模式匹配） | Phase 02 做深度审查时 |
 
 ### 阶段文档（按决策树进入）
 

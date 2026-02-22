@@ -25,6 +25,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   jq \
   nano \
   vim \
+  ca-certificates \
+  curl \
+  lsb-release \
+  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI (for Docker-outside-of-Docker)
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
+  apt-get update && apt-get install -y --no-install-recommends \
+  docker-ce-cli \
+  docker-buildx-plugin \
+  docker-compose-plugin \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install C/C++ development toolchain and environment
@@ -135,5 +147,10 @@ RUN chmod +x /usr/local/bin/init-firewall.sh
 # Configure passwordless sudo for node user (full access)
 RUN echo "node ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/node-sudo && \
   chmod 0440 /etc/sudoers.d/node-sudo
+
+# Create docker group with a default GID (will be adjusted at runtime if needed)
+# The actual docker socket GID from host will be handled by the startup script
+RUN groupadd -g 999 docker 2>/dev/null || true && \
+  usermod -aG docker node
 
 USER node

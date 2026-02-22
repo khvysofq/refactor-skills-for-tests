@@ -30,17 +30,17 @@
 ### 必须满足
 
 - [ ] **任务列表中每条任务均有验证结果**：已确认 / 未复现 / 暂缓
+- [ ] **每条任务均有对应的验证测试**：测试文件路径已记录在 remediation_log 中（暂缓项须有说明）
+- [ ] **所有验证测试已实际编译并运行**（非仅编写）
 - [ ] 验证结果已写入 `docs/remediation/remediation_log.md`（可随任务逐条追加），供 Phase 02/03 使用
-- [ ] 可执行检查：存在 `docs/remediation/remediation_log.md` 且含验证结果关键词
+- [ ] 可执行检查：
 
 ```bash
 [ -f docs/remediation/remediation_log.md ] && echo "PASS" || echo "FAIL"
 grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+# 检查验证测试路径已记录
+grep -q "验证测试路径\|test/verification\|verify_.*test" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
 ```
-
-### 可选
-
-- [ ] 每条任务对应测试场景已构建或已选定（可写在 log 或中间文件）
 
 ---
 
