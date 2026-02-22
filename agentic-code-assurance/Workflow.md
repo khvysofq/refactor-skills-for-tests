@@ -12,7 +12,7 @@
 
 ### 阅读顺序
 
-1. **先读本文档（本 Workflow）**，确认三阶段顺序、输入输出契约与反馈机制。
+1. **先读本文档（本 Workflow）**，确认三阶段顺序、输入输出契约与反馈机制。阶段一又称**代码认知**（即工程理解），阶段二又称**风险评估**（即风险分析），阶段三又称**BUG 修复**（即确认与修复）。
 2. **根据当前目标与前置产出状态**，进入对应子目录的 **Workflow.md**：
    - 需要建立或更新工程知识库 → [1-code-cognition/Workflow.md](1-code-cognition/Workflow.md)
    - 知识库已就绪、需识别潜在 BUG → [2-risk-assessment/Workflow.md](2-risk-assessment/Workflow.md)
@@ -82,6 +82,8 @@ flowchart LR
 | 模块职责/边界描述不准确 | 直接更新 `docs/codearch/modules/<module_name>.md` 的职责描述、边界等对应章节。                                                                                                                 |
 | 遗漏外部依赖或代码特征  | 补充该模块报告中的「依赖」「代码特征」等章节。                                                                                                                                                 |
 | 模块边界划分不合理      | 在 1-code-cognition 中触发「分解审视」，并视结果重跑 Phase 01 或 Phase 02。详见 [1-code-cognition/definitions/decomposition_review.md](1-code-cognition/definitions/decomposition_review.md)。 |
+
+**操作顺序**：反馈时 1）直接编辑 `docs/codearch/modules/<module_name>.md` 的对应章节（或 overall_report 的相应部分）；2）可选在 `docs/codearch/knowledge_base_changelog.md` 中追加一条，记录反馈类型与修改摘要。
 
 ### 记录建议
 

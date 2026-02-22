@@ -43,9 +43,13 @@ compatibility: Designed for Agent/Claude. Requires stage two (2-risk-assessment)
 
 检查以下条件是否全部满足：
 
-- [ ] 存在验证结果记录（remediation_log 初稿或中间文件）
-- [ ] 任务列表中每条任务均有对应验证结果：已确认 / 未复现 / 暂缓
-- [ ] 可执行检查：如 `grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md` 或等价
+- [ ] 存在 `docs/remediation/remediation_log.md`，且其中每条任务均有对应验证结果（已确认 / 未复现 / 暂缓）
+- [ ] 可执行检查：针对 `docs/remediation/remediation_log.md` 的 grep（验证结果须写在本文件，见 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)）
+
+```bash
+[ -f docs/remediation/remediation_log.md ] && echo "PASS" || echo "FAIL"
+grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
+```
 
 **全部满足** → 验证已就绪  
 **任一不满足** → 需执行 Phase 01
@@ -147,11 +151,12 @@ grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/re
 
 ## 执行原则
 
-1. **最小上下文原则**：验证与修复时按任务逐条或分批处理，单次仅加载当前任务相关模块报告与源码。
-2. **验收驱动**：每个 Phase 与 Skill 执行完必须验证验收标准。
-3. **产出路径固定**：测试与补丁落位遵循 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)；remediation_log 统一在 `docs/remediation/remediation_log.md`。
-4. **按决策树进入**：从 Q1 开始，首个「否」进入对应 Phase。
-5. **反馈及时**：验证或修复中一旦发现工程理解文档与代码不符，按根目录 Workflow 反馈机制更新并可选记录。
+1. **阶段衔接**：前置阶段（阶段二）产出未就绪时，先执行根 Workflow 中对应阶段，再进入本阶段决策树。
+2. **最小上下文原则**：验证与修复时按任务逐条或分批处理，单次仅加载当前任务相关模块报告与源码。
+3. **验收驱动**：每个 Phase 与 Skill 执行完必须验证验收标准。
+4. **产出路径固定**：测试与补丁落位遵循 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)；remediation_log 统一在 `docs/remediation/remediation_log.md`。
+5. **按决策树进入**：从 Q1 开始，首个「否」进入对应 Phase。
+6. **反馈及时**：验证或修复中一旦发现工程理解文档与代码不符，按根目录 Workflow 反馈机制更新并可选记录。
 
 ---
 

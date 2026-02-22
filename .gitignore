@@ -1,3 +1,6 @@
 projects/*
 claude_settings/*
 opencode_settings/*
+.vscode/*
+docs/
+reports/

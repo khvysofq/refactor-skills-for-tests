@@ -50,10 +50,17 @@ compatibility: Designed for Agent/Claude. Requires stage one (1-code-cognition) 
 
 ### Q2: 如何判断「当前范围内深度审查已完成」？
 
+可检查等价条件：**`docs/risk_tasks/task_list.md` 已存在，且其中已含至少一条任务记录（含位置、简要描述、风险类型、关联模块）**。Phase 02 可将审查结果逐条写入 task_list 初稿，Q2 通过即该文件存在且含至少一条符合必填字段的任务；具体结构完整性与验收命令在 Q3 完成。
+
 检查以下条件：
 
-- [ ] 根据 scope 或 task_list 头部的选定模块，已对每个模块（或约定子集）完成审查
-- [ ] 疑似 BUG 已记录：存在 `docs/risk_tasks/task_list.md` 或临时清单，且每条至少含位置、简要描述、风险类型、关联模块
+- [ ] `docs/risk_tasks/task_list.md` 存在
+- [ ] 文档中至少含一条任务记录，且含 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 规定的必填字段（位置、简要描述、风险类型、关联模块）
+
+```bash
+[ -f docs/risk_tasks/task_list.md ] && echo "PASS" || echo "FAIL"
+grep -q "位置\|描述\|风险类型\|关联模块" docs/risk_tasks/task_list.md && echo "PASS" || echo "FAIL"
+```
 
 **全部满足** → 深度审查已就绪  
 **任一不满足** → 需执行 Phase 02
@@ -142,11 +149,12 @@ grep -q "位置\|描述\|风险类型\|关联模块" docs/risk_tasks/task_list.m
 
 ## 执行原则
 
-1. **最小上下文原则**：仅加载当前步骤需要的文档；Phase 02 按模块或风险维度分批，每批只加载对应模块报告，不一次性加载全部。
-2. **验收驱动**：每个 Phase 与 Skill 执行完必须验证验收标准。
-3. **产出路径固定**：产出统一在 `docs/risk_tasks/`，路径与结构见 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md)。
-4. **按决策树进入**：从 Q1 开始，首个「否」进入对应 Phase。
-5. **反馈及时**：审查中一旦发现工程理解文档与代码不符，按根目录 Workflow 反馈机制更新并可选记录。
+1. **阶段衔接**：前置阶段（阶段一）产出未就绪时，先执行根 Workflow 中对应阶段，再进入本阶段决策树。
+2. **最小上下文原则**：仅加载当前步骤需要的文档；Phase 02 按模块或风险维度分批，每批只加载对应模块报告，不一次性加载全部。
+3. **验收驱动**：每个 Phase 与 Skill 执行完必须验证验收标准。
+4. **产出路径固定**：产出统一在 `docs/risk_tasks/`，路径与结构见 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md)。
+5. **按决策树进入**：从 Q1 开始，首个「否」进入对应 Phase。
+6. **反馈及时**：审查中一旦发现工程理解文档与代码不符，按根目录 Workflow 反馈机制更新并可选记录。
 
 ---
 

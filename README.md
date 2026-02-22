@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-本项目提供**两套** Agent 工作流：
+本项目提供**两套** Agent 工作流；另有一套**自动化 BUG 分析**端到端工作流（代码认知 → 风险评估 → BUG 确认与修复），入口为 [agentic-code-assurance/Workflow.md](agentic-code-assurance/Workflow.md)。
 
 - **codearch-agents**（代码架构分析）：理解项目在做什么、分析模块与依赖、文档化构建与测试体系，产出总体报告与各模块报告（含使用示例与高复杂度模块验证），供后续代码审查与写测试按需引用。
 - **automated-ut-agents**（可测试性重构）：从基线准备、工程分析、优先级排序到迭代重构，系统化提升 C/C++ 项目可测试性并补充单元测试。
@@ -29,6 +29,7 @@
 ```
 codearch-agents/          # 代码架构分析工作流
 automated-ut-agents/      # 可测试性重构工作流
+agentic-code-assurance/   # 自动化 BUG 分析端到端工作流（代码认知 → 风险评估 → BUG 修复）
 docker/                   # 构建 Agent 运行环境
 claude_settings/          # ClaudeCode 配置（可选）
 opencode_settings/        # OpenCode 配置（可选）

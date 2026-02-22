@@ -30,12 +30,12 @@
 ### 必须满足
 
 - [ ] **任务列表中每条任务均有验证结果**：已确认 / 未复现 / 暂缓
-- [ ] 验证结果已写入 remediation_log 初稿或单独中间文件，供 Phase 02/03 使用
-- [ ] 可执行检查：存在记录文件且含验证结果关键词
+- [ ] 验证结果已写入 `docs/remediation/remediation_log.md`（可随任务逐条追加），供 Phase 02/03 使用
+- [ ] 可执行检查：存在 `docs/remediation/remediation_log.md` 且含验证结果关键词
 
 ```bash
-# 若已写 remediation_log：含验证结果
-grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md 2>/dev/null && echo "PASS" || echo "CHECK"
+[ -f docs/remediation/remediation_log.md ] && echo "PASS" || echo "FAIL"
+grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
 ```
 
 ### 可选
@@ -48,7 +48,7 @@ grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md 2>/de
 
 | 产出 | 路径 | 说明 |
 |------|------|------|
-| 验证结果记录 | remediation_log 初稿或中间文件 | 每条任务的验证结果（已确认/未复现/暂缓） |
+| 验证结果记录 | `docs/remediation/remediation_log.md` | 每条任务的验证结果（已确认/未复现/暂缓），可随任务逐条追加 |
 
 ---
 

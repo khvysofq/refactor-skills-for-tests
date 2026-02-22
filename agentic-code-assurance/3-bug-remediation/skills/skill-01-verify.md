@@ -18,9 +18,9 @@
 
 | 产出 | 路径 | 必须 |
 |------|------|------|
-| 验证结果记录 | remediation_log 初稿或中间文件 | ✓ |
+| 验证结果记录 | `docs/remediation/remediation_log.md` | ✓ |
 
-每条任务须有验证结果：已确认 / 未复现 / 暂缓；可写入 `docs/remediation/remediation_log.md` 初稿或单独文件，供 Phase 02/03 使用。
+每条任务须有验证结果：已确认 / 未复现 / 暂缓；须将验证结果写入 `docs/remediation/remediation_log.md`（可随任务逐条追加），与 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) 约定一致。
 
 ---
 
@@ -35,7 +35,7 @@
    - 结合「建议验证方式」「复现思路」与 `docs/codearch/build_and_tests.md` 构建或选择测试场景（可新写测试或利用现有测试）；
    - 运行测试；
    - 记录结果：**已确认**（BUG 可复现）、**未复现**（当前无法复现）、**暂缓**（暂不处理）。
-3. 将验证结果写入 remediation_log 初稿或中间文件，格式符合 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
+3. 将验证结果写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
 
 ### 任务 2: 验收自检
 

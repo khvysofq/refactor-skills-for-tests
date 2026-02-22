@@ -39,6 +39,8 @@
 
 可选字段：时间、关联模块、建议验证方式引用。
 
+**约定**：Phase 01（验证存在性）的验证结果须写入 `docs/remediation/remediation_log.md`，可随任务逐条追加；不得仅写在临时文件，以便 Q1/Q3 统一针对该文件做验收。Q1 可检查：`remediation_log.md` 存在且含验证结果（如 `grep -q "已确认\|未复现\|暂缓" docs/remediation/remediation_log.md` 至少匹配一次，且匹配条数不少于 task_list 中任务条数则更严格）。
+
 ---
 
 ## 验收检查
