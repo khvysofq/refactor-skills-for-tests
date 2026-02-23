@@ -312,7 +312,7 @@
       font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
       background: var(--border); padding: 2px 8px; border-radius: 4px;
     }
-    .code-body { padding: 24px; font-family: var(--font-mono); font-size: 13px; line-height: 1.8; overflow-x: auto; }
+    .code-body { padding: 24px; font-family: var(--font-mono); font-size: 13px; line-height: 1.8; overflow-x: auto; white-space: pre-wrap; }
     .c-comment { color: var(--text-dim); }
     .c-key { color: var(--purple); }
     .c-str { color: var(--orange); }
@@ -984,8 +984,7 @@
           <span class="code-filename">1-code-cognition/Workflow.md — Decision Tree Example</span>
           <span class="code-lang">Markdown</span>
         </div>
-        <div class="code-body">
-<span class="c-head">## Quick Decision Tree</span>
+        <div class="code-body"><span class="c-head">## Quick Decision Tree</span>
 
 <span class="c-bold">Q1: Does `docs/codearch/overall_report.md` exist and pass validation?</span>
 <span class="c-comment">   Checklist:</span>
@@ -1005,8 +1004,7 @@
 <span class="c-bold">Q2b: Does the decomposition pass the structured review?</span>
 <span class="c-comment">   Run: skill-decomposition-review checklist</span>
 <span class="c-val">   → PASS: proceed to Q3</span>
-<span class="c-str">   → FAIL: rollback per decomposition_review.md rules</span>
-        </div>
+<span class="c-str">   → FAIL: rollback per decomposition_review.md rules</span></div>
       </div>
     </div>
   </div>
@@ -1130,8 +1128,7 @@
           <span class="code-filename">Recommended directory layout</span>
           <span class="code-lang">Shell</span>
         </div>
-        <div class="code-body">
-<span class="c-comment"># Root entry point</span>
+        <div class="code-body"><span class="c-comment"># Root entry point</span>
 <span class="c-head">Workflow.md</span>                     <span class="c-comment"># Global decision tree &amp; stage orchestration</span>
 
 <span class="c-comment"># Stage 1: Code Cognition</span>
@@ -1160,8 +1157,7 @@
   <span class="c-val">codearch/overall_report.md</span>    <span class="c-comment"># Stage 1 → Stage 2 contract</span>
   <span class="c-val">codearch/modules/</span>             <span class="c-comment"># Per-module semantic reports</span>
   <span class="c-val">risk_tasks/task_list.md</span>       <span class="c-comment"># Stage 2 → Stage 3 contract</span>
-  <span class="c-val">remediation/</span>                  <span class="c-comment"># Fix reports &amp; integrated tests</span>
-        </div>
+  <span class="c-val">remediation/</span>                  <span class="c-comment"># Fix reports &amp; integrated tests</span></div>
       </div>
     </div>
   </div>
