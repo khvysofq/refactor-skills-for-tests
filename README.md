@@ -1,28 +1,30 @@
 # 可测试性重构与代码架构分析 - Agent 工作流
 
-本仓库提供两套 Agent 工作流，用于在复杂 C/C++ 项目上做架构分析与可测试性重构。通过 ClaudeCode 或 OpenCode 加载对应工作流，可自动化执行代码架构分析或可测试性重构任务。
+本仓库提供三套 Agent 工作流，用于在复杂 C/C++ 项目上做架构分析、可测试性重构与自动化 BUG 分析。通过 ClaudeCode 或 OpenCode 加载对应工作流，可自动化执行相应任务。
 
 ## 项目简介
 
-本项目提供**两套** Agent 工作流；另有一套**自动化 BUG 分析**端到端工作流（代码认知 → 风险评估 → BUG 确认与修复），入口为 [agentic-code-assurance/Workflow.md](agentic-code-assurance/Workflow.md)。
+本项目提供**三套** Agent 工作流：
 
 - **codearch-agents**（代码架构分析）：理解项目在做什么、分析模块与依赖、文档化构建与测试体系，产出总体报告与各模块报告（含使用示例与高复杂度模块验证），供后续代码审查与写测试按需引用。
 - **automated-ut-agents**（可测试性重构）：从基线准备、工程分析、优先级排序到迭代重构，系统化提升 C/C++ 项目可测试性并补充单元测试。
+- **agentic-code-assurance**（自动化 BUG 分析）：端到端流水线「代码认知 → 风险评估 → BUG 确认与修复」——先建立工程知识库，再通过路径追踪审查识别潜在 BUG，最后编写验证测试并修复，支持迭代深化与反馈更新知识库。
 
-两者可配合使用：架构分析产出的文档可被可测试性重构工作流按需引用，推荐先跑架构分析再跑重构。
+三者可配合使用：架构分析产出的文档可被可测试性重构、BUG 分析工作流按需引用；BUG 分析工作流的阶段一（代码认知）与 codearch-agents 产出结构兼容，可复用 `docs/codearch/` 知识库。推荐先跑架构分析，再按需跑可测试性重构或 BUG 分析。
 
-## 两种工作流概览
+## 三种工作流概览
 
-| 维度 | codearch-agents | automated-ut-agents |
-|------|-----------------|---------------------|
-| 入口 | `codearch-agents/Workflow.md` | `automated-ut-agents/Workflow.md` |
-| 目标 | 架构理解、模块/依赖分析、构建与测试文档化、产出结构化报告 | 建立门禁基线、分析、优先级排序、迭代重构与单测 |
-| 阶段数 | 4（概览 → 模块 → 构建与测试 → 报告） | 4（基线 → 分析 → 优先级 → 迭代） |
-| 技能数 | 4 个 | 14 个 |
-| 典型产出 | `docs/codearch/` 下总体报告与 `modules/*.md` | 门禁基线、`docs/architecture/`、`docs/testing/backlog.md` 及迭代结果 |
+| 维度 | codearch-agents | automated-ut-agents | agentic-code-assurance |
+|------|-----------------|---------------------|------------------------|
+| 入口 | `codearch-agents/Workflow.md` | `automated-ut-agents/Workflow.md` | `agentic-code-assurance/Workflow.md` |
+| 目标 | 架构理解、模块/依赖分析、构建与测试文档化、产出结构化报告 | 建立门禁基线、分析、优先级排序、迭代重构与单测 | 代码认知 → 风险评估 → BUG 验证与修复，支持迭代深化 |
+| 阶段数 | 4（概览 → 模块 → 构建与测试 → 报告） | 4（基线 → 分析 → 优先级 → 迭代） | 3（代码认知 → 风险评估 → BUG 修复） |
+| 技能数 | 4 个 | 14 个 | 各子工作流内按阶段配置 |
+| 典型产出 | `docs/codearch/` 下总体报告与 `modules/*.md` | 门禁基线、`docs/architecture/`、`docs/testing/backlog.md` 及迭代结果 | `docs/codearch/`（阶段一）、`docs/risk_tasks/`（阶段二）、`docs/remediation/`（阶段三） |
 
-- **何时用 codearch-agents**：需要理解项目、撰写模块文档或为后续写测试做准备时。
+- **何时用 codearch-agents**：需要理解项目、撰写模块文档或为后续写测试/风险分析做准备时。
 - **何时用 automated-ut-agents**：需要实际做可测试性重构、补充单测时。
+- **何时用 agentic-code-assurance**：需要系统化发现潜在 BUG、验证并修复，且希望复用或先建立工程知识库时。
 
 ### 项目根目录结构
 
@@ -107,8 +109,9 @@ cd /path/to/your/project
 
 - **做架构分析**：让 Agent 加载 `codearch-agents/Workflow.md`
 - **做可测试性重构**：让 Agent 加载 `automated-ut-agents/Workflow.md`
+- **做自动化 BUG 分析**：让 Agent 加载 `agentic-code-assurance/Workflow.md`
 
-各工作流均包含决策树、阶段文档与按需加载的技能文档，详见下方「工作流说明」。
+各工作流均包含决策树/阶段编排、阶段文档与按需加载的技能文档，详见下方「工作流说明」。
 
 ## 工作流说明
 
@@ -187,16 +190,50 @@ automated-ut-agents/
 └── templates/                 # module-card, backlog-entry, question-set 等
 ```
 
+### 工作流 3：agentic-code-assurance（自动化 BUG 分析）
+
+**入口**：`agentic-code-assurance/Workflow.md`
+
+本工作流为**端到端三阶段**流水线，按顺序执行：代码认知 → 风险评估 → BUG 修复。阶段一含编译与测试门禁，未通过则中止；阶段二、三可根据前置产出跳过或重跑；阶段三完成后可经迭代深化重新进入阶段二。
+
+**三阶段与子入口**：
+
+| 阶段 | 说明 | 子工作流入口 |
+|------|------|--------------|
+| **1 代码认知** | 建立/更新工程知识库（总体报告、模块报告、构建与测试文档） | [1-code-cognition/Workflow.md](agentic-code-assurance/1-code-cognition/Workflow.md) |
+| **2 风险评估** | 加载知识库，路径追踪审查，输出疑似 BUG 任务列表 | [2-risk-assessment/Workflow.md](agentic-code-assurance/2-risk-assessment/Workflow.md) |
+| **3 BUG 修复** | 编写验证测试、修复并通过测试、回归与归档 | [3-bug-remediation/Workflow.md](agentic-code-assurance/3-bug-remediation/Workflow.md) |
+
+**核心文档结构**：
+
+```
+agentic-code-assurance/
+├── Workflow.md                 # 总入口：端到端编排、契约、反馈与迭代机制
+├── definitions/                # 执行原则、反馈操作约定
+├── 1-code-cognition/           # 代码认知（与 codearch 产出结构兼容）
+│   ├── Workflow.md
+│   ├── phases/ & skills/ & definitions/ & templates/
+├── 2-risk-assessment/          # 风险评估
+│   ├── Workflow.md
+│   ├── phases/ & skills/ & definitions/ & templates/
+└── 3-bug-remediation/          # BUG 确认与修复
+    ├── Workflow.md
+    ├── phases/ & skills/ & definitions/ & templates/
+```
+
+完整编排、输入输出契约、反馈机制与迭代深化规则见 [agentic-code-assurance/Workflow.md](agentic-code-assurance/Workflow.md)。
+
 ### 使用方式
 
 1. **启动容器后**，在容器内打开 ClaudeCode 或 OpenCode。
 2. **根据目标告诉 Agent**：
    - 架构分析：例如「请按照 `codearch-agents/Workflow.md` 中的工作流执行代码架构分析」
    - 可测试性重构：例如「请按照 `automated-ut-agents/Workflow.md` 中的工作流开始执行可测试性重构」
+   - 自动化 BUG 分析：例如「请按照 `agentic-code-assurance/Workflow.md` 中的工作流执行自动化 BUG 分析」
 3. **Agent 会自动**：
    - 读取对应工作流的 `Workflow.md` 作为入口
-   - 根据决策树判断当前工程状态
-   - 进入对应的阶段文档
+   - 根据决策树/阶段编排判断当前工程状态
+   - 进入对应的阶段文档（或子工作流入口）
    - 按需加载技能文档执行具体任务
 
 ## 配置说明
@@ -256,9 +293,9 @@ OpenCode 的配置目录挂载在：
 
 ### ClaudeCode / OpenCode 无法加载工作流
 
-- 确保所选用工作流入口存在：`codearch-agents/Workflow.md` 或 `automated-ut-agents/Workflow.md`（路径相对于挂载的项目根目录）
+- 确保所选用工作流入口存在：`codearch-agents/Workflow.md`、`automated-ut-agents/Workflow.md` 或 `agentic-code-assurance/Workflow.md`（路径相对于挂载的项目根目录）
 - 检查对应配置目录是否正确挂载：ClaudeCode 使用 `claude_settings/.claude`，OpenCode 使用 `opencode_settings/.config`
-- 在容器内验证：`ls -la <挂载路径>/codearch-agents/Workflow.md` 或 `ls -la <挂载路径>/automated-ut-agents/Workflow.md`
+- 在容器内验证：`ls -la <挂载路径>/codearch-agents/Workflow.md`、`<挂载路径>/automated-ut-agents/Workflow.md` 或 `<挂载路径>/agentic-code-assurance/Workflow.md`
 
 ## 贡献
 
