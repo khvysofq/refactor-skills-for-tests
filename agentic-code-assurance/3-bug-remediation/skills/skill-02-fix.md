@@ -54,7 +54,7 @@
 
 ## 验收
 
-与 [Phase 02](3-bug-remediation/phases/02-fix.md) 阶段验收标准一致：已确认任务均已修复、可检查通过。
+与 [Phase 02](../phases/02-fix.md) 阶段验收标准一致：已确认任务均已修复、可检查通过。
 
 ---
 
@@ -62,15 +62,15 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 返回 [Phase 02](3-bug-remediation/phases/02-fix.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或继续 Q3 |
+| 通过 | 返回 [Phase 02](../phases/02-fix.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或继续 Q3 |
 | 未通过 | 补全修复后重新验收 |
 
 ---
 
 ## 反馈
 
-修复过程中若发现**工程理解文档**与代码有误，应按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 更新 `docs/codearch/` 并可选记录；若发现**模块边界划分不合理**，须参见 [1-code-cognition 分解审视约定](1-code-cognition/definitions/decomposition_review.md)，必要时回阶段一。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**完成后**：返回 [Phase 02](3-bug-remediation/phases/02-fix.md) 进行阶段验收
+**完成后**：返回 [Phase 02](../phases/02-fix.md) 进行阶段验收

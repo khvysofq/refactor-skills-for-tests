@@ -8,7 +8,7 @@
 ## 使用说明
 
 1. 每个模块一份独立文件，文件名与模块标识一致（如 `core_utils.md`、`io_file.md`）。
-2. 由 Phase 02 / Skill 02 填写；复杂度评级时参阅 [complexity_levels](1-code-cognition/definitions/complexity_levels.md)；验证时参阅 [validation_levels](1-code-cognition/definitions/validation_levels.md)。
+2. 由 Phase 02 / Skill 02 填写；复杂度评级时参阅 [complexity_levels](../definitions/complexity_levels.md)；验证时参阅 [validation_levels](../definitions/validation_levels.md)。
 3. 保持纯架构分析，不包含可测试性状态（S1–S4）等重构专用字段。
 4. 「信息来源」记录分析依据；「使用示例」必须填写至少一个基本用法；「验证状态」复杂度 ≥ 高时必填。
 5. 「代码特征」为必填章节，记录客观技术特征（是/否 + 简要说明），为下游风险分析提供索引。
@@ -241,7 +241,7 @@ int main() {
 
 <复杂度为「高」或「极高」时必填；复杂度「低」可省略；复杂度「中」建议填写>
 
-- **验证等级**: [L0 / L1 / L2 / L3]（参见 [validation_levels](1-code-cognition/definitions/validation_levels.md)）
+- **验证等级**: [L0 / L1 / L2 / L3]（参见 [validation_levels](../definitions/validation_levels.md)）
 - **验证方式**: [静态分析 / 阅读测试 / 运行测试 / 探索性测试]
 - **测试命令**: <若 L2/L3，填写实际执行的命令>
 - **测试结果**: <X/Y 通过，或「全部通过」>
@@ -256,6 +256,6 @@ int main() {
 
 ## 与 output_structure 的对应
 
-- 必须章节与路径见 [产出路径与报告结构约定](1-code-cognition/definitions/output_structure.md)。
+- 必须章节与路径见 [产出路径与报告结构约定](../definitions/output_structure.md)。
 - **可选**：可在文档头部使用 YAML frontmatter，字段如 `summary`、`complexity`、`path`，便于 Agent 先扫再决定是否读全文。
 ```

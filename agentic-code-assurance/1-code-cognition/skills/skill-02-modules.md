@@ -21,7 +21,7 @@
 | 总体报告中的模块列表与链接 | `docs/codearch/overall_report.md`        | ✓    |
 | 模块地图（可选）           | `docs/codearch/module_map.md`            | 可选 |
 
-撰写时遵循 [产出结构约定](1-code-cognition/definitions/output_structure.md)。进行复杂度评级时查阅 [复杂度等级定义](1-code-cognition/definitions/complexity_levels.md)。进行模块验证时查阅 [验证等级定义](1-code-cognition/definitions/validation_levels.md)。
+撰写时遵循 [产出结构约定](../definitions/output_structure.md)。进行复杂度评级时查阅 [复杂度等级定义](../definitions/complexity_levels.md)。进行模块验证时查阅 [验证等级定义](../definitions/validation_levels.md)。
 
 ---
 
@@ -48,7 +48,7 @@ grep -r "add_library\|add_executable" . --include="CMakeLists.txt"
 grep -r "cc_library\|cc_binary" . --include="BUILD*"
 ```
 
-模块边界与依赖分析时可按需查阅 [C/C++ 注意点](1-code-cognition/definitions/cpp_cpp_notes.md)。
+模块边界与依赖分析时可按需查阅 [C/C++ 注意点](../definitions/cpp_cpp_notes.md)。
 
 ### 任务 1.5: 模块文档扫描
 
@@ -110,7 +110,7 @@ head -100 ${MODULE_PATH}/*.h 2>/dev/null | grep -E "@brief|@file|/\*\*"
 
 ### 任务 2: 为每个模块撰写报告
 
-**目标**：按 [模块报告模板](1-code-cognition/templates/module-report.md) 填写职责、边界、依赖、代码特征、信息来源、使用示例
+**目标**：按 [模块报告模板](../templates/module-report.md) 填写职责、边界、依赖、代码特征、信息来源、使用示例
 
 **步骤**：
 
@@ -120,7 +120,7 @@ head -100 ${MODULE_PATH}/*.h 2>/dev/null | grep -E "@brief|@file|/\*\*"
 4. **填写「代码特征」**：执行任务 2.1 的扫描，填写内存管理、并发模型、I/O 操作、外部数据处理、错误处理各维度
 5. **填写「关键代码位置索引」**：记录主要入口点和外部数据入口
 6. 填写「与其它模块的关系」
-7. **复杂度评级**：按 [complexity_levels](1-code-cognition/definitions/complexity_levels.md) 判定等级（低/中/高/极高）并写入报告，可选写一句依据
+7. **复杂度评级**：按 [complexity_levels](../definitions/complexity_levels.md) 判定等级（低/中/高/极高）并写入报告，可选写一句依据
 8. **填写「信息来源」**：记录分析所依据的信息源（任务 1.5 的产出）
 9. **填写「使用示例」**：提供至少一个基本用法示例
 
@@ -378,13 +378,13 @@ grep -rn "atomic\|__sync_\|__atomic_" $MODULE_PATH --include="*.c" --include="*.
 - [ ] 构建环境可用（能够编译项目）
 - [ ] 已识别模块对应的测试文件
 
-**若前置条件不满足**：先跳转执行 [Phase 03](1-code-cognition/phases/03-build-and-tests.md)，完成后返回继续验证。
+**若前置条件不满足**：先跳转执行 [Phase 03](../phases/03-build-and-tests.md)，完成后返回继续验证。
 
 **步骤**：
 
 1. **确定验证等级**
 
-   - 参照 [验证等级定义](1-code-cognition/definitions/validation_levels.md)
+   - 参照 [验证等级定义](../definitions/validation_levels.md)
    - 复杂度「高」→ L2（运行测试）
    - 复杂度「极高」或测试不足 → L3（探索性测试）
 
@@ -455,15 +455,15 @@ grep -r "target_link_libraries" . --include="CMakeLists.txt"
 
 ### 任务 5: 分解质量自检（分解审视）
 
-**目标**：按 [分解审视约定](1-code-cognition/definitions/decomposition_review.md) 检查当前模块划分是否稳定、合理
+**目标**：按 [分解审视约定](../definitions/decomposition_review.md) 检查当前模块划分是否稳定、合理
 
 **步骤**：
 
-1. 阅读并执行 [decomposition_review](1-code-cognition/definitions/decomposition_review.md) 中的审视维度（checklist）：单一职责、边界清晰、粒度一致、循环依赖、与 Phase 01 概览一致
-2. **若自检通过或变更列表为空**：返回 [Phase 02](1-code-cognition/phases/02-modules.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或 Phase 04
+1. 阅读并执行 [decomposition_review](../definitions/decomposition_review.md) 中的审视维度（checklist）：单一职责、边界清晰、粒度一致、循环依赖、与 Phase 01 概览一致
+2. **若自检通过或变更列表为空**：返回 [Phase 02](../phases/02-modules.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或 Phase 04
 3. **若自检不通过**：写出本轮变更列表（拆/合/重命名），更新总体报告中的模块列表与链接；根据回退规则选择：
    - 仅模块边界/数量调整 → 只重做 Task 2–4（受影响的模块）及 Task 5
-   - 主流程或顶层分解需修正 → 返回 [Phase 01](1-code-cognition/phases/01-overview.md)，更新概览后重新执行 Phase 02
+   - 主流程或顶层分解需修正 → 返回 [Phase 01](../phases/01-overview.md)，更新概览后重新执行 Phase 02
 
 ---
 
@@ -523,8 +523,8 @@ grep -q "技术特征统计\|技术特征概览" docs/codearch/overall_report.md
 
 ## 应该做
 
-- 使用 [complexity_levels](1-code-cognition/definitions/complexity_levels.md) 统一评级
-- 使用 [validation_levels](1-code-cognition/definitions/validation_levels.md) 确定验证等级
+- 使用 [complexity_levels](../definitions/complexity_levels.md) 统一评级
+- 使用 [validation_levels](../definitions/validation_levels.md) 确定验证等级
 - 依赖关系结合构建配置与 include 验证
 - 优先利用已有文档和测试作为信息来源，文档内容优先于代码推断
 - 使用示例优先从现有示例/测试中提取，标注来源
@@ -547,13 +547,13 @@ grep -q "技术特征统计\|技术特征概览" docs/codearch/overall_report.md
 
 | 验收结果              | 下一步                                                                                                                          |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| 审视通过或已收敛      | 返回 [Phase 02](1-code-cognition/phases/02-modules.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或 Phase 04                  |
-| 审视不通过            | 按变更列表修正后重做 Task 2–4（受影响模块）及 Task 5，或返回 [Phase 01](1-code-cognition/phases/01-overview.md) 后重做 Phase 02 |
+| 审视通过或已收敛      | 返回 [Phase 02](../phases/02-modules.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或 Phase 04                  |
+| 审视不通过            | 按变更列表修正后重做 Task 2–4（受影响模块）及 Task 5，或返回 [Phase 01](../phases/01-overview.md) 后重做 Phase 02 |
 | 未通过 - 模块遗漏     | 继续任务 1、1.5、2                                                                                                              |
 | 未通过 - 链接缺失     | 继续任务 4                                                                                                                      |
 | 未通过 - 使用示例缺失 | 继续任务 1.5、2（补充示例部分）                                                                                                 |
 | 未通过 - 验证缺失     | 执行任务 2.5（需先确认 Phase 03 已完成）                                                                                        |
-| 验证需要构建环境      | 先执行 [Phase 03](1-code-cognition/phases/03-build-and-tests.md)，完成后返回执行任务 2.5                                        |
+| 验证需要构建环境      | 先执行 [Phase 03](../phases/03-build-and-tests.md)，完成后返回执行任务 2.5                                        |
 
 ---
 
@@ -567,4 +567,4 @@ grep -q "技术特征统计\|技术特征概览" docs/codearch/overall_report.md
 
 ---
 
-**完成后**：返回 [Phase 02](1-code-cognition/phases/02-modules.md) 进行阶段验收
+**完成后**：返回 [Phase 02](../phases/02-modules.md) 进行阶段验收

@@ -1,6 +1,6 @@
 # BUG 修复摘要（remediation log）
 
-> 撰写时须遵循 [修复阶段产出路径与结构约定](3-bug-remediation/definitions/remediation_output_structure.md)。路径与必填内容见该文档。
+> 撰写时须遵循 [修复阶段产出路径与结构约定](../definitions/remediation_output_structure.md)。路径与必填内容见该文档。
 
 ---
 
@@ -15,7 +15,7 @@
 
 ## 任务处理记录
 
-每条任务对应一条记录。所有字段定义见 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
+每条任务对应一条记录。所有字段定义见 [remediation_output_structure](../definitions/remediation_output_structure.md)。
 
 ### 示例：已确认并修复
 

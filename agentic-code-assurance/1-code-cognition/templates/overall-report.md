@@ -134,5 +134,5 @@
 
 ## 与 output_structure 的对应
 
-- 路径、章节要求见 [产出路径与报告结构约定](1-code-cognition/definitions/output_structure.md)。
+- 路径、章节要求见 [产出路径与报告结构约定](../definitions/output_structure.md)。
 - **可选**：可在文档头部使用 YAML frontmatter，字段如 `summary`、`scope_commit`、`module_count`，供 Agent 做轻量解析或 embedding。

@@ -28,7 +28,7 @@
 
 ## 结论与变更列表
 
-- **通过**：无需调整，进入 [Workflow](1-code-cognition/Workflow.md) 决策树 Q3。
+- **通过**：无需调整，进入 [Workflow](../Workflow.md) 决策树 Q3。
 - **不通过**：必须产出 **本轮变更列表**，例如：
   - 模块 A 拆为 A1、A2
   - 模块 B 与 C 合并为 B
@@ -60,5 +60,5 @@
 
 ## 下一步
 
-- 审视通过或已收敛 → 返回 [Workflow](1-code-cognition/Workflow.md) 执行 Q3。
-- 审视不通过 → 按上表回退到 [Phase 01](1-code-cognition/phases/01-overview.md) 或 [Phase 02](1-code-cognition/phases/02-modules.md)，执行变更列表后再次运行 Phase 02 并重新审视。
+- 审视通过或已收敛 → 返回 [Workflow](../Workflow.md) 执行 Q3。
+- 审视不通过 → 按上表回退到 [Phase 01](../phases/01-overview.md) 或 [Phase 02](../phases/02-modules.md)，执行变更列表后再次运行 Phase 02 并重新审视。

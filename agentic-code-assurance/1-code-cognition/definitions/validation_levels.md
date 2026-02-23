@@ -23,7 +23,7 @@
 - [ ] 构建环境可用（能够编译项目）
 - [ ] 测试框架已识别（Google Test、Catch2 等）
 
-**若前置条件不满足**：先跳转执行 [Phase 03](1-code-cognition/phases/03-build-and-tests.md)，完成后返回继续验证。
+**若前置条件不满足**：先跳转执行 [Phase 03](../phases/03-build-and-tests.md)，完成后返回继续验证。
 
 ---
 
@@ -259,11 +259,11 @@
 
 ## 在模块报告中的填写
 
-在 [模块报告](1-code-cognition/templates/module-report.md) 的「验证状态」章节中：
+在 [模块报告](../templates/module-report.md) 的「验证状态」章节中：
 
 - **复杂度「低」**：可省略「验证状态」章节，或写「L0 - 静态分析」
 - **复杂度「中」及以上**：必须填写验证等级、方式、结果、发现
 
 ---
 
-**下一步**：返回调用此文档的 [Skill 02](1-code-cognition/skills/skill-02-modules.md) 或 [Phase 02](1-code-cognition/phases/02-modules.md)，继续执行模块验证。
+**下一步**：返回调用此文档的 [Skill 02](../skills/skill-02-modules.md) 或 [Phase 02](../phases/02-modules.md)，继续执行模块验证。

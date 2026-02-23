@@ -114,4 +114,4 @@
 
 ---
 
-**下一步**：返回 [Skill 04](1-code-cognition/skills/skill-04-reports.md) 或 [Phase 04](1-code-cognition/phases/04-reports.md)，按此结构生成或检查报告。
+**下一步**：返回 [Skill 04](../skills/skill-04-reports.md) 或 [Phase 04](../phases/04-reports.md)，按此结构生成或检查报告。

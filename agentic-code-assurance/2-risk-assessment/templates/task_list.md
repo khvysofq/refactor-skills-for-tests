@@ -1,6 +1,6 @@
 # 疑似 BUG 任务列表
 
-> 撰写时须遵循 [任务列表产出路径与结构约定](2-risk-assessment/definitions/task_output_structure.md)。路径与必填字段见该文档。
+> 撰写时须遵循 [任务列表产出路径与结构约定](../definitions/task_output_structure.md)。路径与必填字段见该文档。
 
 ---
 
@@ -31,7 +31,7 @@
 ## 格式说明
 
 - **位置**：文件路径 + 行号或行范围，便于阶段三定位。
-- **风险类型**：取值见 [risk_types](2-risk-assessment/definitions/risk_types.md)。
+- **风险类型**：取值见 [risk_types](../definitions/risk_types.md)。
 - **关联模块**：与 `docs/codearch/modules/<module_name>.md` 的模块名一致。
 
 产出路径：`docs/risk_tasks/task_list.md`（相对仓库根）。

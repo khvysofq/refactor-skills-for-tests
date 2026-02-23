@@ -71,11 +71,11 @@
 
 ## 在模块报告中的填写
 
-在 [模块报告](1-code-cognition/templates/module-report.md) 的「复杂度评级」一节中：
+在 [模块报告](../templates/module-report.md) 的「复杂度评级」一节中：
 
 - 填写最终等级：**低 / 中 / 高 / 极高**
 - 可选：用一句话说明主要依据（如「依赖 6 个内部模块 + 文件与网络 I/O」）
 
 ---
 
-**下一步**：返回调用此文档的 [Skill 02](1-code-cognition/skills/skill-02-modules.md) 或 [Phase 02](1-code-cognition/phases/02-modules.md)，完成模块报告中的复杂度评级。
+**下一步**：返回调用此文档的 [Skill 02](../skills/skill-02-modules.md) 或 [Phase 02](../phases/02-modules.md)，完成模块报告中的复杂度评级。

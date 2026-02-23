@@ -1,6 +1,6 @@
 # Phase 03: 编译与测试体系
 
-> **前置条件**：Phase 02 已完成（或从 [Workflow.md](1-code-cognition/Workflow.md) 决策树 Q3 为「否」直接进入），或由 Phase 02 验证步骤触发提前执行  
+> **前置条件**：Phase 02 已完成（或从 [Workflow.md](../Workflow.md) 决策树 Q3 为「否」直接进入），或由 Phase 02 验证步骤触发提前执行  
 > **目标**：梳理编译系统、单元测试体系及测试运行方式，并文档化
 
 ---
@@ -22,7 +22,7 @@
 
 ## 进入条件
 
-- 从 [Workflow.md](1-code-cognition/Workflow.md) 入口决策树判断 Q3 为「否」（构建与测试未文档化或不可执行）
+- 从 [Workflow.md](../Workflow.md) 入口决策树判断 Q3 为「否」（构建与测试未文档化或不可执行）
 - 或 Phase 02 已完成，需执行构建与测试分析
 - 或 Phase 02 验证步骤需要构建环境，触发提前执行
 
@@ -30,7 +30,7 @@
 
 ## 执行指令
 
-**加载 Skill**：阅读并执行 → [Skill 03: 构建与测试体系](1-code-cognition/skills/skill-03-build-tests.md)
+**加载 Skill**：阅读并执行 → [Skill 03: 构建与测试体系](../skills/skill-03-build-tests.md)
 
 ---
 
@@ -115,4 +115,4 @@ Skill 03 完成后，根据「环境验证状态」章节做硬性判定：
 
 ---
 
-**执行**：立即加载 [Skill 03](1-code-cognition/skills/skill-03-build-tests.md) 开始执行
+**执行**：立即加载 [Skill 03](../skills/skill-03-build-tests.md) 开始执行

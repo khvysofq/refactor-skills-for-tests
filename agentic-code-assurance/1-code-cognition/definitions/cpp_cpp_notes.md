@@ -33,4 +33,4 @@
 
 ---
 
-**下一步**：返回 [Skill 02](1-code-cognition/skills/skill-02-modules.md) 继续任务 1 或任务 3。
+**下一步**：返回 [Skill 02](../skills/skill-02-modules.md) 继续任务 1 或任务 3。

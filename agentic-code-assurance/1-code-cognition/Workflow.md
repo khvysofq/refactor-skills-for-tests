@@ -16,19 +16,19 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 
 | 步骤 | 问题                                                               | 否                                                                                                                                       | 是                                                                     |
 | ---- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| Q1   | 是否存在满足约定结构的总体介绍报告（含信息来源汇总）？             | 执行 [Phase 01: 工程概览与主流程](1-code-cognition/phases/01-overview.md)                                                                | 继续 Q2                                                                |
-| Q2   | 是否已为主要模块生成独立模块报告（含使用示例）且总体报告中已引用？ | 执行 [Phase 02: 模块与依赖分析](1-code-cognition/phases/02-modules.md)                                                                   | 继续 Q2b                                                               |
-| Q2b  | 当前模块划分是否已稳定、合理（无需再拆分/合并或重划）？            | 执行「分解审视」；根据其结果回到 [Phase 01](1-code-cognition/phases/01-overview.md) 或 [Phase 02](1-code-cognition/phases/02-modules.md) | 继续 Q2c                                                               |
+| Q1   | 是否存在满足约定结构的总体介绍报告（含信息来源汇总）？             | 执行 [Phase 01: 工程概览与主流程](phases/01-overview.md)                                                                | 继续 Q2                                                                |
+| Q2   | 是否已为主要模块生成独立模块报告（含使用示例）且总体报告中已引用？ | 执行 [Phase 02: 模块与依赖分析](phases/02-modules.md)                                                                   | 继续 Q2b                                                               |
+| Q2b  | 当前模块划分是否已稳定、合理（无需再拆分/合并或重划）？            | 执行「分解审视」；根据其结果回到 [Phase 01](phases/01-overview.md) 或 [Phase 02](phases/02-modules.md) | 继续 Q2c                                                               |
 | Q2c  | 是否已对高复杂度模块完成验证？                                     | 检查 Q3 后执行验证（见下方说明）                                                                                                         | 继续 Q3                                                                |
-| Q3   | 构建与测试是否已文档化且可执行？                                   | 执行 [Phase 03: 编译与测试体系](1-code-cognition/phases/03-build-and-tests.md)                                                           | 进入 [Phase 04: 报告产出与引用](1-code-cognition/phases/04-reports.md) |
+| Q3   | 构建与测试是否已文档化且可执行？                                   | 执行 [Phase 03: 编译与测试体系](phases/03-build-and-tests.md)                                                           | 进入 [Phase 04: 报告产出与引用](phases/04-reports.md) |
 
 **决策规则**：从 Q1 开始，遇到第一个「否」即进入对应阶段；全部为「是」则进入 Phase 04 做报告汇总与引用检查，或视为分析已完成。Phase 02 完成后须先做分解审视，通过或已收敛才进入 Q2c 验证判断。
 
 **Q2c 验证流程说明**：
 
 - 若 Q2c 为「否」（需要验证），先检查 Q3
-- 若 Q3 也为「否」（构建未就绪），先执行 [Phase 03](1-code-cognition/phases/03-build-and-tests.md)，完成后返回执行验证
-- 若 Q3 为「是」（构建已就绪），直接执行 [Skill 02 Task 2.5](1-code-cognition/skills/skill-02-modules.md) 进行模块验证
+- 若 Q3 也为「否」（构建未就绪），先执行 [Phase 03](phases/03-build-and-tests.md)，完成后返回执行验证
+- 若 Q3 为「是」（构建已就绪），直接执行 [Skill 02 Task 2.5](skills/skill-02-modules.md) 进行模块验证
 - 验证完成后继续 Q3
 
 ---
@@ -62,7 +62,7 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 
 ### Q2b: 如何判断「模块划分已稳定」？
 
-依据 [分解审视约定](1-code-cognition/definitions/decomposition_review.md) 中的审视结论：
+依据 [分解审视约定](definitions/decomposition_review.md) 中的审视结论：
 
 - [ ] 已执行分解审视（Phase 02 完成后或 Skill 02 Task 5）
 - [ ] 审视结论为「通过」，或「本轮变更列表」为空，或已达成收敛条件（如迭代轮数达到建议上限 2–3）
@@ -83,13 +83,13 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 **任一不满足** → 需执行验证：
 
 1. 先检查 Q3（构建与测试是否已文档化）
-2. 若 Q3 为「否」，先执行 [Phase 03](1-code-cognition/phases/03-build-and-tests.md)
-3. 构建就绪后，执行 [Skill 02 Task 2.5](1-code-cognition/skills/skill-02-modules.md) 进行模块验证
+2. 若 Q3 为「否」，先执行 [Phase 03](phases/03-build-and-tests.md)
+3. 构建就绪后，执行 [Skill 02 Task 2.5](skills/skill-02-modules.md) 进行模块验证
 4. 验证完成后返回继续 Q3
 
 **注意**：若无「高」或「极高」复杂度模块，则 Q2c 直接为「是」，跳过验证步骤。
 
-验证等级详见 [验证等级定义](1-code-cognition/definitions/validation_levels.md)。
+验证等级详见 [验证等级定义](definitions/validation_levels.md)。
 
 ### Q3: 如何判断「构建与测试已文档化且可执行」？
 
@@ -114,19 +114,19 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 
 | 文档                                                                   | 用途                                                           | 何时阅读                                           |
 | ---------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------- |
-| [复杂度等级](1-code-cognition/definitions/complexity_levels.md)        | 模块复杂度评级（低/中/高/极高）及判定维度                      | 进行模块复杂度评级时                               |
-| [验证等级](1-code-cognition/definitions/validation_levels.md)          | 模块验证等级（L0–L3）及触发条件、执行步骤                      | 对高复杂度模块进行验证时（Q2c、Skill 02 Task 2.5） |
-| [产出路径与报告结构](1-code-cognition/definitions/output_structure.md) | 产出路径、总体/模块报告必须章节、引用格式、下游 Agent 使用约定 | Phase 04 或撰写/检查报告时；后续工作流按需引用时   |
-| [分解审视约定](1-code-cognition/definitions/decomposition_review.md)   | 审视维度、结论、回退规则、收敛条件                             | Phase 02 完成后、Skill 02 Task 5 执行时            |
+| [复杂度等级](definitions/complexity_levels.md)        | 模块复杂度评级（低/中/高/极高）及判定维度                      | 进行模块复杂度评级时                               |
+| [验证等级](definitions/validation_levels.md)          | 模块验证等级（L0–L3）及触发条件、执行步骤                      | 对高复杂度模块进行验证时（Q2c、Skill 02 Task 2.5） |
+| [产出路径与报告结构](definitions/output_structure.md) | 产出路径、总体/模块报告必须章节、引用格式、下游 Agent 使用约定 | Phase 04 或撰写/检查报告时；后续工作流按需引用时   |
+| [分解审视约定](definitions/decomposition_review.md)   | 审视维度、结论、回退规则、收敛条件                             | Phase 02 完成后、Skill 02 Task 5 执行时            |
 
 ### 阶段文档（按序或按决策树进入）
 
 | 阶段     | 文档                                                            | 说明                                                                                                                                                              |
 | -------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Phase 01 | [工程概览与主流程](1-code-cognition/phases/01-overview.md)      | Q1 为「否」时执行                                                                                                                                                 |
-| Phase 02 | [模块与依赖分析](1-code-cognition/phases/02-modules.md)         | Q2 为「否」时执行；完成后须执行「分解审视」，依据 [decomposition_review](1-code-cognition/definitions/decomposition_review.md)；若未通过则回 Phase 01 或 Phase 02 |
-| Phase 03 | [编译与测试体系](1-code-cognition/phases/03-build-and-tests.md) | Q3 为「否」时执行                                                                                                                                                 |
-| Phase 04 | [报告产出与引用](1-code-cognition/phases/04-reports.md)         | Q1–Q2b–Q3 全「是」或 01–03 完成后执行                                                                                                                             |
+| Phase 01 | [工程概览与主流程](phases/01-overview.md)      | Q1 为「否」时执行                                                                                                                                                 |
+| Phase 02 | [模块与依赖分析](phases/02-modules.md)         | Q2 为「否」时执行；完成后须执行「分解审视」，依据 [decomposition_review](definitions/decomposition_review.md)；若未通过则回 Phase 01 或 Phase 02 |
+| Phase 03 | [编译与测试体系](phases/03-build-and-tests.md) | Q3 为「否」时执行                                                                                                                                                 |
+| Phase 04 | [报告产出与引用](phases/04-reports.md)         | Q1–Q2b–Q3 全「是」或 01–03 完成后执行                                                                                                                             |
 
 ### 技能文档（按需加载）
 
@@ -134,30 +134,25 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 
 | Skill                                                       | 名称                                       | 触发条件                                |
 | ----------------------------------------------------------- | ------------------------------------------ | --------------------------------------- |
-| [Skill 01](1-code-cognition/skills/skill-01-overview.md)    | 工程概览与主流程（含文档收集）             | Phase 01 指示                           |
-| [Skill 02](1-code-cognition/skills/skill-02-modules.md)     | 模块与依赖分析（含复杂度、使用示例、验证） | Phase 02 指示，或 Q2c 验证触发          |
-| [Skill 03](1-code-cognition/skills/skill-03-build-tests.md) | 构建与测试体系                             | Phase 03 指示，或验证前置需要时提前执行 |
-| [Skill 04](1-code-cognition/skills/skill-04-reports.md)     | 报告产出与引用                             | Phase 04 指示                           |
+| [Skill 01](skills/skill-01-overview.md)    | 工程概览与主流程（含文档收集）             | Phase 01 指示                           |
+| [Skill 02](skills/skill-02-modules.md)     | 模块与依赖分析（含复杂度、使用示例、验证） | Phase 02 指示，或 Q2c 验证触发          |
+| [Skill 03](skills/skill-03-build-tests.md) | 构建与测试体系                             | Phase 03 指示，或验证前置需要时提前执行 |
+| [Skill 04](skills/skill-04-reports.md)     | 报告产出与引用                             | Phase 04 指示                           |
 
 ### 模板文档
 
 | 模板                                                         | 用途                                |
 | ------------------------------------------------------------ | ----------------------------------- |
-| [总体报告模板](1-code-cognition/templates/overall-report.md) | 生成或更新 overall_report.md        |
-| [模块报告模板](1-code-cognition/templates/module-report.md)  | 生成或更新 modules/<module_name>.md |
+| [总体报告模板](templates/overall-report.md) | 生成或更新 overall_report.md        |
+| [模块报告模板](templates/module-report.md)  | 生成或更新 modules/<module_name>.md |
 
 ---
 
 ## 执行原则
 
-1. **最小上下文原则**：仅加载当前步骤需要的文档；总体报告仅列模块链接，不内嵌模块全文，便于按需加载单份模块报告。
-2. **验收驱动**：每个 Phase 与 Skill 执行完必须验证验收标准。
-3. **状态持久化**：产出统一放在 `docs/codearch/`，路径与结构见 [output_structure](1-code-cognition/definitions/output_structure.md)，便于中断后恢复。
-4. **按决策树进入**：从 Q1 开始，首个「否」进入对应 Phase，避免跳过或重复执行。
-5. **迭代与收敛**：Phase 02 完成后先做分解审视，通过才进入 Q2c 验证；不通过则按 [分解审视约定](1-code-cognition/definitions/decomposition_review.md) 回退规则重做并记录本轮变更，直至通过或达成收敛条件。
-6. **文档优先**：优先利用项目已有文档（README、测试、示例）作为信息来源，文档内容优先于代码推断。
-7. **深度验证**：对高复杂度模块（「高」或「极高」）通过运行测试进行验证，确保理解正确；验证需要构建环境时可提前执行 Phase 03。
-8. **来源标注**：使用示例需标注来源（文件路径或「Agent 编写」），便于追溯和验证。
+通用原则见 [通用执行原则](../definitions/execution_principles.md)。本阶段补充：
+
+- **迭代与收敛**：Phase 02 完成后先做分解审视，通过才进入 Q2c 验证；不通过则按 [分解审视约定](definitions/decomposition_review.md) 回退规则重做并记录本轮变更，直至通过或达成收敛条件。
 
 ---
 

@@ -6,7 +6,7 @@
 
 ## 上游任务列表约定（阶段二）
 
-阶段三消费的任务列表来自 [2-risk-assessment](2-risk-assessment/Workflow.md)，结构见 [task_output_structure 下游使用约定](2-risk-assessment/definitions/task_output_structure.md)：
+阶段三消费的任务列表来自 [2-risk-assessment](../../2-risk-assessment/Workflow.md)，结构见 [task_output_structure 下游使用约定](../../2-risk-assessment/definitions/task_output_structure.md)：
 
 - **定位代码**：根据「位置」字段打开对应文件与行范围。
 - **理解上下文**：根据「关联模块」加载 `docs/codearch/modules/<module_name>.md`。
@@ -71,4 +71,4 @@ grep -q "测试归档状态\|已集成\|已删除\|保留" docs/remediation/reme
 
 ---
 
-**下一步**：返回 [Skill 03](3-bug-remediation/skills/skill-03-regression.md) 或 [Phase 03](3-bug-remediation/phases/03-regression.md)，按此结构生成或检查 remediation_log；或由 Phase 01/02 参考本约定落位测试与补丁。
+**下一步**：返回 [Skill 03](../skills/skill-03-regression.md) 或 [Phase 03](../phases/03-regression.md)，按此结构生成或检查 remediation_log；或由 Phase 01/02 参考本约定落位测试与补丁。

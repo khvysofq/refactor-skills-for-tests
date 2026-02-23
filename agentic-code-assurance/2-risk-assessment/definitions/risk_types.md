@@ -39,4 +39,4 @@
 
 ---
 
-**下一步**：返回调用此文档的 [Skill 01](2-risk-assessment/skills/skill-01-scope.md)、[Skill 02](2-risk-assessment/skills/skill-02-review.md) 或 [Phase 02](2-risk-assessment/phases/02-review.md)，完成范围设定或任务条目撰写。
+**下一步**：返回调用此文档的 [Skill 01](../skills/skill-01-scope.md)、[Skill 02](../skills/skill-02-review.md) 或 [Phase 02](../phases/02-review.md)，完成范围设定或任务条目撰写。

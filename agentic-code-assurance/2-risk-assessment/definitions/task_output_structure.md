@@ -23,9 +23,9 @@
 |------|------|
 | **位置** | 文件路径与行号或范围（如 `src/foo.cpp:42` 或 `src/bar.cpp:10-25`），供阶段三定位代码 |
 | **简要描述** | 一句话描述疑似问题（如「缓冲区可能未校验长度」） |
-| **风险类型** | 取值见 [risk_types](2-risk-assessment/definitions/risk_types.md)：内存管理、并发竞态、I/O 与外部输入、错误处理等 |
+| **风险类型** | 取值见 [risk_types](risk_types.md)：内存管理、并发竞态、I/O 与外部输入、错误处理等 |
 | **关联模块** | 对应 `docs/codearch/modules/` 的模块名（与 overall_report 模块列表一致），便于按需加载模块报告 |
-| **审查模式** | 对应 [审查模式定义](2-risk-assessment/definitions/review_patterns.md) 中的模式编号（如 M-1、C-2、IO-1），标注发现此问题时使用的审查模式 |
+| **审查模式** | 对应 [审查模式定义](review_patterns.md) 中的模式编号（如 M-1、C-2、IO-1），标注发现此问题时使用的审查模式 |
 | **推理依据** | Agent 得出此结论的推理路径。须包含：追踪的起点、经过的路径、在哪一步发现问题。例：「malloc at L147，追踪函数 X 的 4 条退出路径，经 L155 的 early return 路径无对应 free」 |
 | **已排除的保护机制** | Agent 已检查但认为不足以保护的现有机制。例：「检查了 L160 的 NULL 判断，但该判断仅覆盖正常路径，不覆盖 L155 的 early return」。防止阶段三重复检查已排除的内容 |
 | **需验证的前提假设** | 本条结论依赖的前提假设，供阶段三针对性验证。例：「假设 L155 的 early return 在运行时可达（需验证触发条件）」 |
@@ -78,4 +78,4 @@ grep -c "\.cpp:\|\.c:\|\.h:" docs/risk_tasks/task_list.md
 
 ---
 
-**下一步**：返回 [Skill 03](2-risk-assessment/skills/skill-03-summary.md) 或 [Phase 03](2-risk-assessment/phases/03-summary.md)，按此结构生成或检查任务列表；或由 [3-bug-remediation](3-bug-remediation/Workflow.md) 按下游使用约定消费本产出。
+**下一步**：返回 [Skill 03](../skills/skill-03-summary.md) 或 [Phase 03](../phases/03-summary.md)，按此结构生成或检查任务列表；或由 [3-bug-remediation](../../3-bug-remediation/Workflow.md) 按下游使用约定消费本产出。

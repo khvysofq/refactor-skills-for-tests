@@ -8,8 +8,8 @@
 ## 输入
 
 - Phase 02 产出的任务条目（可能分布在 `docs/risk_tasks/task_list.md` 初稿或临时文件）
-- [任务列表产出结构约定](2-risk-assessment/definitions/task_output_structure.md)
-- [任务列表模板](2-risk-assessment/templates/task_list.md)
+- [任务列表产出结构约定](../definitions/task_output_structure.md)
+- [任务列表模板](../templates/task_list.md)
 
 ---
 
@@ -35,24 +35,24 @@
 
 1. 检查每条条目是否含**必填字段**：位置、简要描述、风险类型、关联模块。
 2. 缺失则补全；可选字段（置信度、建议验证方式、复现思路）可酌情补充。
-3. 风险类型取值须与 [risk_types](2-risk-assessment/definitions/risk_types.md) 一致。
+3. 风险类型取值须与 [risk_types](../definitions/risk_types.md) 一致。
 
 ### 任务 3: 按模板写出
 
-1. 使用 [任务列表模板](2-risk-assessment/templates/task_list.md) 作为结构参考。
+1. 使用 [任务列表模板](../templates/task_list.md) 作为结构参考。
 2. 将最终列表写入 `docs/risk_tasks/task_list.md`（相对仓库根）。
 3. 可选：在头部保留或补充「分析范围」摘要（与 scope.md 或 Phase 01 产出一致）。
 
 ### 任务 4: 验收检查
 
-1. 执行 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 中的验收检查命令（文件存在、必填标题/字段存在）。
+1. 执行 [task_output_structure](../definitions/task_output_structure.md) 中的验收检查命令（文件存在、必填标题/字段存在）。
 2. 确认通过后返回 Phase 03 做阶段验收。
 
 ---
 
 ## 验收
 
-与 [Phase 03](2-risk-assessment/phases/03-summary.md) 阶段验收标准一致：task_list.md 存在、每条含必填字段、definitions 中的验收命令通过。
+与 [Phase 03](../phases/03-summary.md) 阶段验收标准一致：task_list.md 存在、每条含必填字段、definitions 中的验收命令通过。
 
 ---
 
@@ -60,15 +60,15 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 返回 [Phase 03](2-risk-assessment/phases/03-summary.md) 完成阶段验收；阶段二完成，可进入 [3-bug-remediation](3-bug-remediation/Workflow.md) |
+| 通过 | 返回 [Phase 03](../phases/03-summary.md) 完成阶段验收；阶段二完成，可进入 [3-bug-remediation](../../3-bug-remediation/Workflow.md) |
 | 未通过 | 补全字段与结构后重新验收 |
 
 ---
 
 ## 反馈
 
-若在汇总时发现此前审查所依赖的工程理解文档（overall_report 或某模块报告）有误，仍按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 更新 `docs/codearch/` 下相应内容，并可选在 `docs/codearch/knowledge_base_changelog.md` 记录。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**完成后**：返回 [Phase 03](2-risk-assessment/phases/03-summary.md) 进行阶段验收
+**完成后**：返回 [Phase 03](../phases/03-summary.md) 进行阶段验收

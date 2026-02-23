@@ -1,22 +1,22 @@
 # Phase 02: 实施修复
 
-> **前置条件**：Phase 01 已产出验证结果，至少存在「已确认」任务；从 [Workflow.md](3-bug-remediation/Workflow.md) 决策树 Q2 为「否」进入。  
+> **前置条件**：Phase 01 已产出验证结果，至少存在「已确认」任务；从 [Workflow.md](../Workflow.md) 决策树 Q2 为「否」进入。  
 > **目标**：对「已确认」任务实施修复，产出源码变更与可选补丁/测试。
 
 ---
 
 ## 进入条件
 
-- 从 [Workflow.md](3-bug-remediation/Workflow.md) 决策树判断 Q2 为「否」（尚未对已确认任务完成修复）
+- 从 [Workflow.md](../Workflow.md) 决策树判断 Q2 为「否」（尚未对已确认任务完成修复）
 - Phase 01 已产出验证结果，且至少有一条「已确认」
 
 ---
 
 ## 执行指令
 
-**加载 Skill**：阅读并执行 → [Skill 02: 实施修复](3-bug-remediation/skills/skill-02-fix.md)
+**加载 Skill**：阅读并执行 → [Skill 02: 实施修复](../skills/skill-02-fix.md)
 
-**按需查阅**：补丁与测试落位时阅读 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)
+**按需查阅**：补丁与测试落位时阅读 [remediation_output_structure](../definitions/remediation_output_structure.md)
 
 ---
 
@@ -53,15 +53,15 @@ grep -q "修复\|PASS\|修复后" docs/remediation/remediation_log.md 2>/dev/nul
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 回到 [Workflow.md](3-bug-remediation/Workflow.md) 决策树：若 Q3 为「否」则进入 [Phase 03: 回归与产出](03-regression.md)；若 Q3 为「是」则阶段三完成 |
+| 通过 | 回到 [Workflow.md](../Workflow.md) 决策树：若 Q3 为「否」则进入 [Phase 03: 回归与产出](03-regression.md)；若 Q3 为「是」则阶段三完成 |
 | 未通过 | 返回 Skill 02 补全修复后重新验收 |
 
 ---
 
 ## 反馈
 
-修复过程中若发现**工程理解文档**与代码有误，应按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 更新 `docs/codearch/` 并可选记录；若发现**模块边界划分不合理**，须参见 [1-code-cognition 分解审视约定](1-code-cognition/definitions/decomposition_review.md)，必要时回阶段一。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**执行**：立即加载 [Skill 02](3-bug-remediation/skills/skill-02-fix.md) 开始执行
+**执行**：立即加载 [Skill 02](../skills/skill-02-fix.md) 开始执行

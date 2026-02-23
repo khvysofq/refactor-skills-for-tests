@@ -33,7 +33,7 @@
 ### 任务 2: 选择分析范围
 
 1. 根据模块列表中的**复杂度**与**技术特征**，选择本轮回析的模块（可全量或子集，建议优先高复杂度或高风险特征模块）。
-2. 根据 [风险类型定义](2-risk-assessment/definitions/risk_types.md) 确定本轮回析的**风险维度**（如：内存管理、I/O 与外部输入）及优先级。
+2. 根据 [风险类型定义](../definitions/risk_types.md) 确定本轮回析的**风险维度**（如：内存管理、I/O 与外部输入）及优先级。
 3. 将选定模块列表与风险维度/优先级写入 `docs/risk_tasks/scope.md`（或按约定写在 task_list.md 头部）。
 
 ### 任务 3: 验收自检
@@ -45,7 +45,7 @@
 
 ## 验收
 
-与 [Phase 01](2-risk-assessment/phases/01-scope.md) 阶段验收标准一致：分析范围产出存在、含选定模块与风险维度、可执行检查通过。
+与 [Phase 01](../phases/01-scope.md) 阶段验收标准一致：分析范围产出存在、含选定模块与风险维度、可执行检查通过。
 
 ---
 
@@ -53,15 +53,15 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 返回 [Phase 01](2-risk-assessment/phases/01-scope.md) 完成阶段验收，然后根据入口决策进入 Phase 02 或继续 Q2 |
+| 通过 | 返回 [Phase 01](../phases/01-scope.md) 完成阶段验收，然后根据入口决策进入 Phase 02 或继续 Q2 |
 | 未通过 | 补全分析范围内容后重新验收 |
 
 ---
 
 ## 反馈
 
-若发现 `docs/codearch/overall_report.md` 与代码严重不符（如模块列表缺失或错误、技术特征概览明显偏差），应按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 更新知识库或记录反馈；若需调整**模块边界**，须参见 [1-code-cognition 分解审视约定](1-code-cognition/definitions/decomposition_review.md)，必要时先回阶段一执行审视或重跑后再继续本阶段。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**完成后**：返回 [Phase 01](2-risk-assessment/phases/01-scope.md) 进行阶段验收
+**完成后**：返回 [Phase 01](../phases/01-scope.md) 进行阶段验收

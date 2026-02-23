@@ -18,7 +18,7 @@
 | -------------------- | --------------------------------- | ---- |
 | 总体报告（概览部分） | `docs/codearch/overall_report.md` | ✓    |
 
-撰写时遵循 [产出结构约定](1-code-cognition/definitions/output_structure.md)。可先只写「工程概览」章节，模块列表与构建/测试摘要由后续 Phase 补充。
+撰写时遵循 [产出结构约定](../definitions/output_structure.md)。可先只写「工程概览」章节，模块列表与构建/测试摘要由后续 Phase 补充。
 
 ---
 
@@ -240,7 +240,7 @@ grep -q "信息来源" docs/codearch/overall_report.md && echo "PASS" || echo "F
 
 | 验收结果 | 下一步                                                                                                     |
 | -------- | ---------------------------------------------------------------------------------------------------------- |
-| 通过     | 返回 [Phase 01](1-code-cognition/phases/01-overview.md) 完成阶段验收，然后根据入口决策进入 Phase 02 或结束 |
+| 通过     | 返回 [Phase 01](../phases/01-overview.md) 完成阶段验收，然后根据入口决策进入 Phase 02 或结束 |
 | 未通过   | 补全缺失章节后重新验收                                                                                     |
 
 ---
@@ -255,4 +255,4 @@ grep -q "信息来源" docs/codearch/overall_report.md && echo "PASS" || echo "F
 
 ---
 
-**完成后**：返回 [Phase 01](1-code-cognition/phases/01-overview.md) 进行阶段验收
+**完成后**：返回 [Phase 01](../phases/01-overview.md) 进行阶段验收

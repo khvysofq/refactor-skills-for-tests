@@ -2,6 +2,8 @@
 
 > **读取指令**：本文档是 Agent（如 OpenCode、ClaudeCode）执行自动化 BUG 分析的总入口。先阅读本文档以理解整条流水线、各阶段输入输出与反馈机制，再根据当前目标进入对应子目录的 Workflow.md。
 
+> **路径约定**：本工作流所有文档中的链接路径均以 `agentic-code-assurance/` 目录为根基准。例如 `1-code-cognition/Workflow.md` 指向 `agentic-code-assurance/1-code-cognition/Workflow.md`。同一子目录内的引用使用相对路径（如 `../skills/skill-01-overview.md`）；跨子目录的引用从本目录根开始（如 `1-code-cognition/definitions/decomposition_review.md`）。
+
 ---
 
 ## 一、总览与阅读顺序
@@ -77,21 +79,7 @@ flowchart LR
 
 ## 四、反馈机制（如何更新阶段一）
 
-阶段二或阶段三执行过程中，若发现**工程理解文档与代码不一致或遗漏**，应触发反馈，更新知识库以保持与代码一致。
-
-### 操作约定
-
-| 发现类型                | 更新方式                                                                                                                                                                                       |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 模块职责/边界描述不准确 | 直接更新 `docs/codearch/modules/<module_name>.md` 的职责描述、边界等对应章节。                                                                                                                 |
-| 遗漏外部依赖或代码特征  | 补充该模块报告中的「依赖」「代码特征」等章节。                                                                                                                                                 |
-| 模块边界划分不合理      | 在 1-code-cognition 中触发「分解审视」，并视结果重跑 Phase 01 或 Phase 02。详见 [1-code-cognition/definitions/decomposition_review.md](1-code-cognition/definitions/decomposition_review.md)。 |
-
-**操作顺序**：反馈时 1）直接编辑 `docs/codearch/modules/<module_name>.md` 的对应章节（或 overall_report 的相应部分）；2）可选在 `docs/codearch/knowledge_base_changelog.md` 中追加一条，记录反馈类型与修改摘要。
-
-### 记录建议
-
-可在 `docs/codearch/` 下使用可选文件（如 `knowledge_base_changelog.md`）记录反馈类型与修改摘要，便于审计。格式不强制，由后续工作流或人工约定。
+阶段二或阶段三执行过程中，若发现工程理解文档与代码不一致或遗漏，应触发反馈更新知识库。完整的操作约定、操作顺序与记录建议见 [反馈操作约定](definitions/feedback_protocol.md)。
 
 ---
 

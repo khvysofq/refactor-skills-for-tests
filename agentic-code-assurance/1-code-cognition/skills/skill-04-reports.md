@@ -8,7 +8,7 @@
 ## 输入
 
 - Phase 01–03 的产出：概览内容、模块报告目录、构建与测试文档
-- [产出路径与报告结构约定](1-code-cognition/definitions/output_structure.md)
+- [产出路径与报告结构约定](../definitions/output_structure.md)
 
 ---
 
@@ -26,7 +26,7 @@
 
 ### 任务 1: 汇总总体报告
 
-**目标**：生成或更新 `docs/codearch/overall_report.md`，使其符合 [output_structure](1-code-cognition/definitions/output_structure.md) 中「总体报告必须包含的章节」
+**目标**：生成或更新 `docs/codearch/overall_report.md`，使其符合 [output_structure](../definitions/output_structure.md) 中「总体报告必须包含的章节」
 
 **步骤**：
 
@@ -35,7 +35,7 @@
 3. 增加「构建与测试摘要」：简要说明或链接到 `build_and_tests.md`
 4. 可选：增加「后续分析建议」
 
-使用 [总体报告模板](1-code-cognition/templates/overall-report.md) 作为结构参考。
+使用 [总体报告模板](../templates/overall-report.md) 作为结构参考。
 
 ### 任务 2: 校验引用与路径
 
@@ -68,7 +68,7 @@ done
 1. 随机或按优先级选 2–5 份模块报告
 2. 确认每份含：职责描述、边界（输入/输出）、依赖、复杂度评级、关键设计要点
 3. 缺项则退回 Phase 02 / Skill 02 补充
-4. **可选**：检查总体报告中主流程、输入输出与当前模块列表是否一致；若明显不一致，建议回到 [Phase 01](1-code-cognition/phases/01-overview.md) 做小幅更新并注明
+4. **可选**：检查总体报告中主流程、输入输出与当前模块列表是否一致；若明显不一致，建议回到 [Phase 01](../phases/01-overview.md) 做小幅更新并注明
 
 ---
 
@@ -94,7 +94,7 @@ grep -q "modules/.*\.md" docs/codearch/overall_report.md && echo "PASS" || echo 
 
 ## 应该做
 
-- 严格按 [output_structure](1-code-cognition/definitions/output_structure.md) 检查章节与路径
+- 严格按 [output_structure](../definitions/output_structure.md) 检查章节与路径
 - 链接使用相对路径，便于不同环境打开
 
 ## 不应该做

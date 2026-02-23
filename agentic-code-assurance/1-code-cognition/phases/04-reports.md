@@ -1,6 +1,6 @@
 # Phase 04: 报告产出与引用
 
-> **前置条件**：Phase 01–03 均已验收通过（含 Phase 02 分解审视通过或已收敛），或从 [Workflow.md](1-code-cognition/Workflow.md) 入口决策树 Q1–Q2b–Q3 全部「是」后做收尾  
+> **前置条件**：Phase 01–03 均已验收通过（含 Phase 02 分解审视通过或已收敛），或从 [Workflow.md](../Workflow.md) 入口决策树 Q1–Q2b–Q3 全部「是」后做收尾  
 > **目标**：汇总总体报告、确认模块报告引用正确，便于后续 Agent 按需加载
 
 ---
@@ -8,14 +8,14 @@
 ## 进入条件
 
 - Phase 01、02、03 均已验收通过
-- 或从 [Workflow.md](1-code-cognition/Workflow.md) 决策树判断 Q1–Q2b–Q3 全部为「是」，需做一次报告汇总与引用检查
+- 或从 [Workflow.md](../Workflow.md) 决策树判断 Q1–Q2b–Q3 全部为「是」，需做一次报告汇总与引用检查
 
 ---
 
 ## 执行指令
 
-**加载 Skill**：阅读并执行 → [Skill 04: 报告产出与引用](1-code-cognition/skills/skill-04-reports.md)  
-**按需查阅**：撰写或检查报告时阅读 [产出路径与报告结构约定](1-code-cognition/definitions/output_structure.md)
+**加载 Skill**：阅读并执行 → [Skill 04: 报告产出与引用](../skills/skill-04-reports.md)  
+**按需查阅**：撰写或检查报告时阅读 [产出路径与报告结构约定](../definitions/output_structure.md)
 
 ---
 
@@ -77,4 +77,4 @@
 
 ---
 
-**执行**：立即加载 [Skill 04](1-code-cognition/skills/skill-04-reports.md) 开始执行
+**执行**：立即加载 [Skill 04](../skills/skill-04-reports.md) 开始执行

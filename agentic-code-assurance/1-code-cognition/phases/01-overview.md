@@ -1,20 +1,20 @@
 # Phase 01: 工程概览与主流程
 
-> **前置条件**：无（或从 [Workflow.md](1-code-cognition/Workflow.md) 决策树 Q1 为「否」进入）  
+> **前置条件**：无（或从 [Workflow.md](../Workflow.md) 决策树 Q1 为「否」进入）  
 > **目标**：形成工程目标、输入/输出、主流程的概览，并写入总体报告
 
 ---
 
 ## 进入条件
 
-- 从 [Workflow.md](1-code-cognition/Workflow.md) 入口决策树判断 Q1 为「否」（总体报告不存在或不满足约定结构）
+- 从 [Workflow.md](../Workflow.md) 入口决策树判断 Q1 为「否」（总体报告不存在或不满足约定结构）
 - 或需补齐总体报告中的「工程概览」部分
 
 ---
 
 ## 执行指令
 
-**加载 Skill**：阅读并执行 → [Skill 01: 工程概览与主流程](1-code-cognition/skills/skill-01-overview.md)
+**加载 Skill**：阅读并执行 → [Skill 01: 工程概览与主流程](../skills/skill-01-overview.md)
 
 ---
 
@@ -68,7 +68,7 @@
 
 | 验收结果 | 下一步                                                                                                                              |
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 通过     | 回到 [Workflow.md](1-code-cognition/Workflow.md) 决策树：若 Q2 为「否」则进入 [Phase 02: 模块与依赖分析](02-modules.md)；若 Q2 为「是」则继续 Q2b |
+| 通过     | 回到 [Workflow.md](../Workflow.md) 决策树：若 Q2 为「否」则进入 [Phase 02: 模块与依赖分析](02-modules.md)；若 Q2 为「是」则继续 Q2b |
 | 未通过   | 返回 Skill 01 补全内容后重新验收                                                                                                    |
 
 若从分解审视回退到此阶段：在此更新概览（工程目标、输入输出、主流程）后，重新进入 [Phase 02](02-modules.md)。
@@ -85,4 +85,4 @@
 
 ---
 
-**执行**：立即加载 [Skill 01](1-code-cognition/skills/skill-01-overview.md) 开始执行
+**执行**：立即加载 [Skill 01](../skills/skill-01-overview.md) 开始执行

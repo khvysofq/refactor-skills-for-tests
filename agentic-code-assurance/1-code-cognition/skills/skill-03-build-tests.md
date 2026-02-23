@@ -181,7 +181,7 @@ grep -q "编译\|构建\|build\|cmake\|make" docs/codearch/build_and_tests.md &&
 
 | 验收结果 | 下一步                                                                                                |
 | -------- | ----------------------------------------------------------------------------------------------------- |
-| 通过     | 返回 [Phase 03](1-code-cognition/phases/03-build-and-tests.md) 完成阶段验收，然后进入 Phase 04 或结束 |
+| 通过     | 返回 [Phase 03](../phases/03-build-and-tests.md) 完成阶段验收，然后进入 Phase 04 或结束 |
 | 未通过   | 补全文档并重新验收                                                                                    |
 | 环境未就绪 | **中止整个工作流**。输出环境问题说明，提示使用者配置编译环境与测试体系后重新执行                     |
 
@@ -197,4 +197,4 @@ grep -q "编译\|构建\|build\|cmake\|make" docs/codearch/build_and_tests.md &&
 
 ---
 
-**完成后**：返回 [Phase 03](1-code-cognition/phases/03-build-and-tests.md) 进行阶段验收
+**完成后**：返回 [Phase 03](../phases/03-build-and-tests.md) 进行阶段验收

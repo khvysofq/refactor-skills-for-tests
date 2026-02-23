@@ -20,7 +20,7 @@
 |------|------|------|
 | 疑似 BUG 条目 | `docs/risk_tasks/task_list.md` 或临时文件 | ✓（可由 Phase 03 合并/去重后定稿） |
 
-每条须符合 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md)：位置、简要描述、风险类型、关联模块；可选置信度、建议验证方式、复现思路。
+每条须符合 [task_output_structure](../definitions/task_output_structure.md)：位置、简要描述、风险类型、关联模块；可选置信度、建议验证方式、复现思路。
 
 ---
 
@@ -48,10 +48,10 @@
    - 「生命周期与所有权模型」：验证每个关键对象的所有权语义
    - 「并发不变量」（多线程模块）：以此为基准检查并发安全
 4. **按审查模式执行路径追踪**：
-   - 加载 [审查模式定义](2-risk-assessment/definitions/review_patterns.md)，选择与当前风险维度对应的模式
+   - 加载 [审查模式定义](../definitions/review_patterns.md)，选择与当前风险维度对应的模式
    - 对 L2/L3 深度的模块：沿每条数据流路径，逐步应用审查模式，追踪代码而非仅 grep 关键词
    - 对 L0/L1 深度的模块：按审查模式做关键词扫描，对可疑处做局部路径验证
-5. **记录疑似问题**：每条疑似 BUG 按 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 记录所有必填字段（含推理依据、已排除的保护机制、需验证的前提假设），并标注对应的审查模式编号（如 M-1、C-2）。
+5. **记录疑似问题**：每条疑似 BUG 按 [task_output_structure](../definitions/task_output_structure.md) 记录所有必填字段（含推理依据、已排除的保护机制、需验证的前提假设），并标注对应的审查模式编号（如 M-1、C-2）。
 6. 将条目写入 `docs/risk_tasks/task_list.md`（可追加）或临时文件，供 Phase 03 汇总。
 
 **最小上下文原则**：不要一次性加载全部模块报告；每批只读当前审查模块的报告与对应源码。
@@ -66,7 +66,7 @@
 3. **重点审查「回调跨越模块边界」**的场景：
    - 模块 A 注册回调给模块 B，回调触发时引用的模块 A 对象是否仍存活？
    - 回调在哪个线程上下文中执行？是否与注册时的假设一致？
-4. 将跨模块问题同样按 [task_output_structure](2-risk-assessment/definitions/task_output_structure.md) 记录。
+4. 将跨模块问题同样按 [task_output_structure](../definitions/task_output_structure.md) 记录。
 
 ### 任务 2: 验收自检
 
@@ -79,7 +79,7 @@
 
 ## 验收
 
-与 [Phase 02](2-risk-assessment/phases/02-review.md) 阶段验收标准一致：范围覆盖完整、条目含位置/描述/风险类型/关联模块、符合 task_output_structure。
+与 [Phase 02](../phases/02-review.md) 阶段验收标准一致：范围覆盖完整、条目含位置/描述/风险类型/关联模块、符合 task_output_structure。
 
 ---
 
@@ -87,15 +87,15 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 返回 [Phase 02](2-risk-assessment/phases/02-review.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或继续 Q3 |
+| 通过 | 返回 [Phase 02](../phases/02-review.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或继续 Q3 |
 | 未通过 | 补全审查与条目后重新验收 |
 
 ---
 
 ## 反馈
 
-审查过程中若发现某模块报告（职责、边界、代码特征、依赖、关键代码位置）与代码不符，应**立即**更新 `docs/codearch/modules/<module_name>.md` 对应章节，并按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 操作；可选在 `docs/codearch/knowledge_base_changelog.md` 记录一条摘要。若发现**模块边界划分不合理**，须按根目录 Workflow 与 [1-code-cognition 分解审视约定](1-code-cognition/definitions/decomposition_review.md) 处理，必要时暂停并先回阶段一执行审视或重跑 Phase 01/02，再继续本 Skill。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**完成后**：返回 [Phase 02](2-risk-assessment/phases/02-review.md) 进行阶段验收
+**完成后**：返回 [Phase 02](../phases/02-review.md) 进行阶段验收

@@ -8,8 +8,8 @@
 ## 输入
 
 - Phase 01 的验证结果、Phase 02 的修复结果（或 remediation_log 初稿）
-- [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)
-- [remediation_log 模板](3-bug-remediation/templates/remediation_log.md)
+- [remediation_output_structure](../definitions/remediation_output_structure.md)
+- [remediation_log 模板](../templates/remediation_log.md)
 - `docs/codearch/build_and_tests.md`（用于运行回归）
 
 ---
@@ -62,12 +62,12 @@
 ### 任务 2: 汇总并定稿 remediation_log
 
 1. 汇总每条任务的完整信息：验证结果、修复摘要、验证测试路径、修复前后测试结果、测试归档状态、修复涉及的文件列表。
-2. 按 [remediation_log 模板](3-bug-remediation/templates/remediation_log.md) 与 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) 定稿 `docs/remediation/remediation_log.md`。
+2. 按 [remediation_log 模板](../templates/remediation_log.md) 与 [remediation_output_structure](../definitions/remediation_output_structure.md) 定稿 `docs/remediation/remediation_log.md`。
 3. 在 log 头部注明：本轮回溯范围、完成日期、最终回归测试结果、已修复/未复现/暂缓的数量汇总。
 
 ### 任务 3: 验收检查
 
-1. 执行 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) 中的验收检查命令。
+1. 执行 [remediation_output_structure](../definitions/remediation_output_structure.md) 中的验收检查命令。
 2. 确认 `test/verification/` 目录已清空。
 3. 确认已集成的测试在正式测试套件中可正常运行。
 4. 确认通过后返回 Phase 03 做阶段验收。
@@ -76,7 +76,7 @@
 
 ## 验收
 
-与 [Phase 03](3-bug-remediation/phases/03-regression.md) 阶段验收标准一致：remediation_log 存在、每条任务有验证结果与（若已修复）修复摘要、验收命令通过。
+与 [Phase 03](../phases/03-regression.md) 阶段验收标准一致：remediation_log 存在、每条任务有验证结果与（若已修复）修复摘要、验收命令通过。
 
 ---
 
@@ -84,15 +84,15 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 返回 [Phase 03](3-bug-remediation/phases/03-regression.md) 完成阶段验收；阶段三完成 |
+| 通过 | 返回 [Phase 03](../phases/03-regression.md) 完成阶段验收；阶段三完成 |
 | 未通过 | 补全 log 与回归说明后重新验收 |
 
 ---
 
 ## 反馈
 
-若在汇总时发现此前依赖的**工程理解文档**有误，仍按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 更新 `docs/codearch/` 并可选在 `docs/codearch/knowledge_base_changelog.md` 记录。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**完成后**：返回 [Phase 03](3-bug-remediation/phases/03-regression.md) 进行阶段验收
+**完成后**：返回 [Phase 03](../phases/03-regression.md) 进行阶段验收

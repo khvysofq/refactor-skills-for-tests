@@ -20,7 +20,7 @@
 |------|------|------|
 | 验证结果记录 | `docs/remediation/remediation_log.md` | ✓ |
 
-每条任务须有验证结果：已确认 / 未复现 / 暂缓；须将验证结果写入 `docs/remediation/remediation_log.md`（可随任务逐条追加），与 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md) 约定一致。
+每条任务须有验证结果：已确认 / 未复现 / 暂缓；须将验证结果写入 `docs/remediation/remediation_log.md`（可随任务逐条追加），与 [remediation_output_structure](../definitions/remediation_output_structure.md) 约定一致。
 
 ---
 
@@ -28,7 +28,7 @@
 
 ### 任务 1: 按任务逐条编写验证测试并执行
 
-1. 读取 `docs/risk_tasks/task_list.md`，按 [2-risk-assessment 下游使用约定](2-risk-assessment/definitions/task_output_structure.md) 理解每条任务的完整信息：位置、简要描述、风险类型、关联模块、**推理依据**、**已排除的保护机制**、**需验证的前提假设**、建议验证方式、复现思路。
+1. 读取 `docs/risk_tasks/task_list.md`，按 [2-risk-assessment 下游使用约定](../../2-risk-assessment/definitions/task_output_structure.md) 理解每条任务的完整信息：位置、简要描述、风险类型、关联模块、**推理依据**、**已排除的保护机制**、**需验证的前提假设**、建议验证方式、复现思路。
 2. 读取 `docs/codearch/build_and_tests.md`，了解工程的测试框架、测试目录结构、命名约定和运行方式。
 3. **每条任务**（最小上下文：单次仅加载当前任务相关模块报告）：
    - 根据「位置」打开对应文件与行范围；
@@ -45,7 +45,7 @@
        - 测试触发了 BUG（崩溃、错误输出、内存错误等）→ **已确认**
        - 测试运行正常，BUG 未被触发 → **未复现**
        - 测试因结构性原因无法编写或运行（如需要特定硬件、网络环境等）→ **暂缓**（附说明）
-   - **记录结果**：将验证结果、测试文件路径、测试名称写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](3-bug-remediation/definitions/remediation_output_structure.md)。
+   - **记录结果**：将验证结果、测试文件路径、测试名称写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](../definitions/remediation_output_structure.md)。
 
 ### 任务 2: 验收自检
 
@@ -58,7 +58,7 @@
 
 ## 验收
 
-与 [Phase 01](3-bug-remediation/phases/01-verify.md) 阶段验收标准一致：每条任务有验证结果、记录存在且可检查。
+与 [Phase 01](../phases/01-verify.md) 阶段验收标准一致：每条任务有验证结果、记录存在且可检查。
 
 ---
 
@@ -66,15 +66,15 @@
 
 | 验收结果 | 下一步 |
 |----------|--------|
-| 通过 | 返回 [Phase 01](3-bug-remediation/phases/01-verify.md) 完成阶段验收，然后根据入口决策进入 Phase 02 或继续 Q2 |
+| 通过 | 返回 [Phase 01](../phases/01-verify.md) 完成阶段验收，然后根据入口决策进入 Phase 02 或继续 Q2 |
 | 未通过 | 补全验证与记录后重新验收 |
 
 ---
 
 ## 反馈
 
-验证过程中若发现 **build_and_tests** 或**模块报告**与代码/构建不符，应按 [根目录 Workflow 四、反馈机制](../../Workflow.md) 更新 `docs/codearch/` 并可选在 `docs/codearch/knowledge_base_changelog.md` 记录；若发现**模块边界划分不合理**，须参见 [1-code-cognition 分解审视约定](1-code-cognition/definitions/decomposition_review.md)，必要时暂停并先回阶段一执行审视或重跑后再继续本 Skill。
+执行过程中若发现知识库与代码不一致，按 [反馈操作约定](../../definitions/feedback_protocol.md) 更新。
 
 ---
 
-**完成后**：返回 [Phase 01](3-bug-remediation/phases/01-verify.md) 进行阶段验收
+**完成后**：返回 [Phase 01](../phases/01-verify.md) 进行阶段验收
