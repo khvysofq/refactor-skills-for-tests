@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agentic Workflow Design — Principled Scaffolding for Reliable AI Agents</title>
+  <meta name="description" content="A framework of 9 core design principles for building reliable, deterministic, and scalable agentic workflows. Instantiated through Agentic Code Assurance for C/C++ analysis." />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0a0c10;
+      --bg-card:     #111318;
+      --bg-code:     #0d1117;
+      --border:      #21262d;
+      --border-glow: #30363d;
+      --text:        #e6edf3;
+      --text-muted:  #8b949e;
+      --text-dim:    #484f58;
+      --accent:      #58a6ff;
+      --accent-dim:  #1f6feb;
+      --green:       #3fb950;
+      --orange:      #d29922;
+      --purple:      #bc8cff;
+      --red:         #f85149;
+      --font-mono:   'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      --font-sans:   -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --radius:      8px;
+      --radius-lg:   12px;
+      --max-w:       1100px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── Animated Grid Background ────────────────────────────── */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(88,166,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(88,166,255,.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    }
+
+    /* ─── Layout ────────────────────────────────────────────────── */
+    .container {
+      position: relative; z-index: 1;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 96px 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    /* ─── Nav ───────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,12,16,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: var(--font-mono); font-size: 15px; font-weight: 600;
+      color: var(--text); letter-spacing: -.3px;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--text-muted); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+    .nav-cta {
+      font-size: 13px; font-weight: 600;
+      background: var(--accent); color: #000;
+      padding: 7px 16px; border-radius: 6px;
+      transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; text-decoration: none; }
+
+    /* ─── Hero ──────────────────────────────────────────────────── */
+    #hero { padding: 120px 0 96px; }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      color: var(--green); background: rgba(63,185,80,.1);
+      border: 1px solid rgba(63,185,80,.25);
+      padding: 5px 12px; border-radius: 20px; margin-bottom: 28px;
+    }
+    .hero-badge::before { content: '●'; font-size: 8px; }
+
+    .hero-title {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -1.5px; margin-bottom: 24px;
+    }
+    .hero-title .hl { color: var(--accent); }
+    .hero-title .hl2 { color: var(--purple); }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-muted); max-width: 640px;
+      line-height: 1.65; margin-bottom: 40px;
+    }
+
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 64px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 600;
+      padding: 11px 24px; border-radius: var(--radius);
+      transition: all .2s; cursor: pointer; border: none;
+    }
+    .btn-primary {
+      background: var(--accent); color: #000;
+    }
+    .btn-primary:hover { background: #79b8ff; text-decoration: none; }
+    .btn-secondary {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border-glow);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+    /* Hero terminal */
+    .hero-terminal {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      max-width: 760px;
+    }
+    .terminal-bar {
+      background: #161b22; padding: 10px 16px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .terminal-title { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin-left: 8px; }
+    .terminal-body { padding: 20px 24px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.8; }
+    .t-comment { color: var(--text-dim); }
+    .t-key { color: var(--purple); }
+    .t-val { color: var(--green); }
+    .t-str { color: var(--orange); }
+    .t-cmd { color: var(--accent); }
+    .t-prompt { color: var(--text-dim); user-select: none; }
+    .t-out { color: var(--text-muted); }
+
+    /* ─── Stats ─────────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px;
+      background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; margin-top: 0;
+    }
+    .stat-item {
+      background: var(--bg-card); padding: 32px 28px;
+    }
+    .stat-num {
+      font-size: 36px; font-weight: 800; font-family: var(--font-mono);
+      color: var(--text); letter-spacing: -1px; margin-bottom: 6px;
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-label { font-size: 14px; color: var(--text-muted); }
+
+    /* ─── Section Headers ───────────────────────────────────────── */
+    .section-label {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(26px, 4vw, 40px); font-weight: 800;
+      letter-spacing: -.8px; line-height: 1.2; margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 17px; color: var(--text-muted);
+      max-width: 600px; line-height: 1.65;
+    }
+    .section-header { margin-bottom: 56px; }
+
+    /* ─── Principles Grid ───────────────────────────────────────── */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .principle-card {
+      background: var(--bg-card); padding: 32px 28px;
+      transition: background .2s;
+      position: relative; overflow: hidden;
+      cursor: pointer;
+    }
+    a.principle-card { text-decoration: none; color: inherit; }
+    .principle-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--card-accent, var(--accent));
+      opacity: 0; transition: opacity .2s;
+    }
+    .principle-card:hover { background: #13171e; }
+    .principle-card:hover::before { opacity: 1; }
+
+    .principle-num {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      color: var(--text-dim); letter-spacing: 1px; margin-bottom: 12px;
+    }
+    .principle-icon {
+      font-size: 22px; margin-bottom: 14px; display: block;
+    }
+    .principle-title {
+      font-size: 17px; font-weight: 700; margin-bottom: 10px; color: var(--text);
+    }
+    .principle-desc {
+      font-size: 14px; color: var(--text-muted); line-height: 1.65;
+    }
+    .principle-tag {
+      display: inline-block; margin-top: 14px;
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      padding: 3px 9px; border-radius: 4px;
+      background: var(--tag-bg, rgba(88,166,255,.1));
+      color: var(--tag-color, var(--accent));
+      border: 1px solid var(--tag-border, rgba(88,166,255,.2));
+    }
+
+    /* ─── Architecture Diagram ──────────────────────────────────── */
+    .arch-flow {
+      display: flex; gap: 0; align-items: stretch;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .arch-stage {
+      flex: 1; padding: 36px 28px;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .arch-stage:last-child { border-right: none; }
+    .arch-stage-num {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      letter-spacing: 1px; margin-bottom: 8px;
+    }
+    .arch-stage-title {
+      font-size: 16px; font-weight: 700; margin-bottom: 12px;
+    }
+    .arch-stage-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .arch-stage-output {
+      margin-top: 16px; font-family: var(--font-mono); font-size: 12px;
+      color: var(--green); background: rgba(63,185,80,.08);
+      border: 1px solid rgba(63,185,80,.2);
+      padding: 6px 10px; border-radius: 4px; display: inline-block;
+    }
+    .arch-arrow {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px; color: var(--text-dim); font-size: 20px;
+      flex-shrink: 0; align-self: center;
+    }
+
+    /* ─── Comparison Table ──────────────────────────────────────── */
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 14px; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .compare-table th {
+      background: #161b22; padding: 14px 20px;
+      text-align: left; font-size: 13px; font-weight: 600;
+      color: var(--text-muted); border-bottom: 1px solid var(--border);
+    }
+    .compare-table td {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.55;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table tr:hover td { background: rgba(255,255,255,.02); }
+    .compare-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .compare-table td:nth-child(2) { color: var(--text-muted); }
+    .compare-table td:nth-child(3) { color: var(--text); }
+    .badge-yes { color: var(--green); font-weight: 700; }
+    .badge-partial { color: var(--orange); font-weight: 700; }
+    .badge-no { color: var(--red); font-weight: 700; }
+
+    /* ─── Code Example ──────────────────────────────────────────── */
+    .code-block {
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .code-header {
+      background: #161b22; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .code-filename { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+    .code-lang {
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-dim);
+      background: var(--border); padding: 2px 8px; border-radius: 4px;
+    }
+    .code-body { padding: 24px; font-family: var(--font-mono); font-size: 13px; line-height: 1.8; overflow-x: auto; }
+    .c-comment { color: var(--text-dim); }
+    .c-key { color: var(--purple); }
+    .c-str { color: var(--orange); }
+    .c-head { color: var(--accent); font-weight: 700; }
+    .c-val { color: var(--green); }
+    .c-bold { color: var(--text); font-weight: 700; }
+
+    /* ─── Example Project Card ──────────────────────────────────── */
+    .example-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 36px 40px;
+      display: flex; gap: 40px; align-items: flex-start;
+      transition: border-color .2s;
+    }
+    .example-card:hover { border-color: var(--accent); }
+    .example-icon {
+      width: 56px; height: 56px; border-radius: var(--radius);
+      background: rgba(88,166,255,.1); border: 1px solid rgba(88,166,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .example-body { flex: 1; }
+    .example-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 6px; }
+    .example-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .example-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; margin-bottom: 20px; }
+    .example-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tag {
+      font-family: var(--font-mono); font-size: 12px;
+      padding: 4px 10px; border-radius: 4px;
+      background: var(--bg-code); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .tag.cpp { color: #79b8ff; border-color: rgba(121,184,255,.3); background: rgba(121,184,255,.07); }
+    .tag.agent { color: var(--purple); border-color: rgba(188,140,255,.3); background: rgba(188,140,255,.07); }
+    .tag.security { color: var(--red); border-color: rgba(248,81,73,.3); background: rgba(248,81,73,.07); }
+
+    /* ─── How It Works ──────────────────────────────────────────── */
+    .steps-list { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex; gap: 28px; padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(88,166,255,.1); border: 1px solid rgba(88,166,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--accent);
+      margin-top: 2px;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .step-desc { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
+    .step-code {
+      margin-top: 14px; font-family: var(--font-mono); font-size: 12.5px;
+      background: var(--bg-code); border: 1px solid var(--border);
+      padding: 12px 16px; border-radius: var(--radius); color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ─── FAQ ───────────────────────────────────────────────────── */
+    .faq-list { display: flex; flex-direction: column; gap: 0; }
+    .faq-item {
+      border-bottom: 1px solid var(--border); padding: 28px 0;
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-q { font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+    .faq-a { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
+
+    /* ─── CTA ───────────────────────────────────────────────────── */
+    #cta {
+      text-align: center;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(88,166,255,.07) 0%, transparent 70%);
+    }
+    #cta .section-title { font-size: clamp(28px, 5vw, 48px); }
+    #cta .section-desc { margin: 0 auto 40px; }
+    #cta .hero-actions { justify-content: center; }
+
+    /* ─── Footer ────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      color: var(--text-dim); font-size: 13px;
+    }
+    .footer-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { color: var(--text-dim); }
+    .footer-links a:hover { color: var(--text-muted); }
+
+    /* ─── Deep Dive ──────────────────────────────────────────────── */
+    .dd-note {
+      background: rgba(88,166,255,.06);
+      border: 1px solid rgba(88,166,255,.15);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 48px;
+    }
+    .dd-note a { font-weight: 600; }
+    .dd-note strong { color: var(--accent); }
+    .dd-list { display: flex; flex-direction: column; }
+    .dd-item {
+      border-bottom: 1px solid var(--border);
+      padding: 48px 0;
+    }
+    .dd-item:first-child { border-top: 1px solid var(--border); }
+    .dd-meta {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px;
+    }
+    .dd-title {
+      font-size: 22px; font-weight: 700; margin-bottom: 6px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .dd-title span { font-size: 24px; }
+    .dd-intro {
+      font-size: 15px; color: var(--text-muted); line-height: 1.7;
+      margin-bottom: 4px; max-width: 800px;
+    }
+    .dd-sub {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+      color: var(--text); letter-spacing: .5px; text-transform: uppercase;
+      margin: 24px 0 12px;
+    }
+    .dd-points { list-style: none; padding: 0; margin: 0; }
+    .dd-points li {
+      font-size: 14px; color: var(--text-muted); line-height: 1.7;
+      padding: 5px 0 5px 20px; position: relative;
+    }
+    .dd-points li::before {
+      content: '\2192'; position: absolute; left: 0; color: var(--accent);
+      font-family: var(--font-mono);
+    }
+    .dd-points li strong { color: var(--text); font-weight: 600; }
+    .dd-example {
+      margin-top: 20px;
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+    }
+    .dd-example-label {
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      color: var(--green); letter-spacing: .5px; margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .dd-example p {
+      font-size: 13.5px; color: var(--text-muted); line-height: 1.7; margin: 0;
+    }
+    .dd-example code {
+      font-size: 12px; color: var(--accent);
+      background: rgba(88,166,255,.08); padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .dd-links {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;
+    }
+    .dd-link {
+      font-family: var(--font-mono); font-size: 12px;
+      padding: 4px 10px; border-radius: 4px;
+      background: var(--bg-code); border: 1px solid var(--border);
+      color: var(--accent); transition: border-color .2s;
+    }
+    .dd-link:hover { border-color: var(--accent); text-decoration: none; }
+
+    /* ─── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .arch-flow { flex-direction: column; }
+      .arch-stage { border-right: none; border-bottom: 1px solid var(--border); }
+      .arch-stage:last-child { border-bottom: none; }
+      .arch-arrow { transform: rotate(90deg); padding: 8px 0; }
+      .example-card { flex-direction: column; }
+      .compare-table { font-size: 12px; }
+      .compare-table th, .compare-table td { padding: 10px 12px; }
+    }
+
+    /* ─── Scrollbar ─────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border-glow); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<!-- ─── Nav ─────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">Agentic<span>Workflow</span>.md</span>
+    <div class="nav-links">
+      <a href="#principles">Principles</a>
+      <a href="#deep-dive">Deep Dive</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#comparison">Comparison</a>
+      <a href="#example">Example</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn-primary nav-cta" href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank">View on GitHub</a>
+  </div>
+</nav>
+
+<!-- ─── Hero ─────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-badge">Open Framework · 9 Core Principles</div>
+    <h1 class="hero-title">
+      Principled Scaffolding<br>
+      for <span class="hl">Reliable</span> AI Agents
+    </h1>
+    <p class="hero-sub">
+      A structured framework for designing agentic workflows that are deterministic, verifiable, and scalable. Move beyond prompt engineering — engineer the <strong>process</strong>.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#principles">Explore Principles</a>
+      <a class="btn btn-secondary" href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View Example Project
+      </a>
+    </div>
+
+    <div class="hero-terminal">
+      <div class="terminal-bar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="terminal-title">Workflow.md — Agentic Code Assurance</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-comment"># Root Workflow Decision Tree</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-key">Q1</span> Does <span class="t-str">docs/codearch/overall_report.md</span> exist and pass validation?</div>
+        <div>&nbsp;&nbsp;<span class="t-comment">→ YES:</span> <span class="t-cmd">proceed to Q2</span></div>
+        <div>&nbsp;&nbsp;<span class="t-comment">→ NO: </span> <span class="t-cmd">execute Stage 1 (Code Cognition)</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-key">Q2</span> Does <span class="t-str">docs/risk_tasks/task_list.md</span> exist and is non-empty?</div>
+        <div>&nbsp;&nbsp;<span class="t-comment">→ YES:</span> <span class="t-cmd">proceed to Q3</span></div>
+        <div>&nbsp;&nbsp;<span class="t-comment">→ NO: </span> <span class="t-cmd">execute Stage 2 (Risk Assessment)</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-key">Q3</span> Is <span class="t-str">build_success=true</span> AND <span class="t-str">tests_runnable=true</span>?</div>
+        <div>&nbsp;&nbsp;<span class="t-comment">→ YES:</span> <span class="t-cmd">execute Stage 3 (Bug Remediation)</span></div>
+        <div>&nbsp;&nbsp;<span class="t-comment">→ NO: </span> <span class="t-val">⛔ HALT — circuit breaker triggered</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Stats ─────────────────────────────────────────────────────── -->
+<section id="stats" style="padding: 0 0 80px;">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">9<span></span></div>
+        <div class="stat-label">Core Design Principles</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3<span></span></div>
+        <div class="stat-label">Workflow Stages</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0<span>%</span></div>
+        <div class="stat-label">Ambiguous Decision Points</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">∞<span></span></div>
+        <div class="stat-label">Domains Applicable</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Principles ────────────────────────────────────────────────── -->
+<section id="principles">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Framework</div>
+      <h2 class="section-title">9 Core Design Principles</h2>
+      <p class="section-desc">Each principle addresses a specific failure mode of naive agentic systems. Together, they form a complete framework for reliable, production-grade workflows.</p>
+    </div>
+
+    <div class="principles-grid">
+
+      <!-- P1 -->
+      <a href="#dd-p1" class="principle-card" style="--card-accent: #58a6ff;">
+        <div class="principle-num">PRINCIPLE 01 · PROCESS MANAGEMENT</div>
+        <span class="principle-icon">🌲</span>
+        <div class="principle-title">Deterministic Decision Trees</div>
+        <div class="principle-desc">
+          Every stage entry is governed by an explicit Q&A decision tree. Each question has a binary Yes/No outcome determined by verifiable file-system checks or shell commands — never by the LLM's subjective judgment. This eliminates ambiguity, enables idempotent re-runs, and enforces prerequisite ordering.
+        </div>
+        <span class="principle-tag">Eliminates Ambiguity</span>
+      </a>
+
+      <!-- P2 -->
+      <a href="#dd-p2" class="principle-card" style="--card-accent: #bc8cff; --tag-bg: rgba(188,140,255,.1); --tag-color: #bc8cff; --tag-border: rgba(188,140,255,.2);">
+        <div class="principle-num">PRINCIPLE 02 · PROCESS MANAGEMENT</div>
+        <span class="principle-icon">📄</span>
+        <div class="principle-title">Explicit State &amp; Contracts</div>
+        <div class="principle-desc">
+          All workflow state is persisted to the file system. Inter-stage communication is governed by formal contracts — predefined directory structures and file schemas. <code style="font-size:12px;color:#bc8cff;">docs/codearch/</code> is the contract between Stage 1 and Stage 2; <code style="font-size:12px;color:#bc8cff;">task_list.md</code> is the contract between Stage 2 and Stage 3.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(188,140,255,.1); --tag-color: #bc8cff; --tag-border: rgba(188,140,255,.2);">Observable &amp; Decoupled</span>
+      </a>
+
+      <!-- P3 -->
+      <a href="#dd-p3" class="principle-card" style="--card-accent: #3fb950; --tag-bg: rgba(63,185,80,.1); --tag-color: #3fb950; --tag-border: rgba(63,185,80,.2);">
+        <div class="principle-num">PRINCIPLE 03 · COGNITIVE ARCHITECTURE</div>
+        <span class="principle-icon">🎯</span>
+        <div class="principle-title">Minimum Context Principle</div>
+        <div class="principle-desc">
+          Workflow instructions explicitly forbid loading all documents upfront. Summary reports link to detailed sub-reports. Skills are loaded on-demand only when the current Phase requires them. A 100-module project is analyzed with ~12k tokens per query instead of millions.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(63,185,80,.1); --tag-color: #3fb950; --tag-border: rgba(63,185,80,.2);">Scales to Any Codebase</span>
+      </a>
+
+      <!-- P4 -->
+      <a href="#dd-p4" class="principle-card" style="--card-accent: #d29922; --tag-bg: rgba(210,153,34,.1); --tag-color: #d29922; --tag-border: rgba(210,153,34,.2);">
+        <div class="principle-num">PRINCIPLE 04 · COGNITIVE ARCHITECTURE</div>
+        <span class="principle-icon">🏗️</span>
+        <div class="principle-title">Layered Abstraction</div>
+        <div class="principle-desc">
+          Instructions are organized into four layers: <strong>Workflow</strong> (the Why — orchestration), <strong>Phase</strong> (the What — goals &amp; acceptance criteria), <strong>Skill</strong> (the How — step-by-step execution), and <strong>Definitions</strong> (shared knowledge, referenced by link). Modify any layer without touching the others.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(210,153,34,.1); --tag-color: #d29922; --tag-border: rgba(210,153,34,.2);">Maintainable &amp; Reusable</span>
+      </a>
+
+      <!-- P5 -->
+      <a href="#dd-p5" class="principle-card" style="--card-accent: #f85149; --tag-bg: rgba(248,81,73,.1); --tag-color: #f85149; --tag-border: rgba(248,81,73,.2);">
+        <div class="principle-num">PRINCIPLE 05 · QUALITY ASSURANCE</div>
+        <span class="principle-icon">🧠</span>
+        <div class="principle-title">Knowledge-Driven Analysis</div>
+        <div class="principle-desc">
+          Stage 1 builds a rich semantic knowledge base — capturing ownership models, data flow paths, concurrency invariants. Stage 2 then uses this knowledge to perform targeted, semantic analysis rather than keyword scanning. To find a data race, the agent reads the declared mutex from the module report and traces unprotected access paths.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(248,81,73,.1); --tag-color: #f85149; --tag-border: rgba(248,81,73,.2);">Low False-Positive Rate</span>
+      </a>
+
+      <!-- P6 -->
+      <a href="#dd-p6" class="principle-card" style="--card-accent: #58a6ff;">
+        <div class="principle-num">PRINCIPLE 06 · QUALITY ASSURANCE</div>
+        <span class="principle-icon">🧪</span>
+        <div class="principle-title">Test-Driven Verification &amp; Remediation</div>
+        <div class="principle-desc">
+          A bug is only "confirmed" when a failing test case reproduces it. A fix is only "accepted" when the verification test passes AND the full regression suite shows no new failures. Confirmed tests are permanently integrated into the test suite, accumulating coverage with every fix.
+        </div>
+        <span class="principle-tag">Objective Correctness</span>
+      </a>
+
+      <!-- P7 -->
+      <a href="#dd-p7" class="principle-card" style="--card-accent: #bc8cff; --tag-bg: rgba(188,140,255,.1); --tag-color: #bc8cff; --tag-border: rgba(188,140,255,.2);">
+        <div class="principle-num">PRINCIPLE 07 · QUALITY ASSURANCE</div>
+        <span class="principle-icon">🔄</span>
+        <div class="principle-title">Iteration &amp; Convergence Control</div>
+        <div class="principle-desc">
+          Controlled feedback loops allow the workflow to self-correct. After module decomposition, a structured review checks quality and can trigger a rollback. After a remediation cycle, a new, deeper cycle can target high-risk modules. Explicit convergence criteria (iteration caps, empty change lists) prevent infinite loops.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(188,140,255,.1); --tag-color: #bc8cff; --tag-border: rgba(188,140,255,.2);">Progressive Refinement</span>
+      </a>
+
+      <!-- P8 -->
+      <a href="#dd-p8" class="principle-card" style="--card-accent: #3fb950; --tag-bg: rgba(63,185,80,.1); --tag-color: #3fb950; --tag-border: rgba(63,185,80,.2);">
+        <div class="principle-num">PRINCIPLE 08 · QUALITY ASSURANCE</div>
+        <span class="principle-icon">🚦</span>
+        <div class="principle-title">Gatekeeping &amp; Circuit Breakers</div>
+        <div class="principle-desc">
+          Hard quality gates at critical junctures prevent wasted effort. If <code style="font-size:12px;color:#3fb950;">build_success=false</code> or <code style="font-size:12px;color:#3fb950;">tests_runnable=false</code>, the entire workflow halts immediately with a clear error report. There is no point analyzing code that cannot be compiled or tested.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(63,185,80,.1); --tag-color: #3fb950; --tag-border: rgba(63,185,80,.2);">Fail Fast &amp; Clearly</span>
+      </a>
+
+      <!-- P9 -->
+      <a href="#dd-p9" class="principle-card" style="--card-accent: #d29922; --tag-bg: rgba(210,153,34,.1); --tag-color: #d29922; --tag-border: rgba(210,153,34,.2);">
+        <div class="principle-num">PRINCIPLE 09 · CROSS-STAGE COORDINATION</div>
+        <span class="principle-icon">🔁</span>
+        <div class="principle-title">Feedback Loop &amp; Self-Healing Knowledge</div>
+        <div class="principle-desc">
+          Later stages can correct the knowledge base built in earlier stages. When Stage 2 or Stage 3 discovers that a module report is inaccurate, a unified feedback protocol allows immediate in-place correction. The knowledge base heals itself as the agent digs deeper, rather than accumulating stale information.
+        </div>
+        <span class="principle-tag" style="--tag-bg: rgba(210,153,34,.1); --tag-color: #d29922; --tag-border: rgba(210,153,34,.2);">Self-Correcting System</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── Principles Deep Dive ──────────────────────────────────────── -->
+<section id="deep-dive">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Deep Dive</div>
+      <h2 class="section-title">Principles in Detail</h2>
+      <p class="section-desc">A comprehensive examination of each design principle — the rationale, design significance, and how it manifests in a real workflow.</p>
+    </div>
+
+    <div class="dd-note">
+      <strong>From the Reference Implementation:</strong> All examples and file references below are drawn from the <a href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank">Agentic Code Assurance</a> open-source project — a concrete instantiation of these 9 principles for C/C++ code quality analysis. Links point directly to the relevant source files so you can inspect the real implementation.
+    </div>
+
+    <div class="dd-list">
+
+      <!-- ── P1 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p1">
+        <div class="dd-meta">PRINCIPLE 01 · PROCESS MANAGEMENT</div>
+        <div class="dd-title"><span>🌲</span> Deterministic Decision Trees</div>
+        <div class="dd-intro">The core scheduling mechanism is a deterministic decision tree. Every stage's entry <code>Workflow.md</code> begins with a quick decision tree (Q1, Q2, Q3...) where each question provides clear Yes/No branches that map directly to specific actions. Each question is paired with an independent "Judgment Basis" section containing exhaustive checklists and executable verification commands.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Eliminates ambiguity:</strong> Agent decisions are strictly constrained to objective verification of checklists and command outputs — no open-ended reasoning required. This provides better compatibility across different model versions and capabilities.</li>
+          <li><strong>Breakpoint resumption:</strong> Decisions are based on persistent file-system artifacts. The workflow can be interrupted at any step; on restart, re-traversing the decision tree automatically locates the interruption point, achieving idempotency.</li>
+          <li><strong>Enforced prerequisites:</strong> The sequential ordering (Q1 &rarr; Q2 &rarr; Q3) guarantees task dependencies — e.g., bug fixing (Stage 3) cannot start until risk assessment (Stage 2) is complete.</li>
+          <li><strong>On-demand navigation:</strong> The decision tree enables the agent to load only documents relevant to the current task, saving token consumption and improving accuracy.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>In <code>1-code-cognition/Workflow.md</code>, Q1 "Does the overall report exist?" has four explicit checks: (1) <code>docs/codearch/overall_report.md</code> exists; (2) it contains a non-empty "Project Goals" section; (3) it has "Inputs", "Outputs", "Main Flow" sections; (4) it has an "Information Sources" section. If any check fails, Phase 01 is triggered — zero ambiguity.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/Workflow.md" target="_blank">1-code-cognition/Workflow.md</a>
+        </div>
+      </div>
+
+      <!-- ── P2 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p2">
+        <div class="dd-meta">PRINCIPLE 02 · PROCESS MANAGEMENT</div>
+        <div class="dd-title"><span>📄</span> Explicit State &amp; Contracts</div>
+        <div class="dd-intro">All workflow state is explicitly persisted to the file system. Inter-stage handoffs strictly follow predefined input/output "contracts" — <code>docs/codearch/</code> represents Stage 1 completion, <code>docs/risk_tasks/</code> represents Stage 2 output, and <code>docs/remediation/</code> represents Stage 3 artifacts. Every key artifact has a corresponding structure definition document specifying required sections, fields, and downstream usage conventions.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Observability:</strong> Any person or agent can inspect the file system to understand workflow progress. Issues can be precisely traced back to the non-compliant artifact.</li>
+          <li><strong>Stage decoupling:</strong> Clear contracts allow stages to be independently developed and improved. As long as input/output agreements are honored, internal implementations (models, skills) can be swapped without affecting other stages.</li>
+          <li><strong>Collaborative execution:</strong> Different agents or human experts can work in parallel — one agent produces the knowledge base in Stage 1, another consumes it in Stage 2.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p><code>task_output_structure.md</code> defines not only the required fields for each task record (location, description, risk type, related module, reasoning chain, excluded protections, preconditions to verify, impact level), but also a "Downstream Usage Conventions" section that explicitly guides Stage 3 on how to consume this information — how to locate code, understand reasoning chains, and design targeted verification tests, ensuring lossless and efficient cross-stage information transfer.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/2-risk-assessment/definitions/task_output_structure.md" target="_blank">task_output_structure.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/definitions/output_structure.md" target="_blank">output_structure.md</a>
+        </div>
+      </div>
+
+      <!-- ── P3 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p3">
+        <div class="dd-meta">PRINCIPLE 03 · COGNITIVE ARCHITECTURE</div>
+        <div class="dd-title"><span>🎯</span> Minimum Context Principle</div>
+        <div class="dd-intro">Under the constraint of limited LLM context windows, the minimum context principle is the key design enabling complex workflows to run efficiently. It operates at three levels: at the document level, summary reports contain only module lists and links without embedding full reports; at the instruction level, Workflow and Phase documents explicitly forbid pre-loading all Skill documents; at the execution level, the agent processes modules in small batches, loading only relevant reports per batch.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Reduced token consumption:</strong> Ensures each LLM interaction stays within context window limits, preventing truncation or execution failures.</li>
+          <li><strong>Improved focus:</strong> Limiting per-interaction information forces the agent to concentrate fully on the current task, improving analysis depth and quality.</li>
+          <li><strong>Faster execution:</strong> Loading and processing less data means faster execution cycles and lower cost.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>A 100-module project might exceed hundreds of thousands of tokens if all module reports are combined. Under this principle, when analyzing a specific bug, the agent loads only <code>overall_report.md</code> (~2k tokens) and 1–2 relevant module reports (~5k tokens each) — keeping total consumption extremely low at approximately 12k tokens per query.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/definitions/output_structure.md" target="_blank">output_structure.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/Workflow.md" target="_blank">Root Workflow.md</a>
+        </div>
+      </div>
+
+      <!-- ── P4 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p4">
+        <div class="dd-meta">PRINCIPLE 04 · COGNITIVE ARCHITECTURE</div>
+        <div class="dd-title"><span>🏗️</span> Layered Abstraction &amp; Shared Definitions</div>
+        <div class="dd-intro">The workflow achieves separation of concerns through a <strong>Workflow &rarr; Phase &rarr; Skill &rarr; Definition</strong> multi-layer structure, while eliminating redundancy through cross-stage shared definitions. Workflow (Why) defines orchestration; Phase (What) defines goals and acceptance criteria; Skill (How) provides step-by-step execution; Definitions (Knowledge) store stable conventions referenced by link from any layer.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Maintainability:</strong> Modifying specific operations requires updating only the corresponding Skill. Adjusting stage goals doesn't require changing lower-level implementations — consistent with interface-implementation separation in software engineering.</li>
+          <li><strong>Readability:</strong> Humans or agents can drill down layer by layer — Workflow for the big picture, Phase for stage details, Skill for specific operations.</li>
+          <li><strong>Consistency &amp; reuse:</strong> Shared definitions ensure uniform terminology, operational standards, and quality criteria throughout the workflow, avoiding inconsistencies from duplicated maintenance.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p><code>02-review.md</code> (Phase) states the task is "perform deep review." The review method is detailed in <code>skill-02-review.md</code> (Skill) — covering batching strategy, depth determination, and pattern application. "Review patterns" are abstracted into <code>review_patterns.md</code> (Definition), loaded on demand by the Skill. Feedback conventions are defined centrally in the root <code>definitions/feedback_protocol.md</code>, referenced by all stages via link.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/2-risk-assessment/phases/02-review.md" target="_blank">phases/02-review.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/2-risk-assessment/skills/skill-02-review.md" target="_blank">skill-02-review.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/2-risk-assessment/definitions/review_patterns.md" target="_blank">review_patterns.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/definitions/feedback_protocol.md" target="_blank">feedback_protocol.md</a>
+        </div>
+      </div>
+
+      <!-- ── P5 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p5">
+        <div class="dd-meta">PRINCIPLE 05 · QUALITY ASSURANCE</div>
+        <div class="dd-title"><span>🧠</span> Knowledge-Driven Analysis</div>
+        <div class="dd-intro">The core analysis strategy is <strong>"deep understanding first, targeted analysis second"</strong> — not blind keyword scanning. Stage 1 requires module reports to capture deep semantic information (key data flow paths, lifecycle and ownership models, concurrency invariants). Stage 2's review patterns then guide the agent along code paths using this semantic context, performing path-aware analysis rather than pattern matching.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Low false-positive rate:</strong> Traditional static analysis produces excessive false positives due to lack of understanding of code intent and ownership models. Knowledge-driven methods let the agent understand contexts like "pointer ownership has been transferred" or "shared variable is protected by a specific lock."</li>
+          <li><strong>Deep logic defect discovery:</strong> Semantic path-tracing can reveal issues that simple pattern matching cannot — deadlocks (inconsistent lock acquisition order across paths), use-after-free (object destroyed before callback fires).</li>
+          <li><strong>Multi-dimensional risk coverage:</strong> Review patterns cover security and correctness (M-1 through E-3), performance (PERF-1 through PERF-3), maintainability (MAINT-1 through MAINT-3), and portability (PORT-1 through PORT-2).</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>When reviewing concurrency race conditions (Pattern C-1: Lock Order Consistency), the agent does not simply search for <code>lock</code> keywords. Instead, it loads "concurrency invariants" from the module report, identifies the agreed lock acquisition order (e.g., lock A before lock B), then searches the code for reverse acquisition paths. This agreement-based check is far more precise than undirected scanning.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/definitions/output_structure.md" target="_blank">output_structure.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/2-risk-assessment/definitions/review_patterns.md" target="_blank">review_patterns.md</a>
+        </div>
+      </div>
+
+      <!-- ── P6 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p6">
+        <div class="dd-meta">PRINCIPLE 06 · QUALITY ASSURANCE</div>
+        <div class="dd-title"><span>🧪</span> Test-Driven Verification &amp; Remediation</div>
+        <div class="dd-intro">Stage 3 (Bug Remediation) adopts a test-driven methodology to ensure objective verification and safe remediation. A bug is only "confirmed" when a failing test reproduces it. A fix is only "accepted" when the verification test passes AND the full regression suite shows no new failures. Confirmed tests are permanently integrated into the test suite, and impact levels (Critical / High / Medium / Low) guide fix priority.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Objective verification:</strong> Transforms "does the bug exist?" from the agent's subjective judgment to an objective test result (Pass/Fail), dramatically increasing reliability.</li>
+          <li><strong>Side-effect prevention:</strong> Mandatory full regression testing ensures fixes don't break other functionality.</li>
+          <li><strong>Accumulated test assets:</strong> Effective verification tests are permanently integrated, continuously enhancing project test coverage in a positive feedback loop.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>For a suspected buffer overflow, the agent writes a <code>test_buffer_overflow</code> test passing an overly long string. If the program crashes, the bug is "confirmed." After the fix (e.g., adding length validation), the verification test passes. A full regression suite run confirms no side effects, and the test is permanently integrated into the official test suite.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/3-bug-remediation/Workflow.md" target="_blank">3-bug-remediation/Workflow.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/3-bug-remediation/phases/01-verify.md" target="_blank">phases/01-verify.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/3-bug-remediation/definitions/remediation_output_structure.md" target="_blank">remediation_output_structure.md</a>
+        </div>
+      </div>
+
+      <!-- ── P7 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p7">
+        <div class="dd-meta">PRINCIPLE 07 · QUALITY ASSURANCE</div>
+        <div class="dd-title"><span>🔄</span> Iteration &amp; Convergence Control</div>
+        <div class="dd-intro">The workflow transforms a linear process into a self-improving closed loop through two layers of iteration. Within Stage 1, a decomposition review checks module partitioning quality and can trigger rollback. Between Stages 2 and 3, iterative deepening narrows scope with each round — the second round focuses on high-risk modules identified in the first, the third on cross-module interaction verification. Explicit convergence criteria (iteration caps, empty change lists) prevent infinite loops.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Progressive refinement:</strong> For complex projects, a perfect first-pass analysis is nearly impossible. Iteration allows starting from an initial version and converging toward high quality through feedback and correction.</li>
+          <li><strong>Resource focusing:</strong> Iterative deepening avoids wasting compute on low-risk areas, concentrating analysis resources where they yield the most value.</li>
+          <li><strong>Infinite loop prevention:</strong> Explicit convergence criteria (iteration caps of 2–3 rounds, empty task lists) ensure the workflow always terminates.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>After the agent's first module decomposition, the structured review discovers that the <code>utils</code> module is overly broad. The review fails, generating a change list: "split utils into string_utils, net_utils, math_utils." The workflow rolls back to Phase 02 to regenerate reports for the three new modules, then reviews again — repeating until the decomposition is sound.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/definitions/decomposition_review.md" target="_blank">decomposition_review.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/Workflow.md" target="_blank">1-code-cognition/Workflow.md</a>
+        </div>
+      </div>
+
+      <!-- ── P8 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p8">
+        <div class="dd-meta">PRINCIPLE 08 · QUALITY ASSURANCE</div>
+        <div class="dd-title"><span>🚦</span> Gatekeeping &amp; Circuit Breakers</div>
+        <div class="dd-intro">Hard quality gates at critical junctures prevent the workflow from investing effort on an unstable foundation. The canonical gate is in Stage 1 Phase 03 (Build &amp; Test System): if the project cannot be compiled (<code>build_success=false</code>) or unit tests cannot run (<code>tests_runnable=false</code>), the entire workflow halts immediately with a clear error report and blocking reason.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Fail fast:</strong> Performing code analysis and bug fixing on a project that cannot compile or run tests is meaningless and resource-wasteful. The gate ensures the agent only proceeds when basic conditions are met.</li>
+          <li><strong>Clear accountability:</strong> Halting exposes the problem clearly — "environment configuration issue" or "basic build broken" — prompting the user to fix foundational issues before re-executing.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>During Stage 1 Phase 03, the agent attempts compilation but fails due to a missing dependency. <code>build_and_tests.md</code> marks <code>build_success</code> as <code>false</code>. The decision tree evaluates Q3 as "No," triggering the hard gate. The agent reports the error and halts the workflow, waiting for the user to fix the build environment before re-executing.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/phases/03-build-and-tests.md" target="_blank">phases/03-build-and-tests.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/1-code-cognition/Workflow.md" target="_blank">1-code-cognition/Workflow.md</a>
+        </div>
+      </div>
+
+      <!-- ── P9 ──────────────────────────── -->
+      <div class="dd-item" id="dd-p9">
+        <div class="dd-meta">PRINCIPLE 09 · CROSS-STAGE COORDINATION</div>
+        <div class="dd-title"><span>🔁</span> Feedback Loop &amp; Self-Healing Knowledge</div>
+        <div class="dd-intro">A unified feedback protocol enables later stages to correct the knowledge base built in earlier stages. When Stage 2 or Stage 3 discovers discrepancies between documentation and actual code (e.g., inaccurate module descriptions, missing external dependencies, misdrawn module boundaries), the agent updates the corresponding knowledge base documents in-place following standardized feedback operations, optionally recording feedback type and modification summary in the change log.</div>
+
+        <div class="dd-sub">Design Significance</div>
+        <ul class="dd-points">
+          <li><strong>Self-healing knowledge base:</strong> Understanding gaps discovered during deeper code exploration in later stages are immediately corrected, rather than accumulating stale information. This maintains the timeliness and accuracy of the knowledge base throughout the workflow.</li>
+          <li><strong>Standardized operations:</strong> A unified feedback protocol prevents each stage from modifying the knowledge base in ad-hoc ways, ensuring modifications are consistent and auditable.</li>
+        </ul>
+
+        <div class="dd-example">
+          <div class="dd-example-label">Example from Reference Implementation</div>
+          <p>During Stage 2 review, the agent discovers that a module's concurrency model description doesn't match the actual code — the report marks it as "single-threaded," but the code uses <code>std::thread</code>. The agent immediately updates the module report's "Concurrency Model" section and records this feedback in the change log, keeping the knowledge base accurate for downstream consumers.</p>
+        </div>
+
+        <div class="dd-links">
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/definitions/feedback_protocol.md" target="_blank">feedback_protocol.md</a>
+          <a class="dd-link" href="https://github.com/khvysofq/refactor-skills-for-tests/blob/main/agentic-code-assurance/definitions/execution_principles.md" target="_blank">execution_principles.md</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── Architecture ───────────────────────────────────────────────── -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Architecture</div>
+      <h2 class="section-title">Three-Stage Pipeline</h2>
+      <p class="section-desc">The Agentic Code Assurance workflow instantiates all 9 principles across three sequential, contract-bound stages.</p>
+    </div>
+
+    <div class="arch-flow">
+      <div class="arch-stage">
+        <div class="arch-stage-num">STAGE 01</div>
+        <div class="arch-stage-title" style="color: #58a6ff;">Code Cognition</div>
+        <div class="arch-stage-desc">
+          Build a rich semantic knowledge base of the target project. Decompose it into modules, then generate detailed reports capturing responsibilities, API surfaces, memory ownership models, data flow paths, and concurrency invariants. A structured decomposition review ensures quality before proceeding.
+        </div>
+        <div class="arch-stage-output">→ docs/codearch/</div>
+      </div>
+      <div class="arch-arrow">›</div>
+      <div class="arch-stage">
+        <div class="arch-stage-num">STAGE 02</div>
+        <div class="arch-stage-title" style="color: #bc8cff;">Risk Assessment</div>
+        <div class="arch-stage-desc">
+          Consume the knowledge base to perform targeted, semantic bug hunting. Apply a library of review patterns (memory safety, concurrency, I/O, error handling, performance) guided by the semantic context from Stage 1. Output a structured, prioritized task list of confirmed risk items.
+        </div>
+        <div class="arch-stage-output">→ docs/risk_tasks/task_list.md</div>
+      </div>
+      <div class="arch-arrow">›</div>
+      <div class="arch-stage">
+        <div class="arch-stage-num">STAGE 03</div>
+        <div class="arch-stage-title" style="color: #3fb950;">Bug Remediation</div>
+        <div class="arch-stage-desc">
+          For each task: first write a failing test to confirm the bug exists, then implement the fix, then verify the test passes and the full regression suite is clean. Confirmed tests are permanently integrated. The circuit breaker ensures this stage only runs on a compilable, testable project.
+        </div>
+        <div class="arch-stage-output">→ docs/remediation/</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 48px;">
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">1-code-cognition/Workflow.md — Decision Tree Example</span>
+          <span class="code-lang">Markdown</span>
+        </div>
+        <div class="code-body">
+<span class="c-head">## Quick Decision Tree</span>
+
+<span class="c-bold">Q1: Does `docs/codearch/overall_report.md` exist and pass validation?</span>
+<span class="c-comment">   Checklist:</span>
+<span class="c-comment">   - [ ] File exists at the specified path</span>
+<span class="c-comment">   - [ ] Contains a non-empty "Project Goals" section</span>
+<span class="c-comment">   - [ ] Contains "Inputs", "Outputs", "Main Flow" sections</span>
+<span class="c-comment">   - [ ] Contains "Information Sources" section</span>
+<span class="c-val">   → ALL PASS: proceed to Q2</span>
+<span class="c-str">   → ANY FAIL: execute Phase 01 (Project Overview)</span>
+
+<span class="c-bold">Q2: Do module reports exist for all modules in the overall report?</span>
+<span class="c-comment">   Command: grep -c "^## " docs/codearch/overall_report.md</span>
+<span class="c-comment">   Check: count of module files in docs/codearch/modules/ matches</span>
+<span class="c-val">   → PASS: proceed to Q2b</span>
+<span class="c-str">   → FAIL: execute Phase 02 (Module Analysis)</span>
+
+<span class="c-bold">Q2b: Does the decomposition pass the structured review?</span>
+<span class="c-comment">   Run: skill-decomposition-review checklist</span>
+<span class="c-val">   → PASS: proceed to Q3</span>
+<span class="c-str">   → FAIL: rollback per decomposition_review.md rules</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Comparison ────────────────────────────────────────────────── -->
+<section id="comparison">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Comparison</div>
+      <h2 class="section-title">How It Compares</h2>
+      <p class="section-desc">Agentic workflows with principled scaffolding address the fundamental limitations of existing approaches.</p>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Traditional Static Analysis<br><span style="font-weight:400;color:var(--text-dim)">(Coverity, Clang-Tidy)</span></th>
+            <th>Monolithic LLM Agent<br><span style="font-weight:400;color:var(--text-dim)">(SWE-agent, OpenDevin)</span></th>
+            <th>Principled Agentic Workflow<br><span style="font-weight:400;color:var(--text-dim)">(This Framework)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Semantic Understanding</td>
+            <td><span class="badge-no">✗</span> Pattern-based only</td>
+            <td><span class="badge-partial">~</span> Context-limited</td>
+            <td><span class="badge-yes">✓</span> Deep semantic knowledge base</td>
+          </tr>
+          <tr>
+            <td>False Positive Rate</td>
+            <td><span class="badge-no">High</span> — no intent model</td>
+            <td><span class="badge-partial">Medium</span> — hallucination risk</td>
+            <td><span class="badge-yes">Low</span> — knowledge-grounded analysis</td>
+          </tr>
+          <tr>
+            <td>Deterministic Behavior</td>
+            <td><span class="badge-yes">✓</span> Rule-based</td>
+            <td><span class="badge-no">✗</span> Non-deterministic</td>
+            <td><span class="badge-yes">✓</span> Decision-tree driven</td>
+          </tr>
+          <tr>
+            <td>Verifiable Correctness</td>
+            <td><span class="badge-partial">~</span> Alerts only</td>
+            <td><span class="badge-no">✗</span> No test enforcement</td>
+            <td><span class="badge-yes">✓</span> TDD-based verification</td>
+          </tr>
+          <tr>
+            <td>Scales to Large Codebases</td>
+            <td><span class="badge-yes">✓</span> File-by-file</td>
+            <td><span class="badge-no">✗</span> Context window limits</td>
+            <td><span class="badge-yes">✓</span> Minimum context principle</td>
+          </tr>
+          <tr>
+            <td>Resumable / Idempotent</td>
+            <td><span class="badge-yes">✓</span></td>
+            <td><span class="badge-no">✗</span> Stateless per session</td>
+            <td><span class="badge-yes">✓</span> File-system state</td>
+          </tr>
+          <tr>
+            <td>Detects Logic Bugs</td>
+            <td><span class="badge-no">✗</span> Syntax/pattern only</td>
+            <td><span class="badge-partial">~</span> Unreliable</td>
+            <td><span class="badge-yes">✓</span> Semantic path tracing</td>
+          </tr>
+          <tr>
+            <td>Debuggable Process</td>
+            <td><span class="badge-partial">~</span> Report only</td>
+            <td><span class="badge-no">✗</span> Black box</td>
+            <td><span class="badge-yes">✓</span> Every decision is traceable</td>
+          </tr>
+          <tr>
+            <td>Accumulates Test Assets</td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-no">✗</span></td>
+            <td><span class="badge-yes">✓</span> Tests integrated permanently</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Example Project ───────────────────────────────────────────── -->
+<section id="example">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Open Source Example</div>
+      <h2 class="section-title">See It in Action</h2>
+      <p class="section-desc">Explore a real-world implementation of these principles applied to C/C++ code quality and test refactoring.</p>
+    </div>
+
+    <a class="example-card" href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank" style="display:flex; text-decoration:none; color:inherit;">
+      <div class="example-icon">⚙️</div>
+      <div class="example-body">
+        <div class="example-label">GITHUB · OPEN SOURCE</div>
+        <div class="example-title">refactor-skills-for-tests</div>
+        <div class="example-desc">
+          A practical implementation of the Agentic Workflow framework applied to C/C++ projects. Demonstrates how the 9 design principles translate into a concrete, file-based workflow specification that any LLM-based coding agent (Claude Code, OpenCode, etc.) can execute to analyze and improve code quality.
+        </div>
+        <div class="example-tags">
+          <span class="tag cpp">C/C++</span>
+          <span class="tag agent">Agentic Workflow</span>
+          <span class="tag security">Code Quality</span>
+          <span class="tag">Claude Code</span>
+          <span class="tag">OpenCode</span>
+        </div>
+        <span class="btn btn-primary" style="font-size:14px; padding:9px 20px;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Open on GitHub →
+        </span>
+      </div>
+    </a>
+
+    <div style="margin-top: 48px;">
+      <div class="section-label" style="margin-bottom: 24px;">Workflow File Structure</div>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename">Recommended directory layout</span>
+          <span class="code-lang">Shell</span>
+        </div>
+        <div class="code-body">
+<span class="c-comment"># Root entry point</span>
+<span class="c-head">Workflow.md</span>                     <span class="c-comment"># Global decision tree &amp; stage orchestration</span>
+
+<span class="c-comment"># Stage 1: Code Cognition</span>
+<span class="c-head">1-code-cognition/</span>
+  <span class="c-key">Workflow.md</span>                   <span class="c-comment"># Stage decision tree (Q1 → Q2 → Q2b → Q3)</span>
+  <span class="c-key">phases/</span>                       <span class="c-comment"># 01-overview, 02-modules, 03-build-tests, 04-reports</span>
+  <span class="c-key">skills/</span>                       <span class="c-comment"># Detailed how-to for each phase task</span>
+  <span class="c-key">definitions/</span>                  <span class="c-comment"># complexity_levels, output_structure, cpp_notes…</span>
+
+<span class="c-comment"># Stage 2: Risk Assessment</span>
+<span class="c-head">2-risk-assessment/</span>
+  <span class="c-key">Workflow.md</span>
+  <span class="c-key">phases/</span>                       <span class="c-comment"># 01-scope, 02-review, 03-summary</span>
+  <span class="c-key">skills/</span>
+  <span class="c-key">definitions/</span>                  <span class="c-comment"># risk_types, review_patterns, task_output_structure</span>
+
+<span class="c-comment"># Stage 3: Bug Remediation</span>
+<span class="c-head">3-bug-remediation/</span>
+  <span class="c-key">Workflow.md</span>
+  <span class="c-key">phases/</span>                       <span class="c-comment"># 01-verify, 02-fix, 03-regression</span>
+  <span class="c-key">skills/</span>
+  <span class="c-key">definitions/</span>                  <span class="c-comment"># remediation_output_structure</span>
+
+<span class="c-comment"># Generated knowledge base (output)</span>
+<span class="c-head">docs/</span>
+  <span class="c-val">codearch/overall_report.md</span>    <span class="c-comment"># Stage 1 → Stage 2 contract</span>
+  <span class="c-val">codearch/modules/</span>             <span class="c-comment"># Per-module semantic reports</span>
+  <span class="c-val">risk_tasks/task_list.md</span>       <span class="c-comment"># Stage 2 → Stage 3 contract</span>
+  <span class="c-val">remediation/</span>                  <span class="c-comment"># Fix reports &amp; integrated tests</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How to Use ────────────────────────────────────────────────── -->
+<section id="howto">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Getting Started</div>
+      <h2 class="section-title">Apply This Framework</h2>
+      <p class="section-desc">Adopt these principles to build your own domain-specific agentic workflow in four steps.</p>
+    </div>
+
+    <div class="steps-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Define Your Stages &amp; Contracts</div>
+          <div class="step-desc">Break your task into sequential stages. For each stage, define its input contract (what files must exist and what they must contain) and its output contract (what files it will produce). These contracts are the backbone of your workflow.</div>
+          <div class="step-code">
+            <span style="color:var(--accent)">Stage 1 Output Contract:</span> docs/knowledge_base/*.md<br>
+            <span style="color:var(--accent)">Stage 2 Input Contract: </span> docs/knowledge_base/ must exist &amp; be valid<br>
+            <span style="color:var(--accent)">Stage 2 Output Contract:</span> docs/task_list.md
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Write the Decision Tree for Each Stage</div>
+          <div class="step-desc">For each stage, write a <code style="font-size:13px;color:var(--accent)">Workflow.md</code> with a Q&amp;A decision tree. Each question must be answerable by a shell command or file check — never by the LLM's opinion. Include the exact verification commands in a "Judgment Basis" subsection.</div>
+          <div class="step-code">
+            <span style="color:var(--purple)">Q1:</span> Does docs/knowledge_base/index.md exist?<br>
+            <span style="color:var(--text-dim)">   Command: [ -f docs/knowledge_base/index.md ] &amp;&amp; echo YES || echo NO</span><br>
+            <span style="color:var(--green)">   → YES: proceed to Q2</span><br>
+            <span style="color:var(--orange)">   → NO:  execute Phase 01</span>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Decompose into Phases and Skills</div>
+          <div class="step-desc">For each stage, write Phase documents (what to do, acceptance criteria) and Skill documents (how to do it, step by step). Extract reusable knowledge into Definition documents. Keep Skills focused — they should be loadable on-demand, not preloaded.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Add Gatekeepers &amp; Feedback Loops</div>
+          <div class="step-desc">Identify the critical preconditions for your workflow (e.g., "data must be valid", "environment must be configured"). Add hard circuit breakers that halt the workflow with a clear error if these fail. Add structured review checkpoints that can trigger controlled rollbacks to refine earlier outputs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ───────────────────────────────────────────────────────── -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">Is this framework specific to C/C++ code analysis?</div>
+        <div class="faq-a">No. The 9 design principles are domain-agnostic. The Agentic Code Assurance workflow is one instantiation applied to C/C++ security analysis. The same framework can be applied to scientific literature review, legal contract analysis, data pipeline validation, or any complex multi-step task requiring reliability.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Which LLM agents are compatible with this workflow format?</div>
+        <div class="faq-a">Any agent that can read files and execute shell commands. This includes Claude Code, OpenCode, SWE-agent, OpenDevin, Devin, Cursor, and similar tools. The workflow is defined in plain Markdown files, making it universally compatible. The agent reads the Workflow.md, follows the decision tree, and loads Phase/Skill documents as instructed.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How does this differ from a simple system prompt?</div>
+        <div class="faq-a">A system prompt is a monolithic instruction loaded once. This framework is a structured, multi-file specification where instructions are loaded on-demand based on the current state. This enables the Minimum Context Principle, allows the workflow to scale to arbitrarily complex tasks, and makes the process transparent, debuggable, and resumable — none of which are possible with a single prompt.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the upfront cost of designing a workflow this way?</div>
+        <div class="faq-a">Significant domain expertise is required to define the stages, contracts, and review patterns. This is not a plug-and-play solution. It is a framework for experts to encode their process knowledge so that an agent can execute it reliably and repeatedly. The investment pays off when the workflow needs to run many times, or when reliability and verifiability are non-negotiable requirements.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can multiple agents collaborate on a single workflow?</div>
+        <div class="faq-a">Yes. Because all state is persisted to the file system via explicit contracts, different agents (or humans) can work on different stages independently. Agent A can execute Stage 1 and produce the knowledge base; Agent B can then consume it to execute Stage 2. The contract-based design enables this kind of parallel and collaborative execution naturally.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens when the LLM makes a mistake mid-workflow?</div>
+        <div class="faq-a">The decision tree is idempotent. If a stage produces incorrect output, the output file either fails the next decision tree check (triggering a re-run) or is corrected via the feedback loop mechanism. The workflow can always be re-entered from the beginning; it will automatically detect the current state and resume from the correct point. No work is lost.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ────────────────────────────────────────────────────────── -->
+<section id="cta">
+  <div class="container">
+    <div class="section-label" style="text-align:center;">Open Source</div>
+    <h2 class="section-title">Start Building Reliable Agents</h2>
+    <p class="section-desc">Explore the open-source example, study the workflow structure, and apply these principles to your own domain.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View Example on GitHub
+      </a>
+      <a class="btn btn-secondary" href="#principles">Read the Principles</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <span>AgenticWorkflow.md — A framework for principled agent design.</span>
+    <div class="footer-links">
+      <a href="#principles">Principles</a>
+      <a href="#comparison">Comparison</a>
+      <a href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
