@@ -192,9 +192,65 @@
     }
     .section-desc {
       font-size: 17px; color: var(--text-muted);
-      max-width: 600px; line-height: 1.65;
+      max-width: 100%; line-height: 1.65;
     }
     .section-header { margin-bottom: 56px; }
+
+    /* ─── Workflow Core section ─────────────────────────────────── */
+    .workflow-core-h3 {
+      font-size: 18px; font-weight: 600; color: var(--text);
+      margin: 40px 0 16px; padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .workflow-core-h3:first-of-type { margin-top: 0; }
+    .workflow-core-list {
+      margin: 0 0 1em; padding-left: 1.4em;
+      color: var(--text-muted); line-height: 1.7;
+    }
+    .workflow-core-list li { margin-bottom: 10px; }
+    .workflow-core-list code { font-size: 13px; color: var(--accent); }
+    .workflow-core-rel, .workflow-core-p {
+      color: var(--text-muted); margin: 0 0 1em;
+    }
+    .workflow-core-cta {
+      margin-top: 32px; padding: 20px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text-muted); font-size: 15px;
+    }
+    .mermaid-wrap {
+      max-width: 100%; margin: 24px auto 32px;
+      padding: 24px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      display: flex; justify-content: center; align-items: center;
+    }
+    .mermaid-wrap .mermaid {
+      display: flex; justify-content: center; align-items: center;
+    }
+    .mermaid-wrap .mermaid svg { display: block; margin: 0 auto; }
+    .why-content { max-width: 100%; }
+    .mermaid-wrap-wide { max-width: 100%; }
+    .fig-wrap { display: flex; justify-content: center; align-items: center; }
+    .workflow-fig { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+
+    /* ─── Diagram card + expand (view full size) ───────────────────── */
+    .diagram-card {
+      margin: 24px auto 32px;
+      max-width: 100%;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .diagram-card-preview {
+      padding: 24px 32px;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .diagram-card-preview .mermaid { width: 100%; min-width: 0; display: flex; justify-content: center; align-items: center; }
+    .diagram-card-preview .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
     /* ─── Principles Grid ───────────────────────────────────────── */
     .principles-grid {
@@ -510,6 +566,8 @@
   <div class="nav-inner">
     <span class="nav-logo">Agentic<span>Workflow</span>.wiki</span>
     <div class="nav-links">
+      <a href="#why">Why</a>
+      <a href="#workflow-core">Workflow</a>
       <a href="#principles">Principles</a>
       <a href="#deep-dive">Deep Dive</a>
       <a href="#architecture">Architecture</a>
@@ -566,27 +624,239 @@
   </div>
 </section>
 
+<!-- ─── Why Agentic Workflow (Background & Motivation) ───────────────── -->
+<section id="why">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Background</div>
+      <h2 class="section-title">Why Agentic Workflow?</h2>
+      <p class="section-desc">The framework was created to address a fundamental limitation of today’s AI agents: non-determinism and lack of verifiability. Here is the problem we solve and where this approach sits among existing methods.</p>
+    </div>
+
+    <div class="why-content">
+      <h3 class="workflow-core-h3">The problem</h3>
+      <p class="workflow-core-p">Powerful LLMs have enabled autonomous agents (e.g. SWE-agent, Devin) that promise to automate complex tasks. The dominant design puts the LLM at the center of the cognitive loop—entrusting it with both task execution and high-level planning. That creates a core weakness: <strong>LLMs are probabilistic and opaque</strong>, so agent behavior is inherently non-deterministic. The same input can succeed today and fail tomorrow. This blocks adoption in mission-critical settings where we need reliability and verifiability—for example, modifying a production codebase.</p>
+
+      <h3 class="workflow-core-h3">Our approach</h3>
+      <p class="workflow-core-p">We shift control <strong>out of the LLM and into a structured, machine-readable workflow</strong>. The agent’s “brain” is a deterministic engine that runs a predefined plan based on explicit, file-system state. The LLM becomes a controlled tool—a <strong>Skill</strong>—invoked by that engine for specific, well-defined tasks. The framework defines a standard <strong>Workflow Unit</strong>: five components (<code>Workflow.md</code>, <code>phases/</code>, <code>skills/</code>, <code>definitions/</code>, <code>templates/</code>) and a <strong>Deterministic Decision Tree</strong> that branches only on file/directory existence. It also supports <strong>workflow composition</strong>: master workflows orchestrate sub-workflows with serial execution, gates, and iterative loops. The result is a process that combines LLM capability with the reliability of classical software engineering.</p>
+
+      <h3 class="workflow-core-h3">Positioning: Determinism vs. scope</h3>
+      <p class="workflow-core-p">The chart below places Agentic Workflow relative to other approaches. The horizontal axis is determinism (low → high); the vertical axis is scope (single-task → end-to-end). We aim for <strong>high determinism and broad scope</strong>—reliable, verifiable, end-to-end workflows—which is where Agentic Workflow (and similar designs) sit, distinct from LLM-driven agents (broad scope, lower determinism) and traditional static analysis (high determinism, narrower scope).</p>
+    </div>
+
+    <div class="diagram-card" role="img" aria-label="Quadrant chart: Positioning of approaches by determinism and scope.">
+      <div class="diagram-card-preview">
+        <div class="mermaid">
+quadrantChart
+    title Positioning of Approaches: Determinism vs. Scope
+    x-axis "Low Determinism" --> "High Determinism"
+    y-axis "Narrow Scope (Single Task)" --> "Broad Scope (End-to-End)"
+    quadrant-1 "Agentic Workflow"
+    quadrant-2 "LLM-Driven Agents"
+    quadrant-3 "Prompt/Skill Libraries"
+    quadrant-4 "Traditional SAST"
+    "Agentic Workflow (Ours)": [0.88, 0.90]
+    "SWE-agent": [0.25, 0.72]
+    "Devin": [0.35, 0.78]
+    "OpenHands": [0.28, 0.70]
+    "AutoCodeRover": [0.45, 0.55]
+    "Agentless": [0.55, 0.50]
+    "Coverity": [0.82, 0.30]
+    "CodeQL": [0.78, 0.35]
+    "SonarQube": [0.75, 0.28]
+    "CLAUDE.md Skills": [0.20, 0.40]
+    "Cursor Rules": [0.18, 0.35]
+    "LangGraph": [0.30, 0.55]
+    "CrewAI": [0.25, 0.50]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ─── Stats ─────────────────────────────────────────────────────── -->
 <section id="stats" style="padding: 0 0 80px;">
   <div class="container">
     <div class="stats-grid">
       <div class="stat-item">
-        <div class="stat-num">9<span></span></div>
+        <div class="stat-num">5</div>
+        <div class="stat-label">Components per Workflow Unit</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">9</div>
         <div class="stat-label">Core Design Principles</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">3<span></span></div>
-        <div class="stat-label">Workflow Stages</div>
-      </div>
-      <div class="stat-item">
         <div class="stat-num">0<span>%</span></div>
-        <div class="stat-label">Ambiguous Decision Points</div>
+        <div class="stat-label">LLM-Based Branching (decisions are file-based)</div>
       </div>
       <div class="stat-item">
-        <div class="stat-num">∞<span></span></div>
+        <div class="stat-num">∞</div>
         <div class="stat-label">Domains Applicable</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ─── Workflow Core ───────────────────────────────────────────────── -->
+<section id="workflow-core">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Core Components</div>
+      <h2 class="section-title">The Workflow Unit</h2>
+      <p class="section-desc">A standard workflow is a directory with five kinds of components that together define a complete, executable process. The same structure also supports <strong>workflow composition</strong>: multiple self-contained sub-workflows can be orchestrated by a master workflow to run in sequence, with gates and iterative loops.</p>
+    </div>
+
+    <h3 class="workflow-core-h3">The five components</h3>
+    <ul class="workflow-core-list">
+      <li><strong><code>Workflow.md</code> (entry point)</strong> — The brain of the unit. It holds a <strong>deterministic decision tree</strong> that branches only on file/directory existence (explicit state), not on LLM output. It decides which phases run and when to move on.</li>
+      <li><strong><code>phases/</code> (execution steps)</strong> — An ordered sequence of Markdown files (e.g. <code>01-overview.md</code>, <code>02-analysis.md</code>). Each phase defines a sub-goal and orchestrates the <code>skills</code> needed to achieve it.</li>
+      <li><strong><code>skills/</code> (atomic capabilities)</strong> — One Markdown file per atomic task, often one LLM call. A skill is stateless: it takes context, applies logic (e.g. a detailed prompt), and produces an output. Skills are the “how” that phases invoke.</li>
+      <li><strong><code>definitions/</code> (domain knowledge)</strong> — Stable, reusable knowledge (coding standards, review patterns, output schemas, validation rules). Skills reference these so that knowledge lives outside prompts and is easy to update.</li>
+      <li><strong><code>templates/</code> (output formats)</strong> — Structures for what skills produce (e.g. report templates). They keep outputs consistent and machine-readable.</li>
+    </ul>
+    <p class="workflow-core-rel">Together: <strong>Workflow</strong> orchestrates <strong>phases</strong> → <strong>phases</strong> invoke <strong>skills</strong> → <strong>skills</strong> use <strong>definitions</strong> and <strong>templates</strong> to produce structured output.</p>
+
+    <div class="diagram-card" role="img" aria-label="Workflow Unit: five components and their relationships.">
+      <div class="diagram-card-preview">
+        <div class="mermaid">
+graph TB
+    subgraph WU["Workflow Unit (Self-Contained)"]
+        direction TB
+        WF["<b>Workflow.md</b><br/>Entry Point &amp; Decision Tree"]
+        subgraph Components["Four Standard Directories"]
+            direction LR
+            DEF["<b>definitions/</b><br/>Domain Knowledge<br/><i>Standards, Patterns,<br/>Taxonomies</i>"]
+            PH["<b>phases/</b><br/>Execution Steps<br/><i>Ordered sequence<br/>of sub-goals</i>"]
+            SK["<b>skills/</b><br/>Atomic Capabilities<br/><i>LLM-powered<br/>task executors</i>"]
+            TPL["<b>templates/</b><br/>Output Formats<br/><i>Structured output<br/>specifications</i>"]
+        end
+    end
+    WF -->|"orchestrates"| PH
+    PH -->|"invokes"| SK
+    SK -->|"references"| DEF
+    SK -->|"outputs via"| TPL
+    WF -->|"loads global"| DEF
+    style WF fill:#4A90D9,stroke:#2C5F8A,color:#fff
+    style DEF fill:#F5A623,stroke:#D4891A,color:#fff
+    style PH fill:#7ED321,stroke:#5CA318,color:#fff
+    style SK fill:#BD10E0,stroke:#8A0BA5,color:#fff
+    style TPL fill:#50E3C2,stroke:#3AAE94,color:#fff
+    style WU fill:#f0f4ff,stroke:#4A90D9,stroke-width:2px
+    style Components fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5
+        </div>
+      </div>
+    </div>
+
+    <h3 class="workflow-core-h3">Data flow within a phase</h3>
+    <p class="workflow-core-p">When a phase runs, it delegates to one or more skills. Each skill reads the current context, pulls in the relevant definitions and templates, and writes structured output. The flow is: <strong>Phase → Skill → (Definitions + Templates) → structured output.</strong></p>
+    <div class="diagram-card" role="img" aria-label="Data flow within a Phase: Skill uses Definitions and Templates to produce structured output.">
+      <div class="diagram-card-preview">
+        <div class="mermaid">
+graph LR
+    subgraph Input["Input Context"]
+        SRC["Source Code<br/>Files"]
+        KB["Knowledge Base<br/>(docs/codearch/)"]
+    end
+    subgraph Execution["Phase Execution"]
+        PH["<b>Phase</b><br/>02-modules.md<br/><i>Defines: goal, scope,<br/>entry/exit criteria</i>"]
+        SK["<b>Skill</b><br/>skill-02-modules.md<br/><i>Defines: LLM prompt,<br/>tool usage, steps</i>"]
+    end
+    subgraph Knowledge["Knowledge Layer"]
+        DEF["<b>Definition</b><br/>decomposition_review.md<br/><i>Provides: standards,<br/>review criteria</i>"]
+    end
+    subgraph Output["Output Layer"]
+        TPL["<b>Template</b><br/>module-report.md<br/><i>Specifies: output<br/>structure &amp; fields</i>"]
+        OUT["Generated Output<br/>(docs/codearch/<br/>module-X-report.md)"]
+    end
+    PH -->|"delegates to"| SK
+    SK -->|"reads"| SRC
+    SK -->|"reads"| KB
+    SK -->|"applies criteria from"| DEF
+    SK -->|"formats output using"| TPL
+    TPL -->|"produces"| OUT
+    OUT -->|"updates"| KB
+    style PH fill:#7ED321,stroke:#5CA318,color:#fff
+    style SK fill:#BD10E0,stroke:#8A0BA5,color:#fff
+    style DEF fill:#F5A623,stroke:#D4891A,color:#fff
+    style TPL fill:#50E3C2,stroke:#3AAE94,color:#fff
+    style SRC fill:#e0e0e0,stroke:#999
+    style KB fill:#e0e0e0,stroke:#999
+    style OUT fill:#e0e0e0,stroke:#999
+        </div>
+      </div>
+    </div>
+
+    <h3 class="workflow-core-h3">Advanced: Workflow composition</h3>
+    <p class="workflow-core-p">Sub-workflows can each be a full workflow unit (with their own <code>Workflow.md</code>, <code>phases/</code>, <code>skills/</code>, etc.). A <strong>master workflow</strong> treats each sub-workflow as a single step and can:</p>
+    <ul class="workflow-core-list">
+      <li><strong>Run sub-workflows in series</strong> — e.g. Stage 1 → Stage 2 → Stage 3.</li>
+      <li><strong>Enforce gates</strong> — e.g. run build and tests after one sub-workflow; only proceed to the next if the gate passes.</li>
+      <li><strong>Use iterative loops</strong> — e.g. feed the output of a bug-remediation sub-workflow back into risk-assessment and repeat until no tasks remain.</li>
+      <li><strong>Share global knowledge</strong> — a top-level <code>definitions/</code> can be inherited by all sub-workflows, which may add their own local definitions.</li>
+    </ul>
+    <div class="diagram-card" role="img" aria-label="Master workflow orchestrates sub-workflows with gates and iterative feedback.">
+      <div class="diagram-card-preview">
+        <div class="mermaid">
+graph TB
+    subgraph Master["<b>Master Workflow</b> (Workflow.md)"]
+        direction TB
+        MW["Master Decision Tree<br/><i>Orchestrates sub-workflows</i>"]
+        GD["<b>Global definitions/</b><br/>execution_principles.md<br/>feedback_protocol.md"]
+    end
+    subgraph SW1["<b>Sub-Workflow 1:</b> Code Cognition"]
+        W1["Workflow.md"]
+        D1["definitions/"]
+        P1["phases/"]
+        S1["skills/"]
+        T1["templates/"]
+    end
+    subgraph SW2["<b>Sub-Workflow 2:</b> Risk Assessment"]
+        W2["Workflow.md"]
+        D2["definitions/"]
+        P2["phases/"]
+        S2["skills/"]
+        T2["templates/"]
+    end
+    subgraph SW3["<b>Sub-Workflow 3:</b> Bug Remediation"]
+        W3["Workflow.md"]
+        D3["definitions/"]
+        P3["phases/"]
+        S3["skills/"]
+        T3["templates/"]
+    end
+    GATE1{{"Build & Test<br/>Gate"}}
+    GATE2{{"Task List<br/>Gate"}}
+    CONV{{"Convergence<br/>Check"}}
+    MW -->|"1. Execute"| SW1
+    SW1 --> GATE1
+    GATE1 -->|"Pass"| SW2
+    GATE1 -->|"Fail"| CB["CIRCUIT BREAKER:<br/>Halt"]
+    SW2 --> GATE2
+    GATE2 -->|"Has tasks"| SW3
+    GATE2 -->|"No tasks"| DONE["Workflow Complete"]
+    SW3 --> CONV
+    CONV -->|"Not converged"| SW2
+    CONV -->|"Converged"| DONE
+    GD -.->|"inherited by"| D1
+    GD -.->|"inherited by"| D2
+    GD -.->|"inherited by"| D3
+    style Master fill:#e8f0fe,stroke:#4A90D9,stroke-width:2px
+    style SW1 fill:#e8f8e8,stroke:#7ED321,stroke-width:2px
+    style SW2 fill:#fff8e1,stroke:#F5A623,stroke-width:2px
+    style SW3 fill:#fce4ec,stroke:#E91E63,stroke-width:2px
+    style GATE1 fill:#ffcdd2,stroke:#c62828
+    style GATE2 fill:#ffcdd2,stroke:#c62828
+    style CONV fill:#ffcdd2,stroke:#c62828
+    style CB fill:#b71c1c,color:#fff
+    style DONE fill:#2e7d32,color:#fff
+    style MW fill:#4A90D9,color:#fff
+    style GD fill:#F5A623,color:#fff
+        </div>
+      </div>
+    </div>
+
+    <p class="workflow-core-cta">For a detailed walkthrough with real file layouts, see the <a href="#example">Example</a> section and the <a href="https://github.com/khvysofq/refactor-skills-for-tests" target="_blank">Agentic Code Assurance</a> repository.</p>
   </div>
 </section>
 
@@ -1280,5 +1550,22 @@
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#58a6ff',
+      primaryTextColor: '#e6edf3',
+      primaryBorderColor: '#30363d',
+      lineColor: '#8b949e',
+      secondaryColor: '#111318',
+      tertiaryColor: '#0a0c10',
+      fontSize: '15px',
+      fontFamily: 'inherit'
+    }
+  });
+</script>
 </body>
 </html>
