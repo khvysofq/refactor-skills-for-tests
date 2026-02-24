@@ -250,7 +250,8 @@
       justify-content: center;
     }
     .diagram-card-preview .mermaid { width: 100%; min-width: 0; display: flex; justify-content: center; align-items: center; }
-    .diagram-card-preview .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+    .diagram-card-preview .mermaid svg { max-width: 100%; height: auto; display: block; margin: 0 auto; background: var(--bg-card) !important; }
+    .mermaid svg { background: var(--bg-card) !important; }
 
     /* ─── Principles Grid ───────────────────────────────────────── */
     .principles-grid {
@@ -737,13 +738,13 @@ graph TB
     SK -->|"references"| DEF
     SK -->|"outputs via"| TPL
     WF -->|"loads global"| DEF
-    style WF fill:#4A90D9,stroke:#2C5F8A,color:#fff
-    style DEF fill:#F5A623,stroke:#D4891A,color:#fff
-    style PH fill:#7ED321,stroke:#5CA318,color:#fff
-    style SK fill:#BD10E0,stroke:#8A0BA5,color:#fff
-    style TPL fill:#50E3C2,stroke:#3AAE94,color:#fff
-    style WU fill:#f0f4ff,stroke:#4A90D9,stroke-width:2px
-    style Components fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5
+    style WF fill:#1f6feb,stroke:#388bfd,color:#fff
+    style DEF fill:#9e6a03,stroke:#d29922,color:#fff
+    style PH fill:#2ea043,stroke:#3fb950,color:#fff
+    style SK fill:#8957e5,stroke:#a371f7,color:#fff
+    style TPL fill:#2da39e,stroke:#39c5cf,color:#fff
+    style WU fill:#161b22,stroke:#30363d,stroke-width:2px
+    style Components fill:#21262d,stroke:#30363d,stroke-dasharray: 5 5
         </div>
       </div>
     </div>
@@ -776,13 +777,17 @@ graph LR
     SK -->|"formats output using"| TPL
     TPL -->|"produces"| OUT
     OUT -->|"updates"| KB
-    style PH fill:#7ED321,stroke:#5CA318,color:#fff
-    style SK fill:#BD10E0,stroke:#8A0BA5,color:#fff
-    style DEF fill:#F5A623,stroke:#D4891A,color:#fff
-    style TPL fill:#50E3C2,stroke:#3AAE94,color:#fff
-    style SRC fill:#e0e0e0,stroke:#999
-    style KB fill:#e0e0e0,stroke:#999
-    style OUT fill:#e0e0e0,stroke:#999
+    style Input fill:#161b22,stroke:#30363d
+    style Execution fill:#161b22,stroke:#30363d
+    style Knowledge fill:#161b22,stroke:#30363d
+    style Output fill:#161b22,stroke:#30363d
+    style PH fill:#2ea043,stroke:#3fb950,color:#fff
+    style SK fill:#8957e5,stroke:#a371f7,color:#fff
+    style DEF fill:#9e6a03,stroke:#d29922,color:#fff
+    style TPL fill:#2da39e,stroke:#39c5cf,color:#fff
+    style SRC fill:#21262d,stroke:#30363d,color:#e6edf3
+    style KB fill:#21262d,stroke:#30363d,color:#e6edf3
+    style OUT fill:#21262d,stroke:#30363d,color:#e6edf3
         </div>
       </div>
     </div>
@@ -841,17 +846,17 @@ graph TB
     GD -.->|"inherited by"| D1
     GD -.->|"inherited by"| D2
     GD -.->|"inherited by"| D3
-    style Master fill:#e8f0fe,stroke:#4A90D9,stroke-width:2px
-    style SW1 fill:#e8f8e8,stroke:#7ED321,stroke-width:2px
-    style SW2 fill:#fff8e1,stroke:#F5A623,stroke-width:2px
-    style SW3 fill:#fce4ec,stroke:#E91E63,stroke-width:2px
-    style GATE1 fill:#ffcdd2,stroke:#c62828
-    style GATE2 fill:#ffcdd2,stroke:#c62828
-    style CONV fill:#ffcdd2,stroke:#c62828
-    style CB fill:#b71c1c,color:#fff
-    style DONE fill:#2e7d32,color:#fff
-    style MW fill:#4A90D9,color:#fff
-    style GD fill:#F5A623,color:#fff
+    style Master fill:#161b22,stroke:#30363d,stroke-width:2px
+    style SW1 fill:#1a2e1a,stroke:#2ea043,stroke-width:2px
+    style SW2 fill:#2e2a1a,stroke:#d29922,stroke-width:2px
+    style SW3 fill:#2e1a22,stroke:#da3633,stroke-width:2px
+    style GATE1 fill:#3d2020,stroke:#da3633,color:#e6edf3
+    style GATE2 fill:#3d2020,stroke:#da3633,color:#e6edf3
+    style CONV fill:#3d2020,stroke:#da3633,color:#e6edf3
+    style CB fill:#b62324,color:#fff
+    style DONE fill:#238636,color:#fff
+    style MW fill:#1f6feb,color:#fff
+    style GD fill:#9e6a03,color:#fff
         </div>
       </div>
     </div>
@@ -1562,6 +1567,9 @@ graph TB
       lineColor: '#8b949e',
       secondaryColor: '#111318',
       tertiaryColor: '#0a0c10',
+      background: '#111318',
+      mainBkg: '#111318',
+      secondBkg: '#161b22',
       fontSize: '15px',
       fontFamily: 'inherit'
     }
