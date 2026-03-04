@@ -66,6 +66,7 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 
 - [ ] 已执行分解审视（Phase 02 完成后或 Skill 02 Task 5）
 - [ ] 审视结论为「通过」，或「本轮变更列表」为空，或已达成收敛条件（如迭代轮数达到建议上限 2–3）
+- [ ] 所有复杂度为「高」或「极高」且满足拆分触发条件的模块，已执行 [Skill 02-DD 深入分析](skills/skill-02-drilldown.md)（或父模块报告中有明确的「不拆」理由，或标注「内部耦合无法拆分」）
 
 **全部满足** → 模块划分已稳定，可进入 Q2c  
 **任一不满足** → 需执行分解审视；若不通过则按回退规则回到 Phase 01 或 Phase 02，执行变更后再次审视
@@ -136,6 +137,7 @@ compatibility: Designed for Agent/Claude. Requires access to C/C++ source tree; 
 | ----------------------------------------------------------- | ------------------------------------------ | --------------------------------------- |
 | [Skill 01](skills/skill-01-overview.md)    | 工程概览与主流程（含文档收集）             | Phase 01 指示                           |
 | [Skill 02](skills/skill-02-modules.md)     | 模块与依赖分析（含复杂度、使用示例、验证） | Phase 02 指示，或 Q2c 验证触发          |
+| [Skill 02-DD](skills/skill-02-drilldown.md) | 模块深入分析（递归拆分）                  | Skill 02 Task 5 发现需拆分的模块时触发 |
 | [Skill 03](skills/skill-03-build-tests.md) | 构建与测试体系                             | Phase 03 指示，或验证前置需要时提前执行 |
 | [Skill 04](skills/skill-04-reports.md)     | 报告产出与引用                             | Phase 04 指示                           |
 
