@@ -19,8 +19,10 @@
 | **单一职责**         | 每个模块是否只有一个清晰的主责；若存在多责，是否已在报告中说明且可接受                |
 | **边界清晰**         | 模块间依赖是否与目录/构建 target 一致；是否存在「说不清属于哪一模块」的目录或文件     |
 | **粒度一致**         | 是否有的模块过大（应考虑再拆）、有的过碎（应考虑合并）；与复杂度评级是否匹配；**极高/高复杂度模块的拆分说明是否为合法终态（「已拆」或「不拆」），不允许「待拆」或模糊表述残留** |
+| **评级复核**         | 高/极高复杂度模块的**评级维度记录**是否与最终等级一致；是否存在维度得分应导致更高等级但实际评级偏低的情况（按 [等级映射规则](complexity_levels.md) 机械复核） |
 | **循环依赖**         | 是否存在未预期的循环依赖；若有，是否已标注并考虑通过重新划分模块消除                  |
 | **与 Phase 01 一致** | 主流程、输入输出是否与当前模块划分一致；Phase 02 是否发现了应在概览中补充的模块或流程 |
+| **跨文档一致**       | 若存在 `decomposition_changelog.md`，其中每个模块的复杂度等级、代码行数、拆分状态须与对应模块报告一致；不一致时须修正 |
 
 **结论**：全部满足 → **通过**；任一项不满足 → **不通过**。
 
@@ -30,32 +32,103 @@
 > 2. **拆分未完成**：拆分说明为「待拆」或含「建议拆分」「建议进一步分析」等非终态表述 → 不通过，须执行 [Skill 02-DD](../skills/skill-02-drilldown.md) 完成深入分析后将结论更新为「已拆」
 > 3. **已拆但无子模块报告**：拆分说明为「已拆」但 `docs/codearch/modules/` 下不存在对应的 `<parent>_*.md` 子模块报告 → 不通过，须生成子模块报告
 > 4. **高复杂度模块未评估**：高复杂度模块满足 [拆分建议触发条件](complexity_levels.md) 但报告中无拆分说明 → 不通过，须补充评估
+> 5. **高复杂度模块不拆理由不合格**：高复杂度模块满足拆分触发条件，拆分说明为「不拆」但理由不满足 [「不拆」理由格式要求](complexity_levels.md) → 不通过，须修正理由或重新评估拆分决策
+> 6. **评级与维度记录不一致**：模块报告的评级维度记录中存在「升两档」维度且同时存在至少一个「升一档」维度，但最终评级低于「极高」→ 不通过，须按 [等级映射规则](complexity_levels.md) 修正评级
+>
+> **评级复核 — 强制阻断规则**（任一命中即 **不通过**）：
+>
+> 7. **缺少评级维度记录**：高/极高复杂度模块的报告中无评级维度记录 → 不通过，须补充维度记录
+> 8. **维度记录与评级矛盾**：维度记录按 [等级映射规则](complexity_levels.md) 计算的最低等级高于报告中的实际等级 → 不通过，须修正评级
 
 **粒度一致维度验证脚本**：
 
 ```bash
 PASS=true
-# 检查极高复杂度模块
+
+# === 检查极高复杂度模块（规则 1-3） ===
 for f in docs/codearch/modules/*.md; do
   module=$(basename "$f" .md)
   if grep -q "等级.*极高" "$f" 2>/dev/null; then
     if grep -q "已拆" "$f" 2>/dev/null; then
-      # 已拆 → 验证子模块报告是否存在
       if ls docs/codearch/modules/${module}_*.md 1>/dev/null 2>&1; then
         echo "$f: PASS (已拆，子模块报告存在)"
       else
-        echo "$f: FAIL (标注已拆但无子模块报告)"
+        echo "$f: FAIL [规则3] (标注已拆但无子模块报告)"
         PASS=false
       fi
     elif grep -q "不拆" "$f" 2>/dev/null; then
-      echo "$f: PASS (明确不拆，有理由)"
+      # 检查不拆理由是否合格（规则 5）
+      if grep -q "跨模块依赖\|双向耦合\|共享.*状态\|共享.*数据结构\|循环依赖" "$f" 2>/dev/null; then
+        echo "$f: PASS (明确不拆，理由合格)"
+      else
+        echo "$f: FAIL [规则5] (不拆理由不合格，未包含具体技术论证)"
+        PASS=false
+      fi
     else
-      echo "$f: FAIL (极高复杂度，拆分说明非终态)"
+      echo "$f: FAIL [规则1] (极高复杂度，拆分说明非终态)"
       PASS=false
     fi
   fi
 done
+
+# === 检查高复杂度模块（规则 4-5） ===
+for f in docs/codearch/modules/*.md; do
+  module=$(basename "$f" .md)
+  # 匹配"等级.*高"但排除"等级.*极高"
+  if grep -q "等级.*高" "$f" 2>/dev/null && ! grep -q "等级.*极高" "$f" 2>/dev/null; then
+    # 检查是否有拆分说明（规则 4）
+    if grep -q "拆分说明" "$f" 2>/dev/null; then
+      # 若为不拆，检查理由是否合格（规则 5）
+      if grep -q "不拆" "$f" 2>/dev/null; then
+        if grep -q "跨模块依赖\|双向耦合\|共享.*状态\|共享.*数据结构\|循环依赖" "$f" 2>/dev/null; then
+          echo "$f: PASS (高复杂度，不拆理由合格)"
+        else
+          echo "$f: FAIL [规则5] (高复杂度，不拆理由不合格)"
+          PASS=false
+        fi
+      else
+        echo "$f: PASS (高复杂度，有拆分说明)"
+      fi
+    else
+      echo "$f: CHECK [规则4] (高复杂度，无拆分说明，须确认是否满足拆分触发条件)"
+    fi
+  fi
+done
+
 $PASS && echo "粒度一致: PASS" || echo "粒度一致: FAIL"
+```
+
+**评级复核维度验证脚本**：
+
+```bash
+PASS=true
+
+# === 检查高/极高模块是否有评级维度记录（规则 7） ===
+for f in docs/codearch/modules/*.md; do
+  if grep -q "等级.*高\|等级.*极高" "$f" 2>/dev/null; then
+    if grep -q "评级维度记录\|代码规模.*升\|升.*档.*升.*档" "$f" 2>/dev/null; then
+      echo "$f: PASS (有评级维度记录)"
+    else
+      echo "$f: FAIL [规则7] (高/极高复杂度，缺少评级维度记录)"
+      PASS=false
+    fi
+  fi
+done
+
+# === 检查评级与维度记录一致性（规则 6/8） ===
+for f in docs/codearch/modules/*.md; do
+  # 检查是否同时存在"升两档"和"升一档"但评级不是极高
+  if grep -q "升两档" "$f" 2>/dev/null && grep -q "升一档" "$f" 2>/dev/null; then
+    if grep -q "等级.*极高" "$f" 2>/dev/null; then
+      echo "$f: PASS (升两档+升一档，评级为极高)"
+    else
+      echo "$f: FAIL [规则6/8] (维度记录含升两档+升一档，但评级未达极高)"
+      PASS=false
+    fi
+  fi
+done
+
+$PASS && echo "评级复核: PASS" || echo "评级复核: FAIL"
 ```
 
 ---

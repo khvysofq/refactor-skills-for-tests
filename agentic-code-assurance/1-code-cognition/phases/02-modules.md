@@ -70,10 +70,10 @@
   grep -q "技术特征统计" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
   ```
 
-- [ ] **极高复杂度模块深入分析完成**：所有复杂度为「极高」的模块，其拆分说明为合法终态——「已拆」（有对应的 `modules/<parent>_*.md` 子模块报告存在）或「不拆」（报告中有明确技术理由）；不允许「待拆」或模糊表述残留
+- [ ] **极高复杂度模块深入分析完成**：所有复杂度为「极高」的模块，其拆分说明为合法终态——「已拆」（有对应的 `modules/<parent>_*.md` 子模块报告存在）或「不拆」（报告中有满足 [理由格式要求](../definitions/complexity_levels.md) 的技术理由）；不允许「待拆」或模糊表述残留
 
   ```bash
-  # 检查极高复杂度模块拆分是否完成
+  # 检查极高复杂度模块拆分是否完成（含不拆理由合格性检查）
   for f in docs/codearch/modules/*.md; do
     module=$(basename "$f" .md)
     if grep -q "等级.*极高" "$f" 2>/dev/null; then
@@ -85,9 +85,59 @@
           echo "$f: FAIL (标注已拆但无子模块报告)"
         fi
       elif grep -q "不拆" "$f" 2>/dev/null; then
-        echo "$f: PASS (明确不拆)"
+        if grep -q "跨模块依赖\|双向耦合\|共享.*状态\|共享.*数据结构\|循环依赖" "$f" 2>/dev/null; then
+          echo "$f: PASS (明确不拆，理由合格)"
+        else
+          echo "$f: FAIL (不拆理由不合格，须包含具体技术论证)"
+        fi
       else
         echo "$f: FAIL (极高复杂度，拆分说明非合法终态，须执行 Skill 02-DD)"
+      fi
+    fi
+  done
+  ```
+
+- [ ] **高复杂度模块拆分评估完成**：满足拆分触发条件的高复杂度模块有拆分说明（合法终态），且「不拆」理由满足 [理由格式要求](../definitions/complexity_levels.md)
+
+  ```bash
+  # 检查高复杂度模块拆分评估
+  for f in docs/codearch/modules/*.md; do
+    if grep -q "等级.*高" "$f" 2>/dev/null && ! grep -q "等级.*极高" "$f" 2>/dev/null; then
+      if grep -q "拆分说明" "$f" 2>/dev/null; then
+        if grep -q "不拆" "$f" 2>/dev/null; then
+          if grep -q "跨模块依赖\|双向耦合\|共享.*状态\|共享.*数据结构\|循环依赖" "$f" 2>/dev/null; then
+            echo "$f: PASS (高复杂度，不拆理由合格)"
+          else
+            echo "$f: FAIL (高复杂度，不拆理由不合格)"
+          fi
+        else
+          echo "$f: PASS (高复杂度，有拆分说明)"
+        fi
+      else
+        echo "$f: CHECK (高复杂度，无拆分说明，须确认是否满足拆分触发条件)"
+      fi
+    fi
+  done
+  ```
+
+- [ ] **评级维度记录完整且一致**：高/极高复杂度模块的报告均包含评级维度记录，且记录与最终等级一致（按 [等级映射规则](../definitions/complexity_levels.md) 复核）
+
+  ```bash
+  # 检查高/极高模块评级维度记录完整性与一致性
+  for f in docs/codearch/modules/*.md; do
+    if grep -q "等级.*高\|等级.*极高" "$f" 2>/dev/null; then
+      if grep -q "评级维度记录\|代码规模.*升\|升.*档.*升.*档" "$f" 2>/dev/null; then
+        if grep -q "升两档" "$f" 2>/dev/null && grep -q "升一档" "$f" 2>/dev/null; then
+          if grep -q "等级.*极高" "$f" 2>/dev/null; then
+            echo "$f: PASS (评级维度记录完整且一致)"
+          else
+            echo "$f: FAIL (维度记录含升两档+升一档，但评级未达极高)"
+          fi
+        else
+          echo "$f: PASS (评级维度记录完整)"
+        fi
+      else
+        echo "$f: FAIL (高/极高复杂度，缺少评级维度记录)"
       fi
     fi
   done
@@ -135,6 +185,9 @@
 | 未通过（使用示例缺失）           | 返回 Skill 02 任务 1.5 和任务 2，补充使用示例后重新验收                                                                                                                                         |
 | 未通过（高复杂度模块验证缺失）   | 检查 Phase 03 是否完成；若否则先执行 Phase 03，再返回执行 Skill 02 任务 2.5                                                                                                                     |
 | 未通过（极高复杂度模块深入分析未完成） | 返回 Skill 02 任务 5 步骤 1（深入分析前置检查），执行 [Skill 02-DD](../skills/skill-02-drilldown.md) 完成拆分后重新验收 |
+| 未通过（高复杂度模块拆分评估未完成）   | 返回 Skill 02 任务 2 步骤 7，补充拆分评估后重新验收                                                                    |
+| 未通过（不拆理由不合格）               | 返回 Skill 02 任务 2 步骤 7，修正不拆理由（须满足理由格式要求）或重新评估拆分决策                                       |
+| 未通过（评级维度记录缺失或不一致）     | 返回 Skill 02 任务 2 步骤 7，补充评级维度记录并按等级映射规则修正评级                                                  |
 
 ---
 
