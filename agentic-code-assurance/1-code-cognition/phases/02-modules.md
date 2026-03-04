@@ -70,6 +70,29 @@
   grep -q "技术特征统计" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
   ```
 
+- [ ] **极高复杂度模块深入分析完成**：所有复杂度为「极高」的模块，其拆分说明为合法终态——「已拆」（有对应的 `modules/<parent>_*.md` 子模块报告存在）或「不拆」（报告中有明确技术理由）；不允许「待拆」或模糊表述残留
+
+  ```bash
+  # 检查极高复杂度模块拆分是否完成
+  for f in docs/codearch/modules/*.md; do
+    module=$(basename "$f" .md)
+    if grep -q "等级.*极高" "$f" 2>/dev/null; then
+      if grep -q "已拆" "$f" 2>/dev/null; then
+        count=$(ls docs/codearch/modules/${module}_*.md 2>/dev/null | wc -l)
+        if [ "$count" -gt 0 ]; then
+          echo "$f: PASS (已拆, $count 子模块报告)"
+        else
+          echo "$f: FAIL (标注已拆但无子模块报告)"
+        fi
+      elif grep -q "不拆" "$f" 2>/dev/null; then
+        echo "$f: PASS (明确不拆)"
+      else
+        echo "$f: FAIL (极高复杂度，拆分说明非合法终态，须执行 Skill 02-DD)"
+      fi
+    fi
+  done
+  ```
+
 - [ ] **分解审视已执行且结论为「通过」或已达成收敛**（见 [分解审视约定](../definitions/decomposition_review.md)）
 
 ### 质量检查
@@ -93,6 +116,7 @@
 | 产出                                 | 路径                                             | 说明                                                                                                         |
 | ------------------------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
 | 模块报告（每模块一份）               | `docs/codearch/modules/<module_name>.md`         | 职责、边界、依赖、复杂度、关键设计要点、代码特征、关键代码位置索引、信息来源、使用示例、验证状态（高复杂度） |
+| 子模块报告（深入分析产出）           | `docs/codearch/modules/<parent>_<submodule>.md`  | 极高/高复杂度模块经 Skill 02-DD 深入分析后产生的子模块报告，结构与顶层模块报告相同                           |
 | 总体报告中的模块列表与技术特征统计   | `docs/codearch/overall_report.md`                | 含路径/范围、到各模块报告的链接、技术特征统计                                                                |
 | 分解审视结论与变更列表（若有不通过） | 可选：`docs/codearch/decomposition_changelog.md` | 见 [分解审视约定](../definitions/decomposition_review.md)                                      |
 | 模块地图（可选）                     | `docs/codearch/module_map.md`                    | 模块列表与依赖图汇总                                                                                         |
@@ -110,6 +134,7 @@
 | 未通过（代码特征或位置索引缺失） | 返回 Skill 02 任务 2.1 和任务 2，补充代码特征和位置索引后重新验收                                                                                                                               |
 | 未通过（使用示例缺失）           | 返回 Skill 02 任务 1.5 和任务 2，补充使用示例后重新验收                                                                                                                                         |
 | 未通过（高复杂度模块验证缺失）   | 检查 Phase 03 是否完成；若否则先执行 Phase 03，再返回执行 Skill 02 任务 2.5                                                                                                                     |
+| 未通过（极高复杂度模块深入分析未完成） | 返回 Skill 02 任务 5 步骤 1（深入分析前置检查），执行 [Skill 02-DD](../skills/skill-02-drilldown.md) 完成拆分后重新验收 |
 
 ---
 

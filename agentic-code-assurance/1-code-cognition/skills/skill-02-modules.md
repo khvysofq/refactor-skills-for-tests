@@ -486,20 +486,24 @@ grep -rn "class.*:.*public\|class.*:.*private" src/ --include="*.h" | head -10
 
 ### 任务 5: 分解质量自检（分解审视）
 
-**目标**：按 [分解审视约定](../definitions/decomposition_review.md) 检查当前模块划分是否稳定、合理
+**目标**：按 [分解审视约定](../definitions/decomposition_review.md) 检查当前模块划分是否稳定、合理；**确保所有需要拆分的高/极高复杂度模块已完成深入分析**
 
 **步骤**：
 
-1. 阅读并执行 [decomposition_review](../definitions/decomposition_review.md) 中的审视维度（checklist）：单一职责、边界清晰、粒度一致、循环依赖、与 Phase 01 概览一致
-2. **若自检通过或变更列表为空**：返回 [Phase 02](../phases/02-modules.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或 Phase 04
-3. **若自检不通过**：写出本轮变更列表（拆/合/重命名），更新总体报告中的模块列表与链接；根据回退规则选择：
+1. **【前置】扫描并执行深入分析**（在审视结论判断之前完成）：
+   - 扫描所有模块报告，列出复杂度为「高/极高」且满足 [complexity_levels 拆分建议触发条件](../definitions/complexity_levels.md) 的模块
+   - 检查每个模块的拆分说明结论（须为 [闭合枚举](../definitions/complexity_levels.md)：「已拆」「不拆」「待拆」之一）：
+     - 若拆分说明为「**待拆**」或含「建议拆分」「建议进一步分析」等模糊表述：**必须**立即对该模块执行 [Skill 02-DD: 模块深入分析](skill-02-drilldown.md)，完成后将拆分说明更新为「已拆（子模块：...）」
+     - 若拆分说明为「已拆」但 `docs/codearch/modules/` 下不存在对应的 `<parent>_*.md` 子模块报告：**必须**补生成子模块报告
+     - 若拆分说明为「不拆（理由：...）」：无需操作
+     - 若无拆分说明字段（极高复杂度模块此字段必填）：须先补充拆分评估，确定为「已拆」「不拆」或「待拆」后再按上述规则处理
+   - 已经完成深入分析的模块（父模块报告末尾含「子模块索引」章节且子模块报告存在）不重复触发
+   - **本步骤结束条件**：所有高/极高复杂度模块的拆分说明均为合法终态（「已拆」且子模块报告存在，或「不拆」且有理由）
+2. **执行审视维度 checklist**：阅读并逐项检查 [decomposition_review](../definitions/decomposition_review.md) 中的审视维度：单一职责、边界清晰、粒度一致、循环依赖、与 Phase 01 概览一致
+3. **若自检通过**：返回 [Phase 02](../phases/02-modules.md) 完成阶段验收，然后根据入口决策进入 Phase 03 或 Phase 04
+4. **若自检不通过**：写出本轮变更列表（拆/合/重命名），更新总体报告中的模块列表与链接；根据回退规则选择：
    - 仅模块边界/数量调整 → 只重做 Task 2–4（受影响的模块）及 Task 5
    - 主流程或顶层分解需修正 → 返回 [Phase 01](../phases/01-overview.md)，更新概览后重新执行 Phase 02
-4. **若存在「建议拆分=是」的模块**（无论审视通过与否）：
-   - 列出所有复杂度为「高/极高」且满足 [complexity_levels 拆分建议触发条件](../definitions/complexity_levels.md) 的模块
-   - 对每个这样的模块（且尚未执行过深入分析的），加载并执行 [Skill 02-DD: 模块深入分析](skill-02-drilldown.md)
-   - 全部深入分析完成后，重新执行本 Task 5（分解审视），以新产生的子模块报告为输入做最终审视
-   - **注意**：已经完成深入分析的模块（父模块报告末尾含「子模块索引」章节）不重复触发；本步骤是幂等的
 
 ---
 
@@ -509,7 +513,7 @@ grep -rn "class.*:.*public\|class.*:.*private" src/ --include="*.h" | head -10
 
 - [ ] 主要模块（建议 ≥80% 的已识别模块）均有对应 `docs/codearch/modules/<module_name>.md`
 - [ ] 每份模块报告含：职责、边界（输入/输出）、依赖（内部/外部）、**复杂度评级**、**关键设计要点**（建议 3–5 条）
-- [ ] **极高复杂度模块报告的「复杂度评级」中含拆分说明**（已拆/不拆的理由）
+- [ ] **极高复杂度模块的拆分说明为合法终态**：「已拆（子模块：...）」且对应子模块报告存在，或「不拆（理由：...）」且有具体技术理由；不允许「待拆」或模糊表述残留
 - [ ] 每份模块报告含「代码特征」章节，包含内存管理、并发模型、I/O 操作、外部数据处理、错误处理各维度
 - [ ] 每份模块报告含「关键代码位置索引」章节，至少包含主要入口点、错误/异常路径、外部数据入口（含首道校验位置）
 - [ ] 每份模块报告含「关键数据流路径」章节，至少包含一条关键数据流转路径
@@ -560,10 +564,21 @@ for f in docs/codearch/modules/*.md; do
     grep -q "验证状态\|验证等级" "$f" && echo "$f: PASS" || echo "$f: FAIL (missing validation)"
   fi
 done
-# 检查极高复杂度模块是否含拆分说明
+# 检查极高复杂度模块拆分说明是否为合法终态（已拆+子模块存在 或 不拆+有理由）
 for f in docs/codearch/modules/*.md; do
+  module=$(basename "$f" .md)
   if grep -q "等级.*极高" "$f" 2>/dev/null; then
-    grep -q "拆分说明\|已拆\|不拆" "$f" && echo "$f: PASS" || echo "$f: FAIL (missing split evaluation)"
+    if grep -q "已拆" "$f" 2>/dev/null; then
+      if ls docs/codearch/modules/${module}_*.md 1>/dev/null 2>&1; then
+        echo "$f: PASS (已拆，子模块报告存在)"
+      else
+        echo "$f: FAIL (标注已拆但无子模块报告)"
+      fi
+    elif grep -q "不拆" "$f" 2>/dev/null; then
+      echo "$f: PASS (明确不拆)"
+    else
+      echo "$f: FAIL (拆分说明非合法终态)"
+    fi
   fi
 done
 # 检查总体报告是否含技术特征统计
@@ -578,7 +593,7 @@ grep -q "技术特征统计\|技术特征概览" docs/codearch/overall_report.md
 - 使用 [validation_levels](../definitions/validation_levels.md) 确定验证等级
 - 依赖关系结合构建配置与 include 验证
 - **为每条依赖边标注依赖类型**（调用/数据传递/事件通知/配置读取/继承），并识别跨模块所有权转移
-- **极高复杂度模块须评估拆分可行性**，并在报告中写明结论（已拆/不拆的理由）
+- **极高复杂度模块须完成拆分或明确不拆**：拆分说明必须为合法终态（「已拆」或「不拆」），不允许「待拆」「建议拆分」等非终态残留；极高复杂度模块满足拆分触发条件时须执行 [Skill 02-DD](skill-02-drilldown.md)
 - 优先利用已有文档和测试作为信息来源，文档内容优先于代码推断
 - 使用示例优先从现有示例/测试中提取，标注来源
 - 对高复杂度模块进行验证，确认理解正确
