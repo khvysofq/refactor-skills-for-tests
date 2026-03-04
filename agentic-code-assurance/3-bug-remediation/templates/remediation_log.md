@@ -29,6 +29,7 @@
 | **修复变更文件** | `src/protocol/http_parser.c` |
 | **全量回归结果** | PASS (全部 42 个测试通过) |
 | **测试归档状态** | 已集成 → `test/http_parser_overflow_test.cpp` |
+| knowledge_gap（可选） | （本条无知识库缺口）|
 
 ### 示例：未复现
 
@@ -48,6 +49,7 @@
 | **验证结果** | 暂缓 |
 | **验证测试路径** | `test/verification/verify_C4_test.cpp`（需多线程时序控制，当前无法可靠触发） |
 | **测试归档状态** | 保留(暂缓) → `test/deferred/verify_C4_test.cpp` |
+| knowledge_gap（可选） | 模块报告的「并发不变量」章节未列出 `Communicator` 与 `Poller` 之间的锁获取顺序约定，导致无法确认当前代码是否真正违反了约定的顺序，验证测试设计困难 |
 
 ---
 

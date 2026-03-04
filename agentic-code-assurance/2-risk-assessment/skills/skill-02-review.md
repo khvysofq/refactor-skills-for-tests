@@ -51,7 +51,7 @@
    - 加载 [审查模式定义](../definitions/review_patterns.md)，选择与当前风险维度对应的模式
    - 对 L2/L3 深度的模块：沿每条数据流路径，逐步应用审查模式，追踪代码而非仅 grep 关键词
    - 对 L0/L1 深度的模块：按审查模式做关键词扫描，对可疑处做局部路径验证
-5. **记录疑似问题**：每条疑似 BUG 按 [task_output_structure](../definitions/task_output_structure.md) 记录所有必填字段（含推理依据、已排除的保护机制、需验证的前提假设），并标注对应的审查模式编号（如 M-1、C-2）。
+5. **记录疑似问题**：每条疑似 BUG 按 [task_output_structure](../definitions/task_output_structure.md) 记录所有必填字段（含推理依据、已排除的保护机制、需验证的前提假设），并标注对应的审查模式编号（如 M-1、C-2）。**若审查过程中因模块报告信息不足（如所有权模型未记录、数据流路径不完整、模块边界模糊）导致推理受阻，须在该任务条目的 `knowledge_gap` 字段记录缺失的具体信息**，供后续知识库补强使用（见 [反馈操作约定](../../definitions/feedback_protocol.md)）。
 6. 将条目写入 `docs/risk_tasks/task_list.md`（可追加）或临时文件，供 Phase 03 汇总。
 
 **最小上下文原则**：不要一次性加载全部模块报告；每批只读当前审查模块的报告与对应源码。

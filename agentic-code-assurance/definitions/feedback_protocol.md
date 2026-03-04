@@ -35,4 +35,35 @@
 
 ---
 
+## 知识库质量信号汇总
+
+> **阅读时机**：阶段二 Phase 03（汇总与产出）完成后，以及阶段三 Phase 03（回归与产出）完成后，各执行一次。目的是将 `task_list.md` 和 `remediation_log.md` 中积累的 `knowledge_gap` 信号转化为驱动阶段一改进的具体指令。
+
+### 执行步骤
+
+1. 扫描当轮 `docs/risk_tasks/task_list.md` 和 `docs/remediation/remediation_log.md` 中所有含 `knowledge_gap` 字段的条目，按关联模块分组统计。
+
+2. 按以下三条规则判断是否需要补强阶段一：
+
+   **规则 A（模块报告内容不足）**：若同一关联模块下有 **≥2 条**任务含 `knowledge_gap`，则将该模块标记为「知识库待补强」，在 `docs/codearch/knowledge_base_changelog.md` 中追加记录（含模块名、缺口描述摘要、触发轮次），并在迭代深化 Round N+1 开始前执行阶段一 `Skill 02` 对应的 Task 2.1/2.2/2.3/2.4 补充该模块报告。
+
+   **规则 B（模块边界划分问题）**：若任意条目的 `knowledge_gap` 描述中涉及「跨模块」「边界不清」「归属不明」「实际属于另一模块」等表述，则将该情况标记为「分解审视待重开」，在 `docs/codearch/knowledge_base_changelog.md` 中追加记录，并在迭代深化 Round N+1 开始前执行阶段一 `Skill 02 Task 5`（分解审视）。**此触发不受阶段一原有「2–3 轮上限」的限制**，可在任意轮次由外部信号重新激活。
+
+   **规则 C（无 knowledge_gap 条目）**：无需补强，`knowledge_base_changelog.md` 中注明「本轮无知识库缺口」即可，按原有流程继续。
+
+3. 将本次汇总结论写入 `docs/codearch/knowledge_base_changelog.md`。该文件从「可选」升级为**建议必填**，每轮至少追加一条记录（哪怕结论是「本轮无缺口」）。
+
+### changelog 记录格式建议
+
+```markdown
+## Round N - <日期>
+
+- **来源**：task_list.md / remediation_log.md（阶段二/三完成后）
+- **规则 A 触发**：模块 X（缺口：未记录函数 f 的所有权模型） / 无
+- **规则 B 触发**：模块 Y 与模块 Z 边界描述不清 / 无
+- **结论**：待补强模块 [X]；分解审视待重开 [是/否]
+```
+
+---
+
 **返回**：返回调用此文档的阶段或技能文档，继续执行。

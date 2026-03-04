@@ -47,7 +47,8 @@ flowchart LR
         C1 --> C2 --> C3
     end
     stage1 -->|门禁通过| stage2 --> stage3
-    stage3 -->|迭代深化| stage2
+    stage3 -->|"迭代深化\n(规则1: BUG集中)"| stage2
+    stage3 -->|"知识库质量信号\n(规则2/3: knowledge_gap汇总)"| stage1
     stage2 -.->|反馈更新| stage1
     stage3 -.->|反馈更新| stage1
     A3 -->|门禁失败| ABORT[中止工作流]
@@ -81,6 +82,8 @@ flowchart LR
 
 阶段二或阶段三执行过程中，若发现工程理解文档与代码不一致或遗漏，应触发反馈更新知识库。完整的操作约定、操作顺序与记录建议见 [反馈操作约定](definitions/feedback_protocol.md)。
 
+阶段二 Phase 03 和阶段三 Phase 03 完成后，还须执行**知识库质量信号汇总**（见 [反馈操作约定 - 知识库质量信号汇总](definitions/feedback_protocol.md)）：扫描当轮 `task_list.md` 和 `remediation_log.md` 中的 `knowledge_gap` 字段，按规则 A/B/C 判断是否需要补强阶段一，并将结论写入 `docs/codearch/knowledge_base_changelog.md`。迭代深化时依据此 changelog 决定是否先进入阶段一补强再开启下一轮审查。
+
 ---
 
 ## 五、迭代深化机制
@@ -97,11 +100,17 @@ flowchart LR
 
 ### 迭代规则
 
-1. **迭代入口**：阶段三完成后，检查 `remediation_log.md`。若存在「暂缓」项或 Round 1 的已确认 BUG 集中在特定模块，建议启动 Round 2。
+1. **迭代入口**：阶段三完成后，检查 `remediation_log.md` 和 `docs/codearch/knowledge_base_changelog.md`。满足以下任一规则时建议启动 Round 2：
+
+   - **规则 1（原有）**：存在「暂缓」项，或 Round 1 的已确认 BUG 集中在特定模块。
+   - **规则 2（新增，知识库补强）**：`knowledge_base_changelog.md` 中标记了「知识库待补强」模块（即 [反馈操作约定](definitions/feedback_protocol.md) 规则 A 触发）。此时须先进入阶段一，执行 `Skill 02` 中对应的 Task 2.1/2.2/2.3/2.4 补充该模块报告，再进入 Round 2 阶段二。
+   - **规则 3（新增，分解审视重开）**：`knowledge_base_changelog.md` 中标记了「分解审视待重开」（即 [反馈操作约定](definitions/feedback_protocol.md) 规则 B 触发）。此时须先进入阶段一执行 `Skill 02 Task 5`（分解审视），审视通过后再进入 Round 2 阶段二。**此触发不受阶段一原有「2–3 轮上限」的一次性限制**。
+
 2. **范围缩窄**：每轮迭代的分析范围应当缩窄（更少的模块），但审查深度加大（更细致的路径追踪）。
 3. **产出版本化**：每轮的 `task_list` 和 `remediation_log` 使用后缀区分（如 `_r2`、`_r3`），避免覆盖前一轮的记录。
 4. **收敛条件**：当某一轮的 task_list 为空（无新发现）或全部为「未复现」时，迭代自然终止。
 5. **最大轮次**：建议不超过 3 轮。超过 3 轮仍有大量新发现，可能说明阶段一的知识库质量不足，应先返回阶段一补充。
+6. **知识库优先**：若规则 2 或规则 3 触发，Round N 阶段二开始前须先完成阶段一补强或分解审视，并在 `scope.md` 中注明「本轮已补强模块：XXX」或「本轮已重开分解审视」，保证审查所依赖的知识库质量已提升。
 
 ### 迭代时的阶段二入口
 

@@ -45,7 +45,7 @@
        - 测试触发了 BUG（崩溃、错误输出、内存错误等）→ **已确认**
        - 测试运行正常，BUG 未被触发 → **未复现**
        - 测试因结构性原因无法编写或运行（如需要特定硬件、网络环境等）→ **暂缓**（附说明）
-   - **记录结果**：将验证结果、测试文件路径、测试名称写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](../definitions/remediation_output_structure.md)。
+   - **记录结果**：将验证结果、测试文件路径、测试名称写入 `docs/remediation/remediation_log.md`，格式符合 [remediation_output_structure](../definitions/remediation_output_structure.md)。**若验证过程中发现模块报告描述不足（如生命周期模型未收录关键对象、数据流路径记录不完整）导致测试设计困难，须在该任务的 `knowledge_gap` 字段记录缺失的具体信息**，供后续知识库补强使用（见 [反馈操作约定](../../definitions/feedback_protocol.md)）。
 
 ### 任务 2: 验收自检
 
