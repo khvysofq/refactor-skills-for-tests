@@ -119,8 +119,8 @@ head -100 ${MODULE_PATH}/*.h 2>/dev/null | grep -E "@brief|@file|/\*\*"
 3. 填写**关键设计要点**（建议 3–5 条：主要入口函数/类、核心数据结构、线程/并发假设、错误处理策略、扩展点等）
 4. **填写「代码特征」**：执行任务 2.1 的扫描，填写内存管理、并发模型、I/O 操作、外部数据处理、错误处理各维度
 5. **填写「关键代码位置索引」**：记录主要入口点和外部数据入口
-6. 填写「与其它模块的关系」
-7. **复杂度评级**：按 [complexity_levels](../definitions/complexity_levels.md) 判定等级（低/中/高/极高）并写入报告，可选写一句依据
+6. **填写「与其它模块的关系」**：按结构化表格格式（上游依赖/下游依赖）填写，**须标注依赖类型**（调用/数据传递/事件通知/配置读取/继承）和**是否涉及跨模块所有权转移**；若本模块被 ≥3 个模块依赖，须在此节顶部注明「本模块为枢纽模块（HUB）」。依赖类型与所有权转移信息来源于任务 3 的分析结果（任务 3 完成后回填）。
+7. **复杂度评级**：按 [complexity_levels](../definitions/complexity_levels.md) 判定等级（低/中/高/极高）并写入报告，可选写一句依据；**极高复杂度模块须填写拆分说明**（已拆/不拆的理由），高复杂度模块建议填写。
 8. **填写「信息来源」**：记录分析所依据的信息源（任务 1.5 的产出）
 9. **填写「使用示例」**：提供至少一个基本用法示例
 
@@ -423,26 +423,52 @@ grep -rn "atomic\|__sync_\|__atomic_" $MODULE_PATH --include="*.c" --include="*.
 
 ---
 
-### 任务 3: 解析依赖方向
+### 任务 3: 解析依赖方向与关系结构化
 
-**目标**：建立模块间依赖关系，避免循环依赖遗漏
+**目标**：建立模块间依赖关系，识别依赖类型与跨模块所有权转移，避免循环依赖遗漏，为总体报告「模块依赖图」提供数据
 
 **步骤**：
 
-1. 分析 include 与链接依赖（`#include`、`target_link_libraries` 等）
-2. 在模块报告中写清「依赖谁 / 被谁依赖」
-3. 可选：在 `module_map.md` 或总体报告中画 Mermaid 依赖图
+1. **分析 include 与链接依赖**，确认基础依赖方向：
+
+   ```bash
+   grep -r "#include" src/ | sed 's/.*#include [<"]\(.*\)[>"]/\1/' | sort | uniq -c | sort -rn
+   grep -r "target_link_libraries" . --include="CMakeLists.txt"
+   ```
+
+2. **为每条依赖边标注依赖类型**，从以下枚举中选取：
+   - `调用`：A 直接调用 B 的函数/方法（检查：B 的函数被 A 直接 call）
+   - `数据传递`：A 将数据对象传给 B 或从 B 获取数据对象（检查：函数参数/返回值传递指针或对象）
+   - `事件通知`：A 注册回调给 B，B 触发时调用 A 的函数（检查：callback 注册与触发模式）
+   - `配置读取`：A 从 B 读取配置（检查：B 提供 get_config/get_option 类接口被 A 消费）
+   - `继承`：A 继承/实现 B 定义的接口或基类（检查：class A : public B）
+
+3. **识别跨模块所有权转移**：对依赖类型为「数据传递」的每条边，判断是否涉及所有权转移：
+   - 转移标志：裸指针传入后由接收方负责 free/delete；`unique_ptr` 通过 `std::move` 传入；函数文档/注释说明"调用方将所有权交给被调用方"
+   - 记录转移方向：「A 获得所有权」或「B 获得所有权」
+
+4. **识别枢纽模块**：统计每个模块被其他模块依赖的数量，被 ≥3 个模块依赖的标记为枢纽模块（HUB）。
+
+5. **在模块报告中填写「与其它模块的关系」结构化表格**：按上游依赖/下游依赖分别列出，填入依赖类型与所有权转移信息（可回填任务 2 步骤 6 留的占位）。
+
+6. **在总体报告中生成/更新「模块依赖图」**：用 Mermaid flowchart 表示所有模块及依赖边，边标签写明依赖类型；有所有权转移的边追加 `[所有权转移]`；枢纽模块节点标注 `[HUB]`。
 
 **分析命令参考**：
 
 ```bash
-grep -r "#include" src/ | sed 's/.*#include [<"]\(.*\)[>"]/\1/' | sort | uniq -c | sort -rn
-grep -r "target_link_libraries" . --include="CMakeLists.txt"
+# 查找回调注册模式
+grep -rn "callback\|register\|set_handler\|add_listener" src/ --include="*.cpp" --include="*.h" | head -10
+
+# 查找所有权转移模式
+grep -rn "std::move\|release()\|unique_ptr" src/ --include="*.cpp" | head -10
+
+# 查找继承关系
+grep -rn "class.*:.*public\|class.*:.*private" src/ --include="*.h" | head -10
 ```
 
-### 任务 4: 更新总体报告中的模块列表与技术特征统计
+### 任务 4: 更新总体报告中的模块列表、技术特征统计与模块依赖图
 
-**目标**：在 `docs/codearch/overall_report.md` 中更新「模块列表」和「技术特征概览」
+**目标**：在 `docs/codearch/overall_report.md` 中更新「模块列表」「技术特征概览」和「模块依赖图」
 
 **步骤**：
 
@@ -452,6 +478,11 @@ grep -r "target_link_libraries" . --include="CMakeLists.txt"
    - 统计各技术特征涉及的模块数量
    - 列出涉及该特征的主要模块名称
    - 基于各模块报告的「代码特征」章节汇总
+4. **生成或更新「模块依赖图」**：
+   - 基于任务 3 的分析结果，用 Mermaid flowchart 绘制全局依赖图
+   - 每条边标注依赖类型（调用/数据传递/事件通知/配置读取/继承）
+   - 涉及所有权转移的边追加 `[所有权转移]` 标注
+   - 枢纽模块节点标注 `[HUB]`
 
 ### 任务 5: 分解质量自检（分解审视）
 
@@ -473,15 +504,18 @@ grep -r "target_link_libraries" . --include="CMakeLists.txt"
 
 - [ ] 主要模块（建议 ≥80% 的已识别模块）均有对应 `docs/codearch/modules/<module_name>.md`
 - [ ] 每份模块报告含：职责、边界（输入/输出）、依赖（内部/外部）、**复杂度评级**、**关键设计要点**（建议 3–5 条）
+- [ ] **极高复杂度模块报告的「复杂度评级」中含拆分说明**（已拆/不拆的理由）
 - [ ] 每份模块报告含「代码特征」章节，包含内存管理、并发模型、I/O 操作、外部数据处理、错误处理各维度
 - [ ] 每份模块报告含「关键代码位置索引」章节，至少包含主要入口点、错误/异常路径、外部数据入口（含首道校验位置）
 - [ ] 每份模块报告含「关键数据流路径」章节，至少包含一条关键数据流转路径
 - [ ] 每份模块报告含「生命周期与所有权模型」章节（涉及手动内存管理的模块须列出关键对象）
 - [ ] 多线程模块的报告含「并发不变量」章节（非多线程模块标注「本模块为单线程模型」）
+- [ ] **每份模块报告含「与其它模块的关系」结构化表格**，上游/下游依赖各有独立表格，每行含依赖类型与跨模块所有权转移标注
 - [ ] 每份模块报告含「信息来源」章节，记录分析依据
 - [ ] 每份模块报告含「使用示例」章节，至少一个基本用法，并标注来源
 - [ ] 复杂度为「高」或「极高」的模块报告含「验证状态」章节
 - [ ] 总体报告中存在「模块列表」且每条含路径/范围、到该模块报告的链接
+- [ ] **总体报告中存在「模块依赖图」（Mermaid 图）**，每条边含依赖类型标注，枢纽模块标注 `[HUB]`，所有权转移边标注 `[所有权转移]`
 - [ ] 总体报告中「技术特征概览」的「技术特征统计」已更新
 - [ ] 链接指向的文件存在
 - [ ] **分解审视已执行**且结论为「通过」或已达成收敛（Task 5）
@@ -493,6 +527,10 @@ grep -r "target_link_libraries" . --include="CMakeLists.txt"
 [ -d docs/codearch/modules ] && [ "$(ls -A docs/codearch/modules 2>/dev/null)" ] && echo "PASS" || echo "FAIL"
 # 总体报告存在且含模块链接
 [ -f docs/codearch/overall_report.md ] && grep -q "modules/.*\.md" docs/codearch/overall_report.md && echo "PASS" || echo "FAIL"
+# 检查总体报告是否含模块依赖图（Mermaid）
+grep -q "flowchart\|graph " docs/codearch/overall_report.md && echo "PASS (依赖图存在)" || echo "FAIL (缺少模块依赖图)"
+# 检查总体报告依赖图是否含依赖类型标注
+grep -q "调用\|数据传递\|事件通知\|配置读取\|继承" docs/codearch/overall_report.md && echo "PASS (含依赖类型)" || echo "CHECK (依赖图可能缺少类型标注)"
 # 检查模块报告是否含代码特征（抽样检查）
 grep -l "代码特征\|Code Characteristics" docs/codearch/modules/*.md 2>/dev/null | wc -l
 # 检查模块报告是否含使用示例（抽样检查）
@@ -503,6 +541,8 @@ grep -l "关键代码位置索引\|主要入口点" docs/codearch/modules/*.md 2
 grep -l "关键数据流路径\|数据流" docs/codearch/modules/*.md 2>/dev/null | wc -l
 # 检查模块报告是否含生命周期与所有权模型
 grep -l "生命周期与所有权\|所有权模型" docs/codearch/modules/*.md 2>/dev/null | wc -l
+# 检查模块报告是否含结构化的与其它模块的关系（上游依赖/下游依赖）
+grep -l "上游依赖\|下游依赖" docs/codearch/modules/*.md 2>/dev/null | wc -l
 # 检查多线程模块是否含并发不变量
 for f in docs/codearch/modules/*.md; do
   if grep -q "多线程.*是" "$f" 2>/dev/null; then
@@ -513,6 +553,12 @@ done
 for f in docs/codearch/modules/*.md; do
   if grep -q "等级.*高\|等级.*极高" "$f" 2>/dev/null; then
     grep -q "验证状态\|验证等级" "$f" && echo "$f: PASS" || echo "$f: FAIL (missing validation)"
+  fi
+done
+# 检查极高复杂度模块是否含拆分说明
+for f in docs/codearch/modules/*.md; do
+  if grep -q "等级.*极高" "$f" 2>/dev/null; then
+    grep -q "拆分说明\|已拆\|不拆" "$f" && echo "$f: PASS" || echo "$f: FAIL (missing split evaluation)"
   fi
 done
 # 检查总体报告是否含技术特征统计
@@ -526,6 +572,8 @@ grep -q "技术特征统计\|技术特征概览" docs/codearch/overall_report.md
 - 使用 [complexity_levels](../definitions/complexity_levels.md) 统一评级
 - 使用 [validation_levels](../definitions/validation_levels.md) 确定验证等级
 - 依赖关系结合构建配置与 include 验证
+- **为每条依赖边标注依赖类型**（调用/数据传递/事件通知/配置读取/继承），并识别跨模块所有权转移
+- **极高复杂度模块须评估拆分可行性**，并在报告中写明结论（已拆/不拆的理由）
 - 优先利用已有文档和测试作为信息来源，文档内容优先于代码推断
 - 使用示例优先从现有示例/测试中提取，标注来源
 - 对高复杂度模块进行验证，确认理解正确

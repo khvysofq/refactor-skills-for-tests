@@ -96,6 +96,31 @@
 
 ---
 
+## 模块依赖图
+
+<以 Mermaid 图展示所有模块间的依赖方向，提供全局拓扑视图>
+
+```mermaid
+flowchart LR
+    module_a["module_a"]
+    module_b["module_b"]
+    module_c["module_c [HUB]"]
+    module_d["module_d"]
+
+    module_a -->|调用| module_c
+    module_b -->|数据传递 [所有权转移]| module_c
+    module_c -->|调用| module_d
+    module_a -->|事件通知| module_d
+```
+
+> **依赖类型枚举**：`调用` / `数据传递` / `事件通知` / `配置读取` / `继承`
+>
+> **特殊标注**：
+> - `[HUB]`：枢纽模块，被 ≥3 个其他模块依赖，审查时优先关注
+> - `[所有权转移]`：该依赖边涉及资源/对象所有权在模块间转移，内存安全审查重点
+
+---
+
 ## 构建与测试摘要
 
 <简要说明或链接到 build_and_tests.md>
