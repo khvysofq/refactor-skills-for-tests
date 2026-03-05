@@ -61,20 +61,20 @@ flowchart LR
 
 ### 何时进入下一阶段
 
-| 欲进入阶段 | 前置条件                                                                                                                                                           |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 欲进入阶段 | 前置条件                                                                                                                                                                                                                                                                                     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 阶段二     | `docs/codearch/overall_report.md` 存在，且满足 [1-code-cognition/Workflow.md](1-code-cognition/Workflow.md) 中 Q1 ～ Q3 的「是」条件（即代码认知已完成或已更新）。**特别注意**：阶段一 Phase 03 包含编译与测试环境硬性门禁，若工程无法编译或测试无法运行，工作流将在此中止，不会进入阶段二。 |
-| 阶段三     | 阶段二产出已存在：`docs/risk_tasks/` 下存在任务列表（具体文件名见 [2-risk-assessment/Workflow.md](2-risk-assessment/Workflow.md)）。                               |
+| 阶段三     | 阶段二产出已存在：`docs/risk_tasks/` 下存在任务列表（具体文件名见 [2-risk-assessment/Workflow.md](2-risk-assessment/Workflow.md)）。                                                                                                                                                         |
 
 ---
 
 ## 三、各阶段输入输出（契约）
 
-| 阶段           | 输入                                                  | 输出（路径与形式）                                                                                                                                                                                   |
-| -------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1 代码认知** | 源代码、构建配置                                      | `docs/codearch/`：`overall_report.md`、`modules/<module_name>.md`、`build_and_tests.md`。详见 [1-code-cognition/definitions/output_structure.md](1-code-cognition/definitions/output_structure.md)。 |
-| **2 风险评估** | 知识库（`docs/codearch/`）+ 源代码                    | 疑似 BUG 任务列表：`docs/risk_tasks/`。具体文件名与格式由 [2-risk-assessment/Workflow.md](2-risk-assessment/Workflow.md) 约定。                                                                      |
-| **3 BUG 修复** | 任务列表 + 源代码 + `docs/codearch/`（构建/测试说明） | 验证测试（集成到正式测试套件）、源码修复（当前分支直接修改）、`docs/remediation/remediation_log.md`（完整记录）。人类可通过 git diff 审查修复。具体由 [3-bug-remediation/Workflow.md](3-bug-remediation/Workflow.md) 约定。 |
+| 阶段           | 输入                                                  | 输出（路径与形式）                                                                                                                                                                                                      |
+| -------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1 代码认知** | 源代码、构建配置                                      | `docs/codearch/`：`overall_report.md`、`modules/<module_name>.md`、`build_and_tests.md`。详见 [1-code-cognition/definitions/output_structure.md](1-code-cognition/definitions/output_structure.md)。                    |
+| **2 风险评估** | 知识库（`docs/codearch/`）+ 源代码                    | 疑似 BUG 任务列表：`docs/risk_tasks/`。具体文件名与格式由 [2-risk-assessment/Workflow.md](2-risk-assessment/Workflow.md) 约定。                                                                                         |
+| **3 BUG 修复** | 任务列表 + 源代码 + `docs/codearch/`（构建/测试说明） | 验证测试（集成到正式测试套件）、源码修复（当前分支直接修改）、`docs/remediation/remediation_log.md`（完整记录）。可通过 git diff 审查修复。具体由 [3-bug-remediation/Workflow.md](3-bug-remediation/Workflow.md) 约定。 |
 
 ---
 
@@ -92,11 +92,11 @@ flowchart LR
 
 ### 迭代轮次
 
-| 轮次 | 策略 | 范围 | 审查深度 | 产出文件命名 |
-|------|------|------|----------|--------------|
-| Round 1（广度优先） | 全模块快速扫描 | 所有模块 | L0-L1 | `task_list.md`、`remediation_log.md` |
-| Round 2（深度优先） | 聚焦高风险区域 | 仅 Round 1 中发现已确认 BUG 或高风险暂缓项的模块 | L2-L3 | `task_list_r2.md`、`remediation_log_r2.md` |
-| Round 3（针对性） | 跨模块交互验证 | Round 1/2 中已确认 BUG 区域的跨模块交互 | L3 | `task_list_r3.md`、`remediation_log_r3.md` |
+| 轮次                | 策略           | 范围                                             | 审查深度 | 产出文件命名                               |
+| ------------------- | -------------- | ------------------------------------------------ | -------- | ------------------------------------------ |
+| Round 1（广度优先） | 全模块快速扫描 | 所有模块                                         | L0-L1    | `task_list.md`、`remediation_log.md`       |
+| Round 2（深度优先） | 聚焦高风险区域 | 仅 Round 1 中发现已确认 BUG 或高风险暂缓项的模块 | L2-L3    | `task_list_r2.md`、`remediation_log_r2.md` |
+| Round 3（针对性）   | 跨模块交互验证 | Round 1/2 中已确认 BUG 区域的跨模块交互          | L3       | `task_list_r3.md`、`remediation_log_r3.md` |
 
 ### 迭代规则
 
@@ -115,6 +115,7 @@ flowchart LR
 ### 迭代时的阶段二入口
 
 迭代 Round 2+ 时，进入阶段二后：
+
 - **Phase 01（范围与策略）**：在 `scope.md` 中注明「Round N 迭代，聚焦模块：XXX」，范围为上一轮发现问题的模块。
 - **Phase 02（深度审查）**：使用更高的审查深度等级（L2/L3），重点审查上一轮暂缓项和已确认 BUG 的周边代码。
 
@@ -122,12 +123,12 @@ flowchart LR
 
 ## 六、目录说明
 
-| 目录                   | 说明                                                                                                                                               |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **本目录**             | 总入口：本文档（Workflow.md）。端到端编排、契约与反馈机制见上文。                                                                                  |
-| **1-code-cognition/**  | 代码架构与工程理解工作流（完整）。入口：[Workflow.md](1-code-cognition/Workflow.md)。产出即 `docs/codearch/` 下的知识库。                          |
-| **2-risk-assessment/** | 风险分析工作流。入口：[Workflow.md](2-risk-assessment/Workflow.md)。输入：`docs/codearch/`；输出：疑似 BUG 任务列表。                              |
-| **3-bug-remediation/** | BUG 确认与修复工作流。入口：[Workflow.md](3-bug-remediation/Workflow.md)。输入：任务列表与知识库；输出：测试、修复与 docs/remediation/ 摘要。      |
+| 目录                   | 说明                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **本目录**             | 总入口：本文档（Workflow.md）。端到端编排、契约与反馈机制见上文。                                                                             |
+| **1-code-cognition/**  | 代码架构与工程理解工作流（完整）。入口：[Workflow.md](1-code-cognition/Workflow.md)。产出即 `docs/codearch/` 下的知识库。                     |
+| **2-risk-assessment/** | 风险分析工作流。入口：[Workflow.md](2-risk-assessment/Workflow.md)。输入：`docs/codearch/`；输出：疑似 BUG 任务列表。                         |
+| **3-bug-remediation/** | BUG 确认与修复工作流。入口：[Workflow.md](3-bug-remediation/Workflow.md)。输入：任务列表与知识库；输出：测试、修复与 docs/remediation/ 摘要。 |
 
 ---
 

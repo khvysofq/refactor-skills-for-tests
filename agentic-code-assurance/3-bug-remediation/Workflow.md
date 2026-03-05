@@ -27,11 +27,11 @@ compatibility: Designed for Agent/Claude. Requires stage two (2-risk-assessment)
 
 按以下顺序回答问题，根据第一个「否」的回答选择对应阶段：
 
-| 步骤 | 问题 | 否 | 是 |
-|------|------|-----|-----|
-| Q1 | 是否已对任务列表中每条任务完成「验证存在性」（构建/运行测试，记录已确认/未复现/暂缓）？ | 执行 [Phase 01: 验证存在性](phases/01-verify.md) | 继续 Q2 |
-| Q2 | 是否已对「已确认」任务完成修复（代码变更已应用）？ | 执行 [Phase 02: 实施修复](phases/02-fix.md) | 继续 Q3 |
-| Q3 | 是否已完成回归验证并产出 remediation 摘要（remediation_log.md）？ | 执行 [Phase 03: 回归与产出](phases/03-regression.md) | 阶段三完成 |
+| 步骤 | 问题                                                                                    | 否                                                   | 是         |
+| ---- | --------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------- |
+| Q1   | 是否已对任务列表中每条任务完成「验证存在性」（构建/运行测试，记录已确认/未复现/暂缓）？ | 执行 [Phase 01: 验证存在性](phases/01-verify.md)     | 继续 Q2    |
+| Q2   | 是否已对「已确认」任务完成修复（代码变更已应用）？                                      | 执行 [Phase 02: 实施修复](phases/02-fix.md)          | 继续 Q3    |
+| Q3   | 是否已完成回归验证并产出 remediation 摘要（remediation_log.md）？                       | 执行 [Phase 03: 回归与产出](phases/03-regression.md) | 阶段三完成 |
 
 **决策规则**：从 Q1 开始，遇到第一个「否」即进入对应 Phase；全部为「是」则阶段三完成。
 
@@ -97,50 +97,50 @@ grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/re
 
 ### 定义文档（按需查阅）
 
-| 文档 | 用途 | 何时阅读 |
-|------|------|----------|
-| [修复阶段产出结构](definitions/remediation_output_structure.md) | 产出路径、remediation_log 结构、验收、与阶段二任务对应 | Phase 02/03 或撰写修复/记录时；与阶段二衔接时 |
-| [阶段二任务列表约定](../2-risk-assessment/definitions/task_output_structure.md) | 任务列表字段与下游使用约定 | Phase 01 消费任务列表时 |
+| 文档                                                                            | 用途                                                   | 何时阅读                                      |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------------- |
+| [修复阶段产出结构](definitions/remediation_output_structure.md)                 | 产出路径、remediation_log 结构、验收、与阶段二任务对应 | Phase 02/03 或撰写修复/记录时；与阶段二衔接时 |
+| [阶段二任务列表约定](../2-risk-assessment/definitions/task_output_structure.md) | 任务列表字段与下游使用约定                             | Phase 01 消费任务列表时                       |
 
 ### 阶段文档（按决策树进入）
 
-| 阶段 | 文档 | 说明 |
-|------|------|------|
-| Phase 01 | [验证存在性](phases/01-verify.md) | Q1 为「否」时执行 |
-| Phase 02 | [实施修复](phases/02-fix.md) | Q2 为「否」时执行 |
+| 阶段     | 文档                                  | 说明              |
+| -------- | ------------------------------------- | ----------------- |
+| Phase 01 | [验证存在性](phases/01-verify.md)     | Q1 为「否」时执行 |
+| Phase 02 | [实施修复](phases/02-fix.md)          | Q2 为「否」时执行 |
 | Phase 03 | [回归与产出](phases/03-regression.md) | Q3 为「否」时执行 |
 
 ### 技能文档（按需加载）
 
 > **注意**：不要预先阅读所有 Skill 文档，仅在阶段文档指示时加载对应 Skill。
 
-| Skill | 名称 | 触发条件 |
-|-------|------|----------|
-| [Skill 01](skills/skill-01-verify.md) | 验证存在性 | Phase 01 指示 |
-| [Skill 02](skills/skill-02-fix.md) | 实施修复 | Phase 02 指示 |
+| Skill                                     | 名称       | 触发条件      |
+| ----------------------------------------- | ---------- | ------------- |
+| [Skill 01](skills/skill-01-verify.md)     | 验证存在性 | Phase 01 指示 |
+| [Skill 02](skills/skill-02-fix.md)        | 实施修复   | Phase 02 指示 |
 | [Skill 03](skills/skill-03-regression.md) | 回归与产出 | Phase 03 指示 |
 
 ### 模板文档
 
-| 模板 | 用途 |
-|------|------|
+| 模板                                                 | 用途                                           |
+| ---------------------------------------------------- | ---------------------------------------------- |
 | [remediation_log 模板](templates/remediation_log.md) | 生成或更新 docs/remediation/remediation_log.md |
 
 ---
 
 ## 输入与输出（契约）
 
-| 输入 | 说明 |
-|------|------|
+| 输入     | 说明                                                                                                                                                     |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 任务列表 | `docs/risk_tasks/task_list.md`（来自阶段二），使用方式见 [task_output_structure 下游使用约定](../2-risk-assessment/definitions/task_output_structure.md) |
-| 源代码 | 仓库根目录下的 C/C++ 源码 |
-| 知识库 | `docs/codearch/build_and_tests.md` 必读；`overall_report.md`、`modules/<module_name>.md` 按需 |
+| 源代码   | 仓库根目录下的 C/C++ 源码                                                                                                                                |
+| 知识库   | `docs/codearch/build_and_tests.md` 必读；`overall_report.md`、`modules/<module_name>.md` 按需                                                            |
 
-| 产出 | 路径 | 说明 |
-|------|------|------|
-| 验证测试 | `test/verification/`（临时）→ 工程正式测试目录（归档后） | 每条任务的验证测试，已确认的集成到正式套件 |
-| 源码修复 | 仓库源码（直接修改，当前分支） | 已确认 BUG 的修复代码，人类可通过 git diff 审查 |
-| 修复摘要 | `docs/remediation/remediation_log.md` | 每条任务完整记录（验证结果、测试路径、修复摘要、测试归档状态等），结构见 [remediation_output_structure](definitions/remediation_output_structure.md) |
+| 产出     | 路径                                                      | 说明                                                                                                                                                 |
+| -------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 验证测试 | `test/verification/` → 工程正式测试目录（已确认的归档后） | 每条任务的验证测试，已确认的集成到正式套件，其余保留在 `test/verification/` 供审查                                                                   |
+| 源码修复 | 仓库源码（直接修改，当前分支）                            | 已确认 BUG 的修复代码，可通过 git diff 审查                                                                                                          |
+| 修复摘要 | `docs/remediation/remediation_log.md`                     | 每条任务完整记录（验证结果、测试路径、修复摘要、测试归档状态等），结构见 [remediation_output_structure](definitions/remediation_output_structure.md) |
 
 ---
 

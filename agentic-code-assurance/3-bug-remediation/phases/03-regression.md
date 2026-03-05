@@ -29,37 +29,35 @@
 - [ ] **已按 build_and_tests 运行全量回归测试**，结果通过（或已在 log 中说明预已存在的失败）
 - [ ] **`docs/remediation/remediation_log.md` 存在**，且每条任务有完整记录（验证结果、验证测试路径、测试归档状态等）
 - [ ] **已确认 BUG 的验证测试已集成到正式测试套件**
-- [ ] **未复现任务的验证测试已删除**
+- [ ] **未复现任务的验证测试已保留**在 `test/verification/` 中，供审查
 - [ ] **暂缓任务的验证测试已隔离标注**
-- [ ] **`test/verification/` 目录已清空**（所有测试已归档或删除）
+- [ ] **所有验证测试均已妥善归档**（已集成到正式套件或保留在 `test/verification/` 中）
 - [ ] 执行 [remediation_output_structure](../definitions/remediation_output_structure.md) 中的验收检查命令通过
 
 ```bash
 [ -f docs/remediation/remediation_log.md ] && echo "PASS" || echo "FAIL"
 grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
 grep -q "测试归档状态" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
-# 检查 verification 目录已清空
-[ -z "$(ls -A test/verification/ 2>/dev/null)" ] && echo "PASS (verification dir empty)" || echo "CHECK (verification dir not empty)"
 ```
 
 ---
 
 ## 阶段产出物
 
-| 产出 | 路径 | 说明 |
-|------|------|------|
+| 产出     | 路径                                  | 说明                                                     |
+| -------- | ------------------------------------- | -------------------------------------------------------- |
 | 修复摘要 | `docs/remediation/remediation_log.md` | 每条任务的完整记录（验证结果、修复摘要、测试归档状态等） |
-| 回归结果 | log 内 | 最终全量回归测试结果 |
-| 集成测试 | 工程正式测试目录 | 已确认 BUG 的验证测试已集成为永久回归守护 |
+| 回归结果 | log 内                                | 最终全量回归测试结果                                     |
+| 集成测试 | 工程正式测试目录                      | 已确认 BUG 的验证测试已集成为永久回归守护                |
 
 ---
 
 ## 完成后跳转
 
-| 验收结果 | 下一步 |
-|----------|--------|
-| 通过 | 阶段三完成 |
-| 未通过 | 返回 Skill 03 补全 log 与回归后重新验收 |
+| 验收结果 | 下一步                                  |
+| -------- | --------------------------------------- |
+| 通过     | 阶段三完成                              |
+| 未通过   | 返回 Skill 03 补全 log 与回归后重新验收 |
 
 ---
 

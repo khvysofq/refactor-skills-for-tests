@@ -39,7 +39,7 @@
 | **验证结果** | 未复现 |
 | **验证测试路径** | `test/verification/verify_M1_test.cpp::TestMemcpyBounds` |
 | **验证测试结果** | PASS（BUG 未触发，代码已有边界检查） |
-| **测试归档状态** | 已删除 |
+| **测试归档状态** | 保留(验证) → `test/verification/verify_M1_test.cpp` |
 
 ### 示例：暂缓
 

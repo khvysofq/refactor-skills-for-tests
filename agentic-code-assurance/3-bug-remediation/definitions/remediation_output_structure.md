@@ -40,7 +40,7 @@
 | **修复摘要**（若已修复） | 简要说明修复内容 | ✓（已确认时） |
 | **修复变更文件** | 修复涉及的文件列表 | ✓（已确认时） |
 | **全量回归结果** | 修复后全量回归测试结果 | ✓（已确认时） |
-| **测试归档状态** | 已集成（含最终测试路径） / 已删除 / 保留(暂缓) | ✓ |
+| **测试归档状态** | 已集成（含最终测试路径） / 保留(验证) / 保留(暂缓) | ✓ |
 
 可选字段：时间、关联模块、建议验证方式引用、knowledge_gap（验证/修复过程中，模块报告中缺失或误导性的描述，用于驱动阶段一知识库补强；例：「模块报告的生命周期表未收录 X 对象，导致验证测试设计困难」；「模块边界说明与实际代码不符，X 函数实际属于模块 Y 而非模块 Z」。仅在知识库信息不足影响判断时填写，见 [反馈操作约定](../../definitions/feedback_protocol.md)）。
 
@@ -63,10 +63,7 @@ grep -q "验证结果\|已确认\|未复现\|暂缓\|修复" docs/remediation/re
 grep -q "验证测试路径\|test/verification\|verify_" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
 
 # 含测试归档状态
-grep -q "测试归档状态\|已集成\|已删除\|保留" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
-
-# verification 目录已清空
-[ -z "$(ls -A test/verification/ 2>/dev/null)" ] && echo "PASS (verification dir clean)" || echo "CHECK (verification dir not empty)"
+grep -q "测试归档状态\|已集成\|保留" docs/remediation/remediation_log.md && echo "PASS" || echo "FAIL"
 ```
 
 ---
