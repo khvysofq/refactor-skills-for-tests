@@ -15,7 +15,8 @@ compatibility: Designed for Agent/Claude. Requires stage one (1-code-cognition) 
 在进入本阶段决策树前，须确认**阶段一（代码认知）**已完成：
 
 - [ ] `docs/codearch/overall_report.md` 存在
-- [ ] 满足 [1-code-cognition/Workflow.md](../1-code-cognition/Workflow.md) 中 Q1～Q3 的「是」条件（总体报告、模块报告、构建与测试已就绪）
+- [ ] 满足 [1-code-cognition/Workflow.md](../1-code-cognition/Workflow.md) 中 Q0～Q6 全部「是」（即 P0–P6 均已完成：元数据采集、模块迭代收敛、深度分析、编译测试门禁、报告汇总）
+- [ ] 所有模块报告为 L2 完整版（含代码特征、数据流路径、生命周期模型、并发不变量等）
 
 **全部满足** → 可继续下方决策树  
 **任一不满足** → 先执行阶段一，入口见 [Workflow.md](../Workflow.md)，完成后再进入本工作流

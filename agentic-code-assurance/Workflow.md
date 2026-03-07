@@ -2,7 +2,7 @@
 
 > **读取指令**：本文档是 Agent（如 OpenCode、ClaudeCode）执行自动化 BUG 分析的总入口。先阅读本文档以理解整条流水线、各阶段输入输出与反馈机制，再根据当前目标进入对应子目录的 Workflow.md。
 
-> **路径约定**：本工作流所有文档中的链接路径均以 `agentic-code-assurance/` 目录为根基准。例如 `1-code-cognition/Workflow.md` 指向 `agentic-code-assurance/1-code-cognition/Workflow.md`。同一子目录内的引用使用相对路径（如 `../skills/skill-01-overview.md`）；跨子目录的引用从本目录根开始（如 `1-code-cognition/definitions/decomposition_review.md`）。
+> **路径约定**：本工作流所有文档中的链接路径均以 `agentic-code-assurance/` 目录为根基准。例如 `1-code-cognition/Workflow.md` 指向 `agentic-code-assurance/1-code-cognition/Workflow.md`。同一子目录内的引用使用相对路径（如 `../skills/skill-00-metadata.md`）；跨子目录的引用从本目录根开始（如 `1-code-cognition/definitions/convergence_criteria.md`）。
 
 ---
 
@@ -29,10 +29,13 @@
 ```mermaid
 flowchart LR
     subgraph stage1 [阶段一 代码认知]
-        A1[分析工程结构]
-        A2[识别模块与语义特征]
-        A3[编译/测试门禁]
-        A1 --> A2 --> A3
+        direction TB
+        A0["P0 元数据采集"]
+        A1["P1→P2→P3\n迭代循环"]
+        A4["P4 深度分析"]
+        A5["P5 编译/测试门禁"]
+        A6["P6 报告汇总"]
+        A0 --> A1 --> A4 --> A5 --> A6
     end
     subgraph stage2 [阶段二 风险评估]
         B1[加载知识库]
@@ -51,11 +54,12 @@ flowchart LR
     stage3 -->|"知识库质量信号\n(规则2/3: knowledge_gap汇总)"| stage1
     stage2 -.->|反馈更新| stage1
     stage3 -.->|反馈更新| stage1
-    A3 -->|门禁失败| ABORT[中止工作流]
+    A5 -->|门禁失败| ABORT[中止工作流]
 ```
 
 - **阶段一（代码认知）** → **阶段二（风险评估）** → **阶段三（BUG 修复）**；通常按顺序执行。
-- 阶段一 Phase 03 包含**编译与测试环境硬性门禁**：若工程无法编译或测试无法运行，工作流在此中止。
+- 阶段一采用**迭代式架构**：P0 元数据采集 → P1/P2/P3 迭代循环（确保模块粒度充分）→ P4 深度分析 → P5 编译与测试门禁 → P6 报告汇总。
+- 阶段一 P5 包含**编译与测试环境硬性门禁**：若工程无法编译或测试无法运行，工作流在此中止。
 - 阶段二、三可根据前置产出是否已存在，决定跳过或重跑。
 - 阶段三完成后，可通过**迭代深化机制**重新进入阶段二进行更深层的分析（见第五节）。
 
@@ -63,7 +67,7 @@ flowchart LR
 
 | 欲进入阶段 | 前置条件                                                                                                                                                                                                                                                                                     |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 阶段二     | `docs/codearch/overall_report.md` 存在，且满足 [1-code-cognition/Workflow.md](1-code-cognition/Workflow.md) 中 Q1 ～ Q3 的「是」条件（即代码认知已完成或已更新）。**特别注意**：阶段一 Phase 03 包含编译与测试环境硬性门禁，若工程无法编译或测试无法运行，工作流将在此中止，不会进入阶段二。 |
+| 阶段二     | `docs/codearch/overall_report.md` 存在，且满足 [1-code-cognition/Workflow.md](1-code-cognition/Workflow.md) 中 Q0 ～ Q6 全部「是」（即代码认知阶段 P0–P6 均已完成）。**特别注意**：阶段一 P5 包含编译与测试环境硬性门禁，若工程无法编译或测试无法运行，工作流将在此中止，不会进入阶段二。 |
 | 阶段三     | 阶段二产出已存在：`docs/risk_tasks/` 下存在任务列表（具体文件名见 [2-risk-assessment/Workflow.md](2-risk-assessment/Workflow.md)）。                                                                                                                                                         |
 
 ---
@@ -103,8 +107,8 @@ flowchart LR
 1. **迭代入口**：阶段三完成后，检查 `remediation_log.md` 和 `docs/codearch/knowledge_base_changelog.md`。满足以下任一规则时建议启动 Round 2：
 
    - **规则 1（原有）**：存在「暂缓」项，或 Round 1 的已确认 BUG 集中在特定模块。
-   - **规则 2（新增，知识库补强）**：`knowledge_base_changelog.md` 中标记了「知识库待补强」模块（即 [反馈操作约定](definitions/feedback_protocol.md) 规则 A 触发）。此时须先进入阶段一，执行 `Skill 02` 中对应的 Task 2.1/2.2/2.3/2.4 补充该模块报告，再进入 Round 2 阶段二。
-   - **规则 3（新增，分解审视重开）**：`knowledge_base_changelog.md` 中标记了「分解审视待重开」（即 [反馈操作约定](definitions/feedback_protocol.md) 规则 B 触发）。此时须先进入阶段一执行 `Skill 02 Task 5`（分解审视），审视通过后再进入 Round 2 阶段二。**此触发不受阶段一原有「2–3 轮上限」的一次性限制**。
+   - **规则 2（新增，知识库补强）**：`knowledge_base_changelog.md` 中标记了「知识库待补强」模块（即 [反馈操作约定](definitions/feedback_protocol.md) 规则 A 触发）。此时须先进入阶段一，执行 `Skill 04`（深度分析）补充该模块的 L2 报告，再进入 Round 2 阶段二。
+   - **规则 3（新增，分解审视重开）**：`knowledge_base_changelog.md` 中标记了「分解审视待重开」（即 [反馈操作约定](definitions/feedback_protocol.md) 规则 B 触发）。此时须先进入阶段一执行 `Skill 03`（收敛评估），根据评估结论决定是否需要重入 P1 进行进一步分解，完成后再进入 Round 2 阶段二。**此触发不受阶段一原有迭代轮次上限的一次性限制**。
 
 2. **范围缩窄**：每轮迭代的分析范围应当缩窄（更少的模块），但审查深度加大（更细致的路径追踪）。
 3. **产出版本化**：每轮的 `task_list` 和 `remediation_log` 使用后缀区分（如 `_r2`、`_r3`），避免覆盖前一轮的记录。

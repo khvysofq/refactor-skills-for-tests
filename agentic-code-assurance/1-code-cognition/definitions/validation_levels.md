@@ -19,11 +19,11 @@
 
 执行 L2 或 L3 验证前，必须满足以下条件：
 
-- [ ] Phase 03（构建与测试体系）已完成，或至少已文档化构建和测试运行方式
+- [ ] P5（编译与测试门禁）已完成，或至少已文档化构建和测试运行方式
 - [ ] 构建环境可用（能够编译项目）
 - [ ] 测试框架已识别（Google Test、Catch2 等）
 
-**若前置条件不满足**：先跳转执行 [Phase 03](../phases/03-build-and-tests.md)，完成后返回继续验证。
+**若前置条件不满足**：先跳转执行 [Phase 05: 编译与测试门禁](../phases/05-build-and-tests.md)，完成后返回继续验证。
 
 ---
 
@@ -259,11 +259,11 @@
 
 ## 在模块报告中的填写
 
-在 [模块报告](../templates/module-report.md) 的「验证状态」章节中：
+在 [模块报告 L2](../templates/module-report-L2.md) 的「验证状态」章节中：
 
 - **复杂度「低」**：可省略「验证状态」章节，或写「L0 - 静态分析」
 - **复杂度「中」及以上**：必须填写验证等级、方式、结果、发现
 
 ---
 
-**下一步**：返回调用此文档的 [Skill 02](../skills/skill-02-modules.md) 或 [Phase 02](../phases/02-modules.md)，继续执行模块验证。
+**下一步**：返回调用此文档的 [Skill 04](../skills/skill-04-analyze.md) 或 [Phase 04](../phases/04-deep-analysis.md)，继续执行深度分析。

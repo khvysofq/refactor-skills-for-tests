@@ -33,4 +33,4 @@
 
 ---
 
-**下一步**：返回 [Skill 02](../skills/skill-02-modules.md) 继续任务 1 或任务 3。
+**下一步**：返回 [Skill 01](../skills/skill-01-identify.md)（模块识别）或 [Skill 04](../skills/skill-04-analyze.md)（深度分析）继续执行。
