@@ -8,7 +8,7 @@ set -e
 # 若出现 "client version X is too new. Maximum supported API version is 1.42" 错误，
 # 请取消下行注释以限制客户端使用的 API 版本：
 # export DOCKER_API_VERSION=1.42
-IMAGE_NAME="claude-code:0.0.4"
+IMAGE_NAME="claude-code:0.1.0"
 CONTAINER_USER="node"
 CONTAINER_USER_UID=1000
 CONTAINER_USER_GID=1000
@@ -67,6 +67,10 @@ if [ ! -d "${MOUNT_PATH}" ]; then
     exit 1
 fi
 
+# 解析输入目录的最后一个子目录名，用于容器内 /workspace/xxx 短路径
+WORKSPACE_SUBDIR="$(basename "${MOUNT_PATH}")"
+WORKSPACE_MOUNT="/workspace/${WORKSPACE_SUBDIR}"
+
 # ============================================
 # Docker socket 检查和 GID 获取
 # ============================================
@@ -90,6 +94,7 @@ echo "============================================"
 echo "脚本目录: ${SCRIPT_DIR}"
 echo "HOME目录: ${HOME_DIR}"
 echo "挂载路径: ${MOUNT_PATH}"
+echo "容器内短路径: ${WORKSPACE_MOUNT} (与上同源，入口工作目录)"
 echo "容器镜像: ${IMAGE_NAME}"
 echo "容器用户: ${CONTAINER_USER} (uid=${CONTAINER_USER_UID}, gid=${CONTAINER_USER_GID})"
 if [ -n "${DOCKER_GID}" ]; then
@@ -162,9 +167,10 @@ docker run -it --rm \
     -e HOME="/home/${CONTAINER_USER}" \
     -e USER="${CONTAINER_USER}" \
     \
-    `# === 工作目录挂载（镜像内外路径一致）===` \
+    `# === 工作目录挂载（镜像内外路径一致，同时挂载到 /workspace/最后子目录名 以使用短路径）===` \
     -v "${MOUNT_PATH}":"${MOUNT_PATH}" \
-    -w "${MOUNT_PATH}" \
+    -v "${MOUNT_PATH}":"${WORKSPACE_MOUNT}" \
+    -w "${WORKSPACE_MOUNT}" \
     \
     `# === 持久化配置挂载 ===` \
     -v "${SCRIPT_DIR}/claude_settings/.claude":"/home/${CONTAINER_USER}/.claude" \
