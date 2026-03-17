@@ -88,6 +88,35 @@ grep -r "#include" $MODULE_PATH --include="*.cpp" --include="*.h" | \
 - 若为迭代重入：在父模块下以 ↳ 缩进添加子模块
 - 将已拆分的父模块状态标记为「已拆分」
 
+### 任务 6: 拆分状态确认（仅迭代重入时）
+
+**仅当 P1 因 P3 再入列表指示「待拆」模块而重入时**，在生成子模块报告后执行本任务。
+
+P1 是**唯一有权将模块拆分状态从「待拆」更新为「已拆」的阶段**（P2 禁止写「已拆」，详见 [complexity_levels — 拆分结论格式](../definitions/complexity_levels.md)）。
+
+步骤：
+
+1. 对每个本轮拆分的父模块，验证所有声称的子模块报告文件已实际存在：
+
+```bash
+# 验证子模块报告文件存在性（对每个拆分的父模块执行）
+PARENT_MODULE="<parent_module_name>"
+SUB_MODULES="<sub1> <sub2> <sub3>"
+ALL_OK=1
+for sub in $SUB_MODULES; do
+  if [ -f "docs/codearch/modules/${sub}.md" ] || [ -f "docs/codearch/modules/${PARENT_MODULE}-${sub}.md" ]; then
+    echo "OK: $sub"
+  else
+    echo "FAIL: $sub — report file not found"
+    ALL_OK=0
+  fi
+done
+[ $ALL_OK -eq 1 ] && echo "All sub-module reports verified" || echo "ERROR: Some reports missing, cannot mark as 已拆"
+```
+
+2. **仅当所有子模块报告文件验证通过后**，将父模块报告中的拆分说明从「待拆」更新为「已拆（子模块：xxx_a, xxx_b, ...）」
+3. 若任何子模块报告缺失，**不得更新状态**，须先补全缺失报告
+
 ---
 
 ## 验收标准
@@ -95,6 +124,7 @@ grep -r "#include" $MODULE_PATH --include="*.cpp" --include="*.h" | \
 - [ ] 每个模块的 L1 报告已存放于 `docs/codearch/modules/`
 - [ ] 总体报告的模块索引已更新
 - [ ] 每份 L1 报告包含：模块名称、路径、代码指标、职责描述、依赖概览
+- [ ] （迭代重入时）所有拆分模块的子报告文件存在性已通过脚本验证，父模块状态已更新为「已拆」
 
 ---
 
@@ -102,8 +132,9 @@ grep -r "#include" $MODULE_PATH --include="*.cpp" --include="*.h" | \
 
 | 类别 | 说明 |
 |---|---|
-| **DO** | 使用 engineering_metadata 数据；对模块边界进行语义验证；记录合并/拆分理由 |
+| **DO** | 使用 engineering_metadata 数据；对模块边界进行语义验证；记录合并/拆分理由；迭代重入时用脚本验证子模块报告文件存在后再标记「已拆」 |
 | **DON'T** | 不要执行深度分析（那是 P4 的职责）；不要分配复杂度评级（那是 P2 的职责）；不要在缺乏证据的情况下虚构职责描述 |
+| **P1 专属权限** | P1 是唯一有权设置拆分状态为「已拆」的阶段——必须在子模块报告文件通过验证后才能设置 |
 
 ---
 

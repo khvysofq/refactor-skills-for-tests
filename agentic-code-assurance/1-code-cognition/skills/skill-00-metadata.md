@@ -99,7 +99,33 @@ grep -rn "gtest\|TEST(\|TEST_F(\|Catch\|BOOST_AUTO_TEST" . --include="*.cpp" --i
 
 将结果填入报告的「测试目录结构」表格。
 
-### 任务 7: 汇总到报告
+### 任务 7: 计算复杂度阈值配置
+
+基于任务 3 采集的代码行数统计，计算项目自适应的复杂度阈值。这些阈值将被 P2 评级和 P3 收敛检查引用，取代硬编码的固定数值。
+
+```bash
+# 计算工程总有效代码行数 T
+T=$(find src/ -name "*.cpp" -o -name "*.h" -o -name "*.c" 2>/dev/null | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}')
+echo "工程总有效代码行数 T = $T"
+
+# 计算各阈值（使用整数算术）
+FLOOR_HIGH=$(( T * 15 / 100 ))
+[ $FLOOR_HIGH -lt 3000 ] && FLOOR_HIGH=3000
+
+SPLIT_EVAL=$(( T * 8 / 100 ))
+[ $SPLIT_EVAL -lt 1500 ] && SPLIT_EVAL=1500
+
+PER_DIR_JUSTIFY=$(( T * 25 / 100 ))
+[ $PER_DIR_JUSTIFY -lt 8000 ] && PER_DIR_JUSTIFY=8000
+
+echo "地板阈值_高 = $FLOOR_HIGH (max(T*15%, 3000))"
+echo "拆分评估阈值 = $SPLIT_EVAL (max(T*8%, 1500))"
+echo "逐目录论证阈值 = $PER_DIR_JUSTIFY (max(T*25%, 8000))"
+```
+
+将计算结果填入报告的「复杂度阈值配置」章节。详见 [objective_metrics — 阈值配置](../definitions/objective_metrics.md)。
+
+### 任务 8: 汇总到报告
 
 使用模板 [engineering_metadata.md](../templates/engineering_metadata.md) 格式化所有采集数据，生成 `docs/codearch/engineering_metadata.md`。
 
@@ -108,7 +134,8 @@ grep -rn "gtest\|TEST(\|TEST_F(\|Catch\|BOOST_AUTO_TEST" . --include="*.cpp" --i
 ## 验收标准
 
 - [ ] `docs/codearch/engineering_metadata.md` 文件已生成
-- [ ] 报告包含全部 6 个章节（目录结构、构建 Target、代码行数、命名空间、文档清单、测试目录）
+- [ ] 报告包含全部 7 个章节（目录结构、构建 Target、代码行数、命名空间、文档清单、测试目录、复杂度阈值配置）
+- [ ] 复杂度阈值配置已基于工程总代码量计算填写
 - [ ] 所有数据均来自命令直接输出，无模型解读或主观分析
 
 ---

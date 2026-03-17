@@ -24,7 +24,61 @@
 
 ## 核心任务
 
-**执行顺序**: 任务 1–6、8–9 可按模块并行执行；任务 7 需在所有模块完成后串行执行；任务 10 在全部完成后执行。
+**执行顺序**: 任务 0 必须首先执行且通过后才能继续；任务 1–6、8–9 可按模块并行执行；任务 7 需在所有模块完成后串行执行；任务 10 在全部完成后执行。
+
+### 任务 0: 拆分状态与评级完整性预检（安全网）
+
+P4 开始前，运行与 P3 Task 0 相同的自动化检查，作为防止 P3 遗漏问题传播到 L2 报告的安全网。阈值从 `engineering_metadata.md` 动态读取。
+
+```bash
+echo "=== P4 前置检查：地板规则合规性 ==="
+META="docs/codearch/engineering_metadata.md"
+FLOOR_HIGH=$(grep -oP '地板阈值_高\s*\|\s*\K[0-9]+' "$META" 2>/dev/null | head -1)
+if [ -z "$FLOOR_HIGH" ]; then
+  echo "WARNING: 无法从 $META 读取地板阈值_高，使用默认值 3000"
+  FLOOR_HIGH=3000
+fi
+echo "地板阈值_高 = $FLOOR_HIGH"
+
+for f in docs/codearch/modules/*.md; do
+  module=$(basename "$f" .md)
+  lines=$(grep -oP '代码行数\s*\|\s*\K[0-9,]+' "$f" 2>/dev/null | tr -d ',' | head -1)
+  rating=$(grep -oP '\*{0,2}等级\*{0,2}\s*[:：]\s*\K(低|中|高|极高)' "$f" 2>/dev/null | head -1)
+  density_signals=$(grep -oP '密度高信号数\s*\|\s*\K[0-9]+' "$f" 2>/dev/null | head -1)
+  if [ -n "$lines" ] && [ "$lines" -gt "$FLOOR_HIGH" ]; then
+    if [ "$rating" = "低" ] || [ "$rating" = "中" ]; then
+      echo "BLOCK: $module ($lines lines > 地板阈值_高 $FLOOR_HIGH, rated '$rating', minimum: 高)"
+    fi
+  fi
+  if [ -n "$density_signals" ] && [ "$density_signals" -ge 3 ]; then
+    if [ "$rating" = "低" ] || [ "$rating" = "中" ]; then
+      echo "BLOCK: $module (密度高信号数=$density_signals >= 3, rated '$rating', minimum: 高)"
+    fi
+  fi
+done
+
+echo "=== P4 前置检查：已拆报告存在性 ==="
+for f in docs/codearch/modules/*.md; do
+  module=$(basename "$f" .md)
+  if grep -q '结论.*已拆' "$f" 2>/dev/null; then
+    subs=$(grep '已拆' "$f" | grep -oP '子模块[：:]\s*\K[^)]+' | tr '、,/' '\n')
+    while IFS= read -r sub; do
+      sub=$(echo "$sub" | xargs)
+      [ -z "$sub" ] && continue
+      found=0
+      [ -f "docs/codearch/modules/${sub}.md" ] && found=1
+      [ -f "docs/codearch/modules/${module}-${sub}.md" ] && found=1
+      [ $found -eq 0 ] && echo "BLOCK: $module claims sub-module '$sub' but no report found"
+    done <<< "$subs"
+  fi
+done
+```
+
+**若输出包含任何 `BLOCK` 行**，P4 不得继续执行。须返回 P3 重新评估（P3 将根据问题类型路由到 P1 或 P2）。
+
+> 此检查作为安全网，在 P3 正常工作时不应触发。若频繁触发，说明 P3 的自动化门禁存在缺陷需要修复。
+
+---
 
 ### 任务 1: 关键设计要点 [每模块，可并行]
 
